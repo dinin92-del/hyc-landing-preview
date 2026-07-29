@@ -49,7 +49,11 @@ grep -q "og:url" index.html \
 # 3) Push to the Pages repo (force — the repo mirrors dist, no history to keep)
 git init -q -b main
 git add -A
-git -c user.name="dinin92-del" -c user.email="dinin92@gmail.com" \
+# Autor commita: adres noreply GitHuba, NIE prywatny e-mail. Repo Pages jest
+# PUBLICZNE, a `git log` / API wystawiają adres autora każdemu — prywatna
+# skrzynka wyciekłaby tam przy pierwszym deployu.
+git -c user.name="dinin92-del" \
+    -c user.email="284271549+dinin92-del@users.noreply.github.com" \
     commit -q -m "Deploy landing $(date +%Y-%m-%d\ %H:%M)"
 git remote add origin "https://github.com/$REPO.git"
 git push -q --force origin main
