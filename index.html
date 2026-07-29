@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hyc! — jeden przycisk do najbliższego schronienia</title>
+  <meta name="description" content="Hyc! to prosta aplikacja turystyczna: jeden przycisk, GPS i nawigacja po szlaku do najbliższego schronienia. Dołącz do otwartej bety na iOS i Androida.">
+  <meta name="theme-color" content="#F0EBE0">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="favicon.svg">
+
+  <!-- Open Graph / social preview (podgląd linku na sociale) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Hyc!">
+  <meta property="og:title" content="Hyc! — jeden przycisk do najbliższego schronienia">
+  <meta property="og:description" content="Prosta appka turystyczna: przycisk, GPS, nawigacja po szlaku. Dołącz do otwartej bety.">
+  <meta property="og:image" content="assets/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="pl_PL">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hyc! — jeden przycisk do najbliższego schronienia">
+  <meta name="twitter:description" content="Prosta appka turystyczna: przycisk, GPS, nawigacja po szlaku. Dołącz do otwartej bety.">
+  <meta name="twitter:image" content="assets/og-image.jpg">
+
+  <link rel="preload" href="assets/fonts/Fredoka-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/Figtree-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="wrap">
+
+    <header class="topbar">
+      <img class="mark" src="favicon.svg" alt="" width="30" height="30">
+      <span>Hyc!</span>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <span class="badge">Beta otwarta</span>
+          <h1>Jeden przycisk<br>i już wiesz, <span class="accent">gdzie się schować</span></h1>
+          <p class="lead">Naciskasz raz — Hyc! bierze Twój GPS i prowadzi po szlaku do najbliższego dachu nad głową. Szukaj w kierunku, w którym idziesz, albo dookoła siebie.</p>
+
+          <div class="stores" id="stores">
+            <a class="store-btn" id="btn-ios" href="#" rel="noopener">
+              <img src="assets/apple.svg" alt="">
+              <span class="label"><small>Pobierz na iPhone</small><strong>TestFlight</strong></span>
+            </a>
+            <a class="store-btn" id="btn-android" href="#" rel="noopener">
+              <img src="assets/google.svg" alt="">
+              <span class="label"><small>Pobierz na Androida</small><strong>Google Play</strong></span>
+            </a>
+          </div>
+          <p class="stores-note">Wersja testowa — instalacja przez TestFlight (iOS) lub testy otwarte Google Play (Android). Za darmo.</p>
+        </div>
+
+        <div class="hero-art">
+          <!-- Ramka telefonu rysowana CSS-em; w środku nagranie z aplikacji.
+               PLACEHOLDER: dopóki assets/demo.mp4 nie istnieje, <video> pokazuje
+               sam poster — podmiana filmiku to jeden <source>. -->
+          <div class="phone">
+            <div class="phone-screen">
+              <video
+                poster="assets/hero.png"
+                autoplay muted loop playsinline
+                preload="none"
+                aria-label="Nagranie z aplikacji: nawigacja do najbliższego schronienia">
+                <!-- Odkomentuj po wrzuceniu nagrania (bez pliku <source> dawałby 404):
+                <source src="assets/demo.mp4" type="video/mp4"> -->
+              </video>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="about" aria-label="Co robi aplikacja">
+        <div class="feat is-wide">
+          <h3>Ponad <span class="feat-num">27 tys</span> punktów</h3>
+          <p class="feat-tags">Wiaty · Chatki · Bacówki · Schroniska · Bazy namiotowe · Miejsca biwakowe · Noclegi · Sklepy · Gastronomia · i inne</p>
+          <p>Łączymy dane z wielu źródeł, tworząc <strong>największą bazę schronień w Polsce</strong></p>
+          <p class="feat-sources">Open Street Map · Lasy Państwowe · CWOH / turystyka.gov.pl · Wikidata · chatki.com.pl · PTSM · i inne</p>
+        </div>
+        <div class="feat">
+          <h3>Komentuj, weryfikuj i dodawaj nowe <span class="accent">punkty</span></h3>
+          <p>Aktualne informacje o punktach, których często nie znajdziesz na zwykłych mapach</p>
+        </div>
+        <div class="feat">
+          <h3>Zapisuj i twórz <span class="accent">własną kolekcję</span> punktów</h3>
+          <p>Zbieraj górskie miejsca-perełki, które chciałbyś odwiedzić ponownie</p>
+        </div>
+        <div class="feat">
+          <h3><span class="accent">Telefon</span> do noclegu zawsze pod ręką</h3>
+          <p>By ułatwić rezerwację, zbieramy numery telefonów do schronisk i innych miejsc noclegowych</p>
+        </div>
+      </section>
+
+      <section class="signup" id="signup" hidden>
+        <h2>Bądź na bieżąco</h2>
+        <p>Zostaw maila — napiszemy, gdy pojawią się nowości albo wersja w sklepie.</p>
+        <form id="signup-form" method="post" novalidate>
+          <input type="email" name="email" placeholder="Twój e-mail" autocomplete="email" required aria-label="Adres e-mail">
+          <button type="submit">Zapisz się</button>
+        </form>
+        <label class="consent">
+          <input type="checkbox" name="consent" required>
+          <span>Zgadzam się na otrzymywanie wiadomości o aplikacji Hyc! Szczegóły w <a href="legal/privacy.html">polityce prywatności</a>.</span>
+        </label>
+        <p class="signup-status" id="signup-status" role="status" aria-live="polite" hidden></p>
+      </section>
+    </main>
+
+    <footer>
+      <span>© <span id="year">2026</span> Hyc!</span>
+      <span class="spacer"></span>
+      <a href="legal/privacy.html">Prywatność</a>
+      <a href="legal/eula.html">Regulamin</a>
+      <a href="legal/warunki_bezpiecznego_korzystania.html">Bezpieczeństwo</a>
+      <a href="mailto:hyc.kontakt@gmail.com?subject=Hyc%21%20%E2%80%94%20kontakt" title="hyc.kontakt@gmail.com">Kontakt</a>
+    </footer>
+
+  </div>
+
+  <script src="config.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

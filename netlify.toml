@@ -1,0 +1,6 @@
+# Netlify config (only needed for the git-connected deploy path).
+# Simpler path: run ./build.sh and drag-drop landing/dist/ into the dashboard.
+[build]
+  base = "landing"
+  command = "bash build.sh"
+  publish = "landing/dist"
