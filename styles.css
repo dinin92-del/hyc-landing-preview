@@ -16,8 +16,7 @@
    Fredoka zostaje WYŁĄCZNIE na wordmarku „Hyc!". */
 @font-face {
   font-family: "Figtree";
-  src: url("assets/fonts/Figtree-Variable.woff2") format("woff2-variations"),
-       url("assets/fonts/Figtree-Variable.woff2") format("woff2");
+  src: url("assets/fonts/Figtree-Variable.woff2") format("woff2");
   font-weight: 300 900;
   font-display: swap;
 }
@@ -173,10 +172,14 @@ h1 {
 }
 .store-btn.is-disabled img { filter: none; opacity: 0.45; }
 
+/* Drobny tekst chodzi na --bark, nie --driftwood: driftwood na tłach strony
+   daje 3,3–3,6:1, czyli poniżej progu AA (4,5:1) dla tekstu tej wielkości.
+   --driftwood zostaje tylko na wyłączonym przycisku (WCAG zwalnia kontrolki
+   disabled z wymogu kontrastu). */
 .stores-note {
   margin: 14px 0 0;
   font-size: 13px;
-  color: var(--driftwood);
+  color: var(--bark);
 }
 
 /* ---- Hero: telefon z filmikiem ----
@@ -260,64 +263,10 @@ h1 {
   padding-top: 10px;
   border-top: 1px solid rgba(138, 128, 112, 0.18);
   font-size: 12px;
-  color: var(--driftwood);
+  color: var(--bark);
 }
 .feat-num { color: var(--green); font-weight: 700; }
 
-/* ---- Email signup ---- */
-.signup {
-  margin-top: 48px;
-  background: var(--cream);
-  border: 1px solid rgba(138, 128, 112, 0.18);
-  border-radius: var(--radius-lg);
-  padding: 26px 22px;
-  box-shadow: var(--shadow-sm);
-}
-.signup h2 { margin: 0 0 6px; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color: var(--green-dark); }
-.signup p { margin: 0 0 16px; font-size: 14px; color: var(--bark); }
-.signup form { display: flex; flex-wrap: wrap; gap: 10px; }
-.signup input[type="email"] {
-  flex: 1 1 220px;
-  min-width: 0;
-  padding: 13px 16px;
-  border: 1.5px solid var(--parchment);
-  border-radius: var(--radius);
-  background: var(--white, #fff);
-  font: inherit;
-  font-weight: 600;
-  color: var(--espresso);
-}
-.signup input[type="email"]:focus { border-color: var(--green); outline: none; }
-.signup button {
-  padding: 13px 22px;
-  border: none;
-  border-radius: var(--radius);
-  background: var(--green);
-  color: var(--cream);
-  font: inherit;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.12s ease, background 0.12s ease;
-}
-.signup button:hover { transform: translateY(-2px); background: var(--green-dark); }
-.consent {
-  display: flex;
-  align-items: flex-start;
-  gap: 9px;
-  margin-top: 14px;
-  font-size: 12.5px;
-  color: var(--driftwood);
-}
-.consent input { margin-top: 2px; accent-color: var(--green); }
-.signup-status {
-  margin: 14px 0 0;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--green-dark);
-}
-.signup-status.is-error { color: var(--orange); }
 
 /* ---- Footer ---- */
 footer {
@@ -325,7 +274,7 @@ footer {
   padding-top: 22px;
   border-top: 1px solid var(--parchment);
   font-size: 13px;
-  color: var(--driftwood);
+  color: var(--bark);
   display: flex;
   flex-wrap: wrap;
   gap: 8px 18px;
@@ -353,4 +302,13 @@ footer .spacer { flex: 1 1 auto; }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
+  /* Wyłączenie animacji NIE zatrzymuje zapętlonego <video> — a to najbardziej
+     ruchliwy element strony. Chowamy je i zostawiamy sam poster (tło ekranu
+     telefonu maluje go przez background-image). */
+  .phone-screen video { display: none; }
+  .phone-screen {
+    background-image: url("assets/hero.png");
+    background-size: cover;
+    background-position: center;
+  }
 }

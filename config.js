@@ -12,8 +12,4 @@ window.HYC_CONFIG = {
   // Android — publiczny link do testów otwartych (Play Console → Testowanie → Testy otwarte → link URL).
   // Format: https://play.google.com/apps/testing/pl.hycdobudy.hyc_do_budy
   googlePlay: "",
-
-  // Zapis na nowości (opcjonalny). Wklej action URL od dostawcy formularza
-  // (Buttondown / Formspree / Mailchimp / Tally). Puste => sekcja maila ukryta.
-  emailAction: "",
 };

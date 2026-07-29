@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
-# Sitemap: https://TWOJA-DOMENA/sitemap.xml
+# Jedna podstrona + pliki prawne — sitemap nic tu nie wnosi.
+# Gdy landing urośnie o realne podstrony: Sitemap: https://gethyc.com/sitemap.xml

@@ -2,6 +2,7 @@
 # Publish landing/ to GitHub Pages (repo: dinin92-del/hyc-landing).
 # One command to update the live site after editing landing/ (e.g. config.js).
 # Uses the already-authenticated `gh`/git — no passwords entered here.
+# macOS only: `sed -i ''` to składnia BSD (na GNU/Linux trzeba `sed -i`).
 #
 #   cd landing && ./deploy-ghpages.sh
 #
@@ -37,6 +38,13 @@ if [[ -n "$SITE_DOMAIN" ]]; then printf '%s\n' "$SITE_DOMAIN" > CNAME; fi
 # OG needs absolute URLs (scrapers don't resolve relative)
 sed -i '' "s#content=\"assets/og-image.jpg\"#content=\"$BASE/assets/og-image.jpg\"#g" index.html
 sed -i '' "s#<meta property=\"og:type\" content=\"website\">#<meta property=\"og:type\" content=\"website\">\n  <meta property=\"og:url\" content=\"$BASE/\">#" index.html
+# Oba podstawienia dopasowują DOKŁADNY string z index.html — zmiana formatowania
+# tamtych metatagów sprawiłaby, że sed po cichu nic nie robi i podgląd linku na
+# socialach traci obrazek/URL. Dlatego sprawdzamy wynik, zamiast ufać sed-owi.
+grep -q "content=\"$BASE/assets/og-image.jpg\"" index.html \
+  || { echo "BŁĄD: og:image nie został przepisany na absolutny URL — sprawdź metatagi w index.html" >&2; exit 1; }
+grep -q "og:url" index.html \
+  || { echo "BŁĄD: nie wstrzyknięto og:url — sprawdź metatag og:type w index.html" >&2; exit 1; }
 
 # 3) Push to the Pages repo (force — the repo mirrors dist, no history to keep)
 git init -q -b main

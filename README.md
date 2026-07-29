@@ -9,8 +9,8 @@ zero trackerów, zero zależności runtime. Design dopracowujemy na bieżąco.
 landing/
   index.html        # strona
   styles.css        # style (tokeny 1:1 z lib/shared/theme.dart)
-  main.js           # zachowanie (przyciski + formularz maila) — zewnętrzne pod CSP
-  config.js         # ← JEDYNE miejsce do edycji: linki bety + endpoint maila
+  main.js           # zachowanie (przyciski sklepów) — zewnętrzne pod CSP
+  config.js         # ← JEDYNE miejsce do edycji: publiczne linki bety
   favicon.svg  robots.txt
   _headers          # nagłówki edge (CSP, cache) — Netlify / Cloudflare Pages
   netlify.toml      # config dla git-connected deployu (opcjonalne)
@@ -27,13 +27,11 @@ Edytuj **`config.js`**:
 window.HYC_CONFIG = {
   testflight: "https://testflight.apple.com/join/XXXXXXXX",
   googlePlay: "https://play.google.com/apps/testing/pl.hycdobudy.hyc_do_budy",
-  emailAction: "",   // opcjonalnie, patrz niżej
 };
 ```
 
-Puste `""` → przycisk pokazuje „Wkrótce" i jest nieklikalny. Strona sama:
-- podświetla przycisk pasujący do systemu odwiedzającego (iOS/Android),
-- pokazuje sekcję zapisu na maila tylko, gdy `emailAction` jest ustawione.
+Puste `""` → przycisk pokazuje „Wkrótce" i jest nieklikalny. Strona sama podświetla
+przycisk pasujący do systemu odwiedzającego (iOS/Android).
 
 ## 2. Skąd wziąć linki
 
@@ -52,15 +50,7 @@ Puste `""` → przycisk pokazuje „Wkrótce" i jest nieklikalny. Strona sama:
    (Nowe konta deweloperskie: Google może wymagać min. liczby testerów przed produkcją —
    testy otwarte to spełniają.)
 
-## 3. (Opcjonalnie) Zapis na maila
-
-Landing nie ma backendu — podłącz zewnętrzny formularz i wklej jego `action` do `emailAction`:
-- **Buttondown** / **Mailchimp** — od razu lista mailingowa,
-- **Formspree** / **Tally** — najprościej, mail leci na skrzynkę / do arkusza.
-
-Sekcja ma checkbox zgody + link do polityki prywatności (RODO).
-
-## 4. Deploy
+## 3. Deploy
 
 Zbuduj host-agnostyczny bundel (realne pliki prawne zamiast symlinku):
 
@@ -76,15 +66,17 @@ Git-connected (Netlify): `netlify.toml` już ustawia `base=landing`, `command=ba
 
 `dist/` jest w `.gitignore` (artefakt buildu — nie commitujemy).
 
-Po podpięciu domeny uzupełnij `robots.txt` (Sitemap).
+### 3a. Własna domena na GitHub Pages (`gethyc.com`) — WPIĘTE 2026-07-29
 
-### 4a. Własna domena na GitHub Pages (`gethyc.com`)
+Domena kupiona (Spaceship), DNS ustawiony, HTTPS wymuszony, certyfikat ważny do
+2026-10-27. Landing stoi pod **https://gethyc.com**, `www` przekierowuje na apeks.
+Poniższa procedura zostaje jako zapis tego, co zrobiono (i przepis na kolejną domenę).
 
 **Kolejność jest istotna: najpierw DNS, dopiero potem `SITE_DOMAIN`.** GitHub Pages
 po zobaczeniu pliku `CNAME` przekierowuje adres `github.io` na domenę własną —
 jeśli DNS jeszcze nie działa, strona przestaje się otwierać pod OBOMA adresami.
 
-1. Kup `gethyc.com` (dowolny rejestrator; wolna wg rejestru Verisign, stan 2026-07-29).
+1. Kup domenę u dowolnego rejestratora.
 2. W DNS rejestratora ustaw dla **apeksu** (`gethyc.com`, rekord `@`) cztery rekordy `A`:
    `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
    (i opcjonalnie `AAAA`: `2606:50c0:8000::153`, `…8001::153`, `…8002::153`, `…8003::153`).
@@ -109,11 +101,17 @@ Bez `SITE_DOMAIN` skrypt publikuje po staremu pod `dinin92-del.github.io/hyc-lan
 - widoczny focus klawiatury, kontrast AA, `prefers-reduced-motion`
 - self-hosted fonty **WOFF2** z licencją OFL: Figtree variable (oś wght 300–900, 27 KB —
   font DS, ten sam co w apce) + Fredoka wyłącznie na wordmarku „Hyc!"
-- JS zewnętrzny → twardy CSP `script-src 'self'` (`_headers`)
+- JS zewnętrzny (nie inline), więc strona **da się** podać z twardym CSP `script-src 'self'`
+  — ale ⚠️ `_headers` czyta **tylko Netlify / Cloudflare Pages**. Na GitHub Pages, gdzie
+  landing stoi dzisiaj, `deploy-ghpages.sh` ten plik kasuje i produkcja leci **bez CSP,
+  bez `X-Content-Type-Options`, bez `Referrer-Policy` i bez `Permissions-Policy`**
+  (GH Pages nie pozwala ustawiać własnych nagłówków). Chcesz je realnie mieć → hosting
+  musi przenieść się na Cloudflare Pages albo Netlify.
 - brak zewnętrznych żądań i trackerów (RODO-clean)
 
 ## TODO (opcjonalne)
-- [ ] kupić `gethyc.com` i wpiąć wg §4a (DNS → dopiero potem `SITE_DOMAIN`)
+- [x] ~~kupić `gethyc.com` i wpiąć wg §3a~~ — zrobione 2026-07-29
 - [ ] `assets/demo.mp4` — nagranie z apki do ramki telefonu w hero (teraz leci sam
-      poster `hero.png`; podmiana to jeden `<source>`)
-- [ ] podłączyć dostawcę maila i wkleić `emailAction` (Formspree/Buttondown/Tally)
+      poster `hero.png`; podmiana to jeden `<source>`). ⚠️ `hero.png` ma proporcję
+      9:16, a ramka 9:19.5 — przy `object-fit: cover` poster gubi ~18% szerokości.
+      Nagranie z telefonu/symulatora będzie miało 9:19.5 i problem zniknie samo.
