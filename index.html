@@ -7,7 +7,9 @@
   <meta name="description" content="Hyc! to prosta aplikacja turystyczna: jeden przycisk, GPS i nawigacja po szlaku do najbliższego schronienia. Dołącz do otwartej bety na iOS i Androida.">
   <meta name="theme-color" content="#F0EBE0">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="favicon.svg">
+  <!-- apple-touch-icon MUSI byc PNG — iOS nie czyta SVG i przy braku rastra
+       robi wlasny zrzut strony jako ikone na ekranie glownym. -->
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 
   <!-- Open Graph / social preview (podgląd linku na sociale) -->
   <meta property="og:type" content="website">
@@ -31,7 +33,7 @@
   <div class="wrap">
 
     <header class="topbar">
-      <img class="mark" src="favicon.svg" alt="" width="30" height="30">
+      <img class="mark" src="assets/mark-rings.svg" alt="" width="30" height="30">
       <span>Hyc!</span>
     </header>
 

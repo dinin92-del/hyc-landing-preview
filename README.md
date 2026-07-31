@@ -109,6 +109,17 @@ Bez `SITE_DOMAIN` skrypt publikuje po staremu pod `dinin92-del.github.io/hyc-lan
   musi przenieść się na Cloudflare Pages albo Netlify.
 - brak zewnętrznych żądań i trackerów (RODO-clean)
 
+## Dwa znaki — nie mylić (0731)
+- **`favicon.svg` = ikona aplikacji**: pole `#2D5016` + biały wordmark „Hyc!", geometria
+  jak w masterze sklepowym (83,33 % szerokości, środek 2,78 % poniżej). Karta przeglądarki
+  ma pokazywać to samo, co ekran telefonu i listing.
+- **`assets/mark-rings.svg` = sygnet nagłówka**: trzy kręgi z HycButtona na kremowym tle.
+  ⛔ W nagłówku obok stoi już słowo „Hyc!", więc wordmark w sygnecie czytałby się jako
+  powtórzenie — dlatego tam ZOSTAJĄ kręgi. Do 0731 oba miejsca brały ten sam plik.
+- **`assets/apple-touch-icon.png` 180×180** — iOS nie czyta SVG i przy braku rastra robi
+  za ikonę na ekranie głównym własny zrzut strony. Regeneracja: przeskalowanie mastera
+  `1080x1080new.png` (LANCZOS), ten sam plik co ikona apki.
+
 ## TODO (opcjonalne)
 - [x] ~~kupić `gethyc.com` i wpiąć wg §3a~~ — zrobione 2026-07-29
 - [ ] `assets/demo.mp4` — nagranie z apki do ramki telefonu w hero (teraz leci sam
