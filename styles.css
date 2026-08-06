@@ -801,7 +801,7 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
      i sam poster zostaje w tym samym miejscu. */
   aspect-ratio: 9 / 16;
   /* ⚠ ?v= podbijasz razem z tym w <source> — patrz komentarz w index.html. */
-  background-image: url("assets/demo-poster.jpg?v=2");
+  background-image: url("assets/demo-poster.jpg?v=4");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

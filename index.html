@@ -33,7 +33,7 @@
        deployu potrafi skleić NOWY index.html ze STARYM styles.css i pokazać
        układ, którego nikt nigdy nie zbudował. Wersja w URL-u wymusza świeże
        pobranie, bo to inny zasób. -->
-  <link rel="stylesheet" href="styles.css?v=20260806">
+  <link rel="stylesheet" href="styles.css?v=20260806b">
 </head>
 <body>
   <div class="wrap">
@@ -50,7 +50,7 @@
           <img class="hero-logo" src="assets/logo.png?v=1" alt="Hyc!" width="105" height="48">
           <span class="badge">Wersja testowa</span>
           <h1>Jeden przycisk →<br><span class="accent">najbliższe schronienie</span></h1>
-          <p class="lead">Łączymy dane z&nbsp;wielu źródeł, tworząc <strong>największą bazę schronień w&nbsp;Polsce</strong> — ponad 27 tysięcy punktów.</p>
+          <p class="lead">Łączymy dane z&nbsp;wielu źródeł, tworząc <strong>największą bazę schronień w&nbsp;Polsce</strong> — ponad 27 tysięcy punktów</p>
           <p class="hero-tags">Wiaty · Chatki · Bacówki · Schroniska · Bazy namiotowe · Miejsca biwakowe · Noclegi · Sklepy · Gastronomia · i&nbsp;inne</p>
 
           <div class="stores" id="stores">
@@ -76,15 +76,22 @@
                telefon w telefonie). Kadr jest KWADRATOWY (1:1) i ma oddech
                dookoła telefonu wbudowany w materiał — skalujemy całość, nigdy
                nie kadrujemy i nie dokładamy marginesu w CSS.
-               PLACEHOLDER (0806): render poszedł z pustym ekranem Rotato
-               ("Drag or paste your video or image here"). Podmiana na wersję
-               z nagraniem = wymiana assets/demo.mp4 + postera i podbicie ?v=,
-               bez zmian tutaj — o ile nowy render zachowa kadr 1:1. -->
+               0806: placeholder zastąpiony DOCELOWYM nagraniem z aplikacji
+               (splash, mapa z trasą, szczegóły punktu, komentarze).
+               Kolejna podmiana = wymiana assets/demo.mp4 + postera i podbicie
+               ?v=, bez zmian tutaj — o ile nowy render zachowa kadr 1:1
+               i proporcje obudowy w klatce (0,66 wysokości / 0,31 szerokości;
+               z tego wynika `aspect-ratio` boxa w styles.css). -->
+          <!-- ⚠ BRAK `autoplay` jest CELOWY: start odpala main.js po 1 sekundzie,
+               żeby pierwsza klatka chwilę postała (prośba usera 0806). Nie
+               dopisuj tu `autoplay` — nagranie ruszyłoby natychmiast i pauza
+               przestałaby istnieć. `preload="metadata"` zamiast `none`, żeby
+               po tej sekundzie materiał ruszył bez doczytywania. -->
           <video
             class="hero-video"
-            poster="assets/demo-poster.jpg?v=2"
-            autoplay muted loop playsinline
-            preload="none"
+            poster="assets/demo-poster.jpg?v=4"
+            muted loop playsinline
+            preload="metadata"
             aria-label="Nagranie z aplikacji: nawigacja do najbliższego schronienia">
             <!-- ⚠ ?v= podbijasz przy każdej podmianie pliku. `_headers` daje
                  /assets/* `max-age=604800`, ale UWAGA: ten plik działa tylko na
@@ -92,7 +99,7 @@
                  gethyc.com, IGNORUJE go i serwuje wszystko z max-age=600.
                  Wersja w URL-u jest więc jedynym mechanizmem, który działa
                  niezależnie od hostingu. -->
-            <source src="assets/demo.mp4?v=2" type="video/mp4">
+            <source src="assets/demo.mp4?v=4" type="video/mp4">
           </video>
         </div>
       </section>
@@ -204,6 +211,6 @@
   </dialog>
 
   <script src="config.js?v=20260806"></script>
-  <script src="main.js?v=20260806"></script>
+  <script src="main.js?v=20260806b"></script>
 </body>
 </html>

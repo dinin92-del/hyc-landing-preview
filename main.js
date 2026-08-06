@@ -158,4 +158,27 @@
   }
 
   document.getElementById("year").textContent = new Date().getFullYear();
+
+  // ---- Hero: 1 sekunda na pierwszej klatce, zanim nagranie ruszy ----
+  // `autoplay` jest ZDJĘTE z <video> w index.html, więc materiał stoi na
+  // pierwszej klatce (poster ją niesie) i startuje dopiero stąd.
+  // ⚠ Pauza dotyczy WYŁĄCZNIE pierwszego uruchomienia — `loop` zapętla bez
+  // przerwy, bo pętla jest wewnątrz elementu i JS jej nie widzi. Gdyby pauza
+  // miała wracać w każdym cyklu, trzeba ją wypalić w materiale (ffmpeg tpad)
+  // albo zastąpić `loop` ręcznym restartem na zdarzeniu `ended`.
+  var heroVideo = document.querySelector(".hero-video");
+  if (heroVideo) {
+    // Przy „ogranicz ruch" CSS chowa <video> — nie odtwarzamy go w tle,
+    // bo to zużywałoby baterię na rzecz czegoś, czego nikt nie widzi.
+    var reduceMotion = window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduceMotion) {
+      setTimeout(function () {
+        // Odrzucenie obietnicy jest normalne, gdy karta jest w tle albo
+        // przeglądarka blokuje autoodtwarzanie — wtedy zostaje sam poster.
+        var p = heroVideo.play();
+        if (p && p.catch) { p.catch(function () {}); }
+      }, 1000);
+    }
+  }
 })();
