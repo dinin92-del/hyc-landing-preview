@@ -26,33 +26,32 @@
   <meta name="twitter:image" content="assets/og-image.jpg">
 
   <link rel="preload" href="assets/fonts/Figtree-Variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css">
+  <!-- ⚠ ?v= NA CSS I JS JEST OBOWIĄZKOWE — podbij przy każdym wydaniu.
+       Strona stoi na GitHub Pages, a GH Pages IGNORUJE plik `_headers`
+       (to format Netlify/Cloudflare Pages) i serwuje wszystko z
+       `Cache-Control: max-age=600`. Bez wersji w URL-u przeglądarka po
+       deployu potrafi skleić NOWY index.html ze STARYM styles.css i pokazać
+       układ, którego nikt nigdy nie zbudował. Wersja w URL-u wymusza świeże
+       pobranie, bo to inny zasób. -->
+  <link rel="stylesheet" href="styles.css?v=20260806">
 </head>
 <body>
   <div class="wrap">
 
-    <header class="topbar">
-      <!-- Wordmark WKLEJONY, nie <img src>. Jako obraz przeglądarka rastruje go
-           do tekstury i przy 36 px potrafi oddać miękkie krawędzie — pogłębiał
-           to jeszcze `transform: translateZ(0)`, który wymusza osobną warstwę
-           kompozytującą rastrowaną raz, w stałej rozdzielczości. Inline <svg>
-           jest rysowany razem z resztą strony, więc zostaje wektorem zawsze:
-           przy każdym zoomie i na każdym DPR. Zmierzone porównawczo 0730. -->
-      <svg class="topbar-logo" viewBox="0 0 232 106" role="img" aria-label="Hyc!" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-        <path d="M139.806 21.1198C135.286 39.8577 130.766 69.6122 124.912 87.9372C117.198 108.292 89.4125 110.959 73.5912 98.3381L79.9319 85.9071C92.7283 98.2163 113.063 92.4847 115.066 73.9905C104.862 82.3815 85.0072 80.7372 83.1462 65.5114C82.1515 59.5294 86.4147 44.8517 87.4027 38.8291C81.8808 42.26 76.2777 45.1562 70.2348 47.3826L63.1565 80.1214L49.1285 80.1417L54.9481 52.3428C47.9645 53.7436 41.3803 54.7789 34.4238 54.8128L28.9154 80.1417L14.522 80.1281L19.983 54.4609C13.4054 54.1496 6.5437 53.121 0 51.5105L2.77447 38.4501C9.17606 40.3787 16.1122 41.5021 22.6424 41.9622L31.5613 0.0135369L46.3405 0L37.1103 42.463C43.9991 42.0908 50.7932 41.0554 57.4722 39.472C59.0354 32.0553 64.3339 7.01739 65.7144 0.00677362L80.5612 0.0203002C78.8627 8.20161 75.0191 25.6673 73.1649 33.9365C80.3988 30.7899 86.9493 26.6417 92.7351 21.1266L105.281 21.1198L98.5141 53.2496C97.0863 57.9188 96.2065 65.0106 102.513 65.9648C116.135 67.5956 119.208 49.46 121.116 39.1742L124.926 21.1198H139.806Z"/>
-        <path d="M164.294 37.1676C170.821 32.7189 181.667 34.2192 183.771 42.68L197.511 37.6724C196.416 31.6227 192.813 26.6631 187.536 23.733C167.252 12.8666 142.131 30.7565 140.031 52.3751C136.035 85.8961 181.184 89.8744 194.301 63.6895L181.992 58.443C163.325 82.3705 141.78 53.2927 164.294 37.1676Z"/>
-        <path d="M231.989 0.138794L215.702 0.140147L204.098 55.6729L216.875 55.6634L231.989 0.138794Z"/>
-        <path d="M207.906 63.048C199.03 63.5176 194.572 77.4191 204.133 80.515C217.114 84.4703 223.119 62.6548 207.906 63.048Z"/>
-      </svg>
-    </header>
-
     <main>
       <section class="hero">
         <div class="hero-copy">
+          <!-- Wordmark jako PNG (podmiana 0806 na plik dostarczony przez usera).
+               ⚠ Wcześniej stał tu inline <svg>, świadomie: <img> przeglądarka
+               rastruje raz, a wektor jest rysowany razem ze stroną i zostaje
+               ostry przy każdym zoomie i DPR. Ten PNG ma 105x48 px, a renderuje
+               się na 29,6 px wysokości — czyli 1x. Na ekranie retina (DPR 2-3)
+               zabraknie mu pikseli. Docelowo: SVG albo raster 315x144. -->
+          <img class="hero-logo" src="assets/logo.png?v=1" alt="Hyc!" width="105" height="48">
           <span class="badge">Wersja testowa</span>
           <h1>Jeden przycisk →<br><span class="accent">najbliższe schronienie</span></h1>
-          <p class="lead">Łączymy dane z wielu źródeł, tworząc <strong>największą bazę schronień w Polsce</strong> — ponad 27 tysięcy punktów.</p>
-          <p class="hero-tags">Wiaty · Chatki · Bacówki · Schroniska · Bazy namiotowe · Miejsca biwakowe · Noclegi · Sklepy · Gastronomia · i inne</p>
+          <p class="lead">Łączymy dane z&nbsp;wielu źródeł, tworząc <strong>największą bazę schronień w&nbsp;Polsce</strong> — ponad 27 tysięcy punktów.</p>
+          <p class="hero-tags">Wiaty · Chatki · Bacówki · Schroniska · Bazy namiotowe · Miejsca biwakowe · Noclegi · Sklepy · Gastronomia · i&nbsp;inne</p>
 
           <div class="stores" id="stores">
             <a class="store-btn store-btn--dark store-btn--compact" id="btn-ios" href="#" rel="noopener">
@@ -72,39 +71,49 @@
         </div>
 
         <div class="hero-art">
-          <!-- Ramka telefonu rysowana CSS-em; w środku nagranie z aplikacji.
-               PLACEHOLDER: dopóki assets/demo.mp4 nie istnieje, <video> pokazuje
-               sam poster — podmiana filmiku to jeden <source>. -->
-          <div class="phone">
-            <div class="phone-screen">
-              <video
-                poster="assets/hero.png"
-                autoplay muted loop playsinline
-                preload="none"
-                aria-label="Nagranie z aplikacji: nawigacja do najbliższego schronienia">
-                <!-- Odkomentuj po wrzuceniu nagrania (bez pliku <source> dawałby 404):
-                <source src="assets/demo.mp4" type="video/mp4"> -->
-              </video>
-            </div>
-          </div>
+          <!-- Render z Rotato: obracający się telefon Z WŁASNĄ obudową wypaloną
+               w kadrze, więc NIE opakowujemy go w ramkę rysowaną CSS-em (byłby
+               telefon w telefonie). Kadr jest KWADRATOWY (1:1) i ma oddech
+               dookoła telefonu wbudowany w materiał — skalujemy całość, nigdy
+               nie kadrujemy i nie dokładamy marginesu w CSS.
+               PLACEHOLDER (0806): render poszedł z pustym ekranem Rotato
+               ("Drag or paste your video or image here"). Podmiana na wersję
+               z nagraniem = wymiana assets/demo.mp4 + postera i podbicie ?v=,
+               bez zmian tutaj — o ile nowy render zachowa kadr 1:1. -->
+          <video
+            class="hero-video"
+            poster="assets/demo-poster.jpg?v=2"
+            autoplay muted loop playsinline
+            preload="none"
+            aria-label="Nagranie z aplikacji: nawigacja do najbliższego schronienia">
+            <!-- ⚠ ?v= podbijasz przy każdej podmianie pliku. `_headers` daje
+                 /assets/* `max-age=604800`, ale UWAGA: ten plik działa tylko na
+                 Netlify/Cloudflare Pages — GitHub Pages, na którym stoi
+                 gethyc.com, IGNORUJE go i serwuje wszystko z max-age=600.
+                 Wersja w URL-u jest więc jedynym mechanizmem, który działa
+                 niezależnie od hostingu. -->
+            <source src="assets/demo.mp4?v=2" type="video/mp4">
+          </video>
         </div>
       </section>
 
       <section class="about" aria-label="Co robi aplikacja">
         <div class="feat">
           <div class="feat-icon"><img class="icon-comment" src="assets/icon-comment.svg" alt=""></div>
-          <h3><span class="feat-accent">Komentuj, weryfikuj</span><br>i dodawaj nowe punkty</h3>
-          <p>Aktualne informacje o punktach, których często nie znajdziesz na zwykłych mapach</p>
+          <!-- Bez wymuszonego <br> (0806, user: „te teksty zróbmy w jednej
+               linii") — łamanie zostaje po stronie CSS, patrz .feat h3. -->
+          <h3><span class="feat-accent">Komentuj, weryfikuj</span><br>i&nbsp;dodawaj nowe punkty</h3>
+          <p>Aktualne informacje o&nbsp;punktach, których często nie znajdziesz na zwykłych mapach</p>
         </div>
         <div class="feat">
           <div class="feat-icon"><img class="icon-bookmark" src="assets/icon-bookmark.svg" alt=""></div>
-          <h3>Zapisuj i twórz <span class="feat-accent">własną kolekcję</span> punktów</h3>
+          <h3>Zapisuj i&nbsp;twórz <span class="feat-accent">własną<br>kolekcję</span> punktów</h3>
           <p>Zbieraj górskie miejsca-perełki, które chciałbyś odwiedzić ponownie</p>
         </div>
         <div class="feat">
           <div class="feat-icon"><img class="icon-phone" src="assets/icon-phone.svg" alt=""></div>
-          <h3><span class="feat-accent">Telefon</span> do noclegu zawsze<br>pod ręką</h3>
-          <p>By ułatwić rezerwację, zbieramy numery telefonów do schronisk i innych miejsc noclegowych</p>
+          <h3><span class="feat-accent">Telefon</span> do noclegu<br>zawsze pod ręką</h3>
+          <p>By ułatwić rezerwację, zbieramy numery telefonów do schronisk i&nbsp;innych miejsc noclegowych</p>
         </div>
       </section>
 
@@ -194,7 +203,7 @@
     </footer>
   </dialog>
 
-  <script src="config.js"></script>
-  <script src="main.js"></script>
+  <script src="config.js?v=20260806"></script>
+  <script src="main.js?v=20260806"></script>
 </body>
 </html>

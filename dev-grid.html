@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Hyc! — podgląd siatki (DEV)</title>
+<!--
+  NARZĘDZIE DEWELOPERSKIE — podgląd siatki kolumn na żywej stronie.
+
+  ⛔ Ten plik NIE trafia na produkcję: build.sh kopiuje do dist/ wyłącznie
+  wypisane z nazwy pliki (index.html, styles.css, main.js, config.js,
+  favicon.svg, robots.txt), więc dev-grid.html nie jest budowany ani
+  deployowany. Nie dodawaj go do tamtej listy.
+
+  Działa tak, że ładuje index.html w <iframe> (to samo źródło, więc mamy
+  dostęp do jego DOM-u) i RYSUJE nakładkę WEWNĄTRZ ramki. Dzięki temu
+  kolumny przewijają się razem z treścią i widać je w kontekście strony,
+  a sam index.html zostaje nietknięty — zero kodu debugowego w produkcji.
+-->
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; background: #1b1712; color: #f9f6f2; }
+  #bar {
+    position: fixed; inset: 0 0 auto 0; z-index: 10;
+    display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+    padding: 10px 14px; background: #24201a; border-bottom: 1px solid #3b342c;
+  }
+  #bar label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+  #bar .sep { width: 1px; height: 20px; background: #3b342c; }
+  #bar output { color: #9fd18a; }
+  input[type="range"] { width: 120px; }
+  iframe { position: fixed; inset: 46px 0 0 0; width: 100%; height: calc(100vh - 46px); border: 0; background: #f9f6f2; }
+</style>
+</head>
+<body>
+  <div id="bar">
+    <strong>Siatka</strong>
+    <label><input type="checkbox" id="hero" checked> kolumny hero</label>
+    <label><input type="checkbox" id="about"> kolumny kafelków</label>
+    <label><input type="checkbox" id="spans" checked> obrysy elementów</label>
+    <span class="sep"></span>
+    <label>krycie <input type="range" id="alpha" min="4" max="40" value="12"></label>
+    <span class="sep"></span>
+    <output id="info">—</output>
+  </div>
+  <iframe id="page" src="index.html"></iframe>
+
+<script>
+const frame = document.getElementById('page');
+const ui = {
+  hero: document.getElementById('hero'),
+  about: document.getElementById('about'),
+  spans: document.getElementById('spans'),
+  alpha: document.getElementById('alpha'),
+  info: document.getElementById('info'),
+};
+
+// Rysujemy w układzie DOKUMENTU ramki (position: absolute + scrollY), nie
+// viewportu — inaczej kolumny stałyby w miejscu przy przewijaniu strony.
+function draw() {
+  const doc = frame.contentDocument;
+  if (!doc || !doc.body) return;
+  doc.querySelectorAll('.dev-grid-layer').forEach(n => n.remove());
+
+  const win = frame.contentWindow;
+  const a = ui.alpha.value / 100;
+  const layer = doc.createElement('div');
+  layer.className = 'dev-grid-layer';
+  layer.style.cssText = 'position:absolute;inset:0;z-index:99999;pointer-events:none;';
+  doc.body.appendChild(layer);
+
+  const box = (l, t, w, h, css) => {
+    const d = doc.createElement('div');
+    d.style.cssText = `position:absolute;left:${l}px;top:${t}px;width:${w}px;height:${h}px;` + css;
+    layer.appendChild(d);
+    return d;
+  };
+  const tag = (l, t, text, color) => {
+    const d = doc.createElement('div');
+    d.style.cssText = `position:absolute;left:${l}px;top:${t}px;font:600 12px/1 ui-monospace,monospace;` +
+      `color:${color};background:#fff;padding:2px 5px;border:1px solid ${color};white-space:nowrap;`;
+    d.textContent = text;
+    layer.appendChild(d);
+  };
+
+  const notes = [];
+
+  // --- kolumny sekcji (hero / about) ---
+  const paint = (sel, color, label) => {
+    const el = doc.querySelector(sel);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const cs = win.getComputedStyle(el);
+    const cols = cs.gridTemplateColumns.split(' ').map(parseFloat).filter(n => !isNaN(n));
+    if (cols.length < 2) { notes.push(`${label}: 1 kolumna`); return; }
+    const gut = parseFloat(cs.columnGap) || 0;
+    const top = r.top + win.scrollY;
+    const h = r.height;
+    let x = r.left + win.scrollX;
+    cols.forEach((w, i) => {
+      box(x, top, w, h, `background:rgba(192,57,43,${a});border-left:1px solid rgba(192,57,43,${a + 0.3});border-right:1px solid rgba(192,57,43,${a + 0.3});`);
+      tag(x + w / 2 - 9, top + h + 4, String(i + 1), color);
+      x += w + gut;
+    });
+    notes.push(`${label}: ${cols.length} kol. x ${cols[0].toFixed(1)}px, rynna ${gut}px`);
+  };
+
+  if (ui.hero.checked) paint('.hero', '#c0392b', 'hero');
+  if (ui.about.checked) paint('.about', '#c0392b', 'kafelki');
+
+  // --- obrysy elementów: gdzie dokładnie siedzą w kolumnach ---
+  if (ui.spans.checked) {
+    [['.hero-copy', '#2980b9', 'tekst'], ['.hero-art', '#16a085', 'kwadrat wideo']].forEach(([sel, color, name]) => {
+      const el = doc.querySelector(sel);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      box(r.left + win.scrollX, r.top + win.scrollY, r.width, r.height,
+          `border:2px solid ${color};background:${color}14;`);
+      tag(r.left + win.scrollX, r.top + win.scrollY - 22, `${name} — ${r.width.toFixed(0)}x${r.height.toFixed(0)}px`, color);
+    });
+  }
+
+  ui.info.textContent = `okno ${win.innerWidth}px  |  ` + notes.join('  |  ');
+}
+
+frame.addEventListener('load', () => {
+  draw();
+  // Siatka musi nadążać za zmianą szerokości okna i za layoutem, który
+  // dojeżdża po załadowaniu fontów/wideo.
+  new ResizeObserver(draw).observe(frame.contentDocument.documentElement);
+  frame.contentWindow.addEventListener('resize', draw);
+});
+[ui.hero, ui.about, ui.spans, ui.alpha].forEach(c => c.addEventListener('input', draw));
+window.addEventListener('resize', draw);
+</script>
+</body>
+</html>

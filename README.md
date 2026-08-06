@@ -122,7 +122,50 @@ Bez `SITE_DOMAIN` skrypt publikuje po staremu pod `dinin92-del.github.io/hyc-lan
 
 ## TODO (opcjonalne)
 - [x] ~~kupić `gethyc.com` i wpiąć wg §3a~~ — zrobione 2026-07-29
-- [ ] `assets/demo.mp4` — nagranie z apki do ramki telefonu w hero (teraz leci sam
-      poster `hero.png`; podmiana to jeden `<source>`). ⚠️ `hero.png` ma proporcję
-      9:16, a ramka 9:19.5 — przy `object-fit: cover` poster gubi ~18% szerokości.
-      Nagranie z telefonu/symulatora będzie miało 9:19.5 i problem zniknie samo.
+- [ ] `assets/demo.mp4` — **stoi PLACEHOLDER**: render z Rotato poszedł z pustym
+      ekranem („Drag or paste your video or image here"), więc w hero kręci się
+      telefon bez treści. Podmiana na wersję z nagraniem = wymiana `demo.mp4`
+      i `demo-poster.jpg`, bez ruszania HTML/CSS — **o ile nowy render zachowa
+      kadr 1:1** i telefon w tych samych proporcjach względem klatki.
+      Zmierzone na obecnym materiale (klatki 0/10/20/29): obudowa zajmuje
+      **0,66 wysokości** i **0,31 szerokości** klatki, leżąc między 34% a 66%
+      jej szerokości. Z tych liczb wynikają dwie rzeczy w `styles.css`:
+      `transform: scale(1.0625)` na `.hero-video` (przybliżenie, bo materiał
+      ma dużo pustki dookoła telefonu) i to, że przycięcie ~3% z każdej strony
+      nie dotyka obudowy ani cienia. Render z ciaśniejszym kadrem = trzeba
+      zejść ze skalą, inaczej obetnie telefon.
+
+      Przepis na przekodowanie źródła z Rotato (źródło ma alfę; spłaszczamy je
+      do `--cream`, bo Safari nie odtwarza wideo z kanałem alfa):
+      ```
+      ffmpeg -i rotato.mov \
+        -filter_complex "[0:v]fps=30,scale=720:720[v];\
+      color=c=0xf9f6f2:s=720x720:d=31,format=rgb24[bg];\
+      [bg][v]overlay=shortest=1,format=yuv420p[out]" \
+        -map "[out]" -c:v libx264 -preset slow -crf 26 -profile:v high \
+        -movflags +faststart -an assets/demo.mp4
+      ffmpeg -i assets/demo.mp4 -frames:v 1 -q:v 4 assets/demo-poster.jpg
+      ```
+      (Obecny plik: 720x720, 30 s, 30 fps, 195 KB; poster 17 KB.)
+      ⚠️ Kolor tła w filtrze musi być równy `--cream` (`#f9f6f2`) — inny odetnie
+      widoczny prostokąt na tle strony. (Zmierzone po zakodowaniu: róg klatki
+      wychodzi `rgb(249,247,243)` przy tle `rgb(249,246,242)` — konwersja do
+      yuv420p przesuwa o 1/255 na kanał, niewidoczne.)
+      ⚠️ Przy podmianie **podbij `?v=`** w `<source>`, w `poster` i w
+      `background-image` (`styles.css`) — `_headers` trzyma `/assets/*` przez
+      7 dni, więc sam nowy plik pod tym samym URL-em do nikogo nie dotrze.
+      ⚠️ `hero.png` (595 KB) przestał być posterem hero i **nie jest już
+      referencjonowany z żadnego pliku** — zostaje na dysku do decyzji, czy
+      kasować (`og-image.jpg` to osobny plik).
+
+## Podgląd siatki (narzędzie dev)
+`dev-grid.html` rysuje kolumny siatki na żywej stronie: ładuje `index.html`
+w `<iframe>` i nakłada kolumny w jego DOM-ie, więc przewijają się razem
+z treścią. Pasek u góry przełącza siatkę hero (12 kolumn / rynna 24px, od
+1100px; 8 / 16px od 760px) i siatkę kafelków (6 / 14px), obrysy elementów
+oraz krycie. `index.html` zostaje przy tym nietknięty — zero kodu debugowego
+w produkcji.
+
+⛔ Plik **nie jest budowany ani deployowany**: `build.sh` kopiuje do `dist/`
+wyłącznie pliki wypisane z nazwy (`index.html styles.css main.js config.js
+favicon.svg robots.txt`). Nie dopisuj go do tamtej listy.
