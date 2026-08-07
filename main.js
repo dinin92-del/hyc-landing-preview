@@ -173,12 +173,31 @@
     var reduceMotion = window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (!reduceMotion) {
-      setTimeout(function () {
-        // Odrzucenie obietnicy jest normalne, gdy karta jest w tle albo
-        // przeglądarka blokuje autoodtwarzanie — wtedy zostaje sam poster.
+      // ⚠ JEDNA PRÓBA NIE WYSTARCZY. Gdy strona ładuje się w karcie w TLE
+      // (Ctrl+klik, „otwórz w nowej karcie"), przeglądarka odrzuca `play()`
+      // i przy samym `catch` wideo zostawało zamrożone na posterze NA ZAWSZE —
+      // także po przełączeniu się użytkownika na tę kartę. Zmierzone na
+      // produkcji: `visibilityState: hidden` -> `play()` odrzucone, mimo że
+      // ręczne wywołanie przechodzi bez problemu.
+      // Atrybut `autoplay` radził sobie z tym sam (przeglądarka wznawia po
+      // pokazaniu karty), więc zdejmując go musimy to odtworzyć ręcznie.
+      var startHeroVideo = function () {
         var p = heroVideo.play();
-        if (p && p.catch) { p.catch(function () {}); }
-      }, 1000);
+        if (p && p.catch) {
+          p.catch(function () {
+            // Odrzucenie prawie zawsze znaczy „karta jest w tle". Ponawiamy
+            // dokładnie raz, w momencie gdy user faktycznie ją zobaczy.
+            if (document.hidden) {
+              document.addEventListener("visibilitychange", function onVisible() {
+                if (document.hidden) { return; }
+                document.removeEventListener("visibilitychange", onVisible);
+                startHeroVideo();
+              });
+            }
+          });
+        }
+      };
+      setTimeout(startHeroVideo, 1000);
     }
   }
 })();
