@@ -80,6 +80,17 @@ html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
+  /* Kadr hero jest na mobile SZERSZY NIŻ OKNO (patrz `.hero-art`, 116vw) —
+     bez tego wychodzi poziomy pasek przewijania i strona daje się przesunąć
+     w bok. `clip` zamiast `hidden`: `hidden` robi z <body> kontener
+     przewijania i psułoby `position: sticky` u potomków, gdyby kiedyś
+     doszło. Poza mobilem nic nie wystaje, więc reguła jest bezczynna.
+     ⚠ DWIE deklaracje pod rząd, celowo: `overflow: clip` weszło dopiero
+     w Safari 16, a landing ogląda się głównie na telefonach. Starsze iOS-y
+     odrzucą drugą linię jako nieznaną wartość i zostaną przy `hidden`
+     (skutek ten sam, tylko z kontenerem przewijania), nowsze wezmą `clip`. */
+  overflow-x: hidden;
+  overflow-x: clip;
   /* cream, nie alabaster — cieplejsze, jaśniejsze tło. Sprawdzone: żadna
      powierzchnia na stronie nie zakłada, że tło JEST alabastrem — wszystkie
      użycia --cream na stronie (modal, stepper, przyciski w kreatorze) żyją
@@ -793,9 +804,40 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
    nie obudowę (telefon leży między 34% a 66% szerokości, widoczne jest
    22%-78%). Na desktopie kadr wraca do 1:1 z `contain` — patrz blok ≥760px. */
 .hero-art {
-  justify-self: center;
-  width: 100%;
-  max-width: 280px;
+  /* `start` + ręczne wyśrodkowanie marginesem (patrz niżej) — `center` i tak
+     nie działa na elemencie szerszym niż kolumna. */
+  justify-self: start;
+  /* 0808, DWA kroki powiększenia na życzenie usera („telefon za mały"):
+     280px -> 360px -> +30% = 468px. Rośnie CAŁY kadr, bez podcinania pustki
+     dookoła telefonu (próba z `transform: scale` na <video> wycofana — user:
+     „chodziło o powiększenie, nie o ucięcie tła").
+     ⚠ 116vw, bo drugie +30% NIE MIEŚCI SIĘ w kolumnie: przy 375px ekranu
+     kolumna ma 335px (`.wrap` = padding 20px), a +30% to 435px. Kadr
+     wychodzi więc poza szerokość okna i tam jest ścinany przez
+     `overflow-x: clip` na <body>. Ścinane jest WYŁĄCZNIE puste tło kadru,
+     spłaszczone przy kodowaniu do --cream, czyli do koloru strony — obudowa
+     leży między 0,343 a 0,657 szerokości materiału (zmierzone na 324
+     klatkach @6fps) i przy 375px zostaje po 66px marginesu z każdej strony.
+     Zmierzone w przeglądarce (box -> obudowa):
+       375px ekranu -> 435x773px -> 243x510px (było 187x393)
+       390px ekranu -> 452x804px -> 253x531
+       >=404px ekranu -> 468x832px -> 261x549 (sufit)
+     Sufit 468px jest po to, żeby przy 600-759px (duże telefony w poziomie,
+     małe tablety) kadr nie urósł na pół ekranu — reguła bazowa obowiązuje
+     aż do 760px, blok desktopowy zaczyna się dopiero tam. */
+  width: 116vw;
+  max-width: 468px;
+  /* ⛔ Samo `justify-self: center` NIE wyśrodkuje kadru szerszego niż kolumna.
+     Grid ma twarde „overflow alignment": element większy od swojego obszaru
+     zachowuje się jak `start`, żeby nie uciąć treści od strony początku —
+     zmierzone, kadr wychodził wtedy 80px w PRAWO i robił poziomy pasek
+     przewijania. Ujemny margines liczy wyśrodkowanie ręcznie: połowa kolumny
+     minus połowa kadru (58vw), przy 375px ekranu = -50px, czyli kadr startuje
+     30px przed lewą krawędzią okna i kończy 30px za prawą.
+     ⚠ `min(58vw, 234px)` — połowa TEJ SAMEJ wartości, którą dostaje `width`
+     (razem z sufitem 468px). Samo 58vw rozjeżdżałoby kadr w prawo powyżej
+     404px ekranu, gdzie o szerokości decyduje już sufit, nie vw. */
+  margin-left: calc(50% - min(58vw, 234px));
   /* Proporcje trzyma KONTENER, nie <video> — dzięki temu przy
      prefers-reduced-motion (gdzie <video> znika) kadr nie zapada się do zera
      i sam poster zostaje w tym samym miejscu. */

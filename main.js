@@ -197,7 +197,52 @@
           });
         }
       };
-      setTimeout(startHeroVideo, 1000);
+      // ⚠ NIE odpalamy po samym `setTimeout` od załadowania strony. Safari na
+      // iOS odtwarza materiał bez gestu tylko wtedy, gdy element jest WIDOCZNY
+      // — wideo pod foldem dostaje odrzucone `play()` (albo natychmiastową
+      // pauzę) i zostaje zamrożone na pierwszej klatce. Zgłoszone z telefonu
+      // 0808, po powiększeniu kadru: hero-art zaczyna się teraz ~1050px od
+      // góry (przy 375px ekranu), czyli DOBRZE pod foldem — wcześniej łapał
+      // się jeszcze przy dolnej krawędzi ekranu i problem się nie ujawniał.
+      // Sekunda pauzy na pierwszej klatce (user 0806) zostaje — liczymy ją
+      // od momentu, w którym kadr wjeżdża w ekran, a nie od `DOMContentLoaded`.
+      // `armed` pilnuje, żeby awaryjna furtka na gest (niżej) nie wystartowała
+      // nagrania ZANIM kadr wjedzie w ekran i odstoi swoją sekundę — inaczej
+      // dotknięcie strony na samej górze zjadałoby pauzę na pierwszej klatce
+      // i user dojeżdżałby do telefonu w połowie animacji.
+      var armed = false;
+      var armHeroVideo = function () {
+        setTimeout(function () {
+          armed = true;
+          startHeroVideo();
+        }, 1000);
+      };
+      if (window.IntersectionObserver) {
+        var io = new IntersectionObserver(function (entries) {
+          for (var i = 0; i < entries.length; i++) {
+            if (!entries[i].isIntersecting) { continue; }
+            io.disconnect();
+            armHeroVideo();
+            return;
+          }
+        // Ćwierć kadru w oknie wystarcza, żeby Safari uznało element za
+        // widoczny, a user zdążył go zobaczyć przed startem.
+        }, { threshold: 0.25 });
+        io.observe(heroVideo);
+      } else {
+        armHeroVideo();
+      }
+      // Ostatnia furtka: tryb niskiego zużycia energii na iOS blokuje KAŻDE
+      // odtwarzanie bez gestu, więc nawet widoczny kadr zostaje na pierwszej
+      // klatce. Dotknięcie strony próbuje wtedy raz jeszcze — gest znosi
+      // blokadę. ⚠ Nasłuch zdejmujemy dopiero, gdy nagranie NAPRAWDĘ ruszy:
+      // dotknięcia sprzed `armed` (user jeszcze nie dojechał do kadru) mają
+      // być zignorowane, a nie zużyć jedyną próbę.
+      document.addEventListener("pointerdown", function onTouch() {
+        if (!armed) { return; }
+        document.removeEventListener("pointerdown", onTouch);
+        if (heroVideo.paused) { startHeroVideo(); }
+      }, { passive: true });
     }
   }
 })();
