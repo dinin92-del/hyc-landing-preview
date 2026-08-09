@@ -840,18 +840,46 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
   margin-left: calc(50% - min(58vw, 234px));
   /* Proporcje trzyma KONTENER, nie <video> — dzięki temu przy
      prefers-reduced-motion (gdzie <video> znika) kadr nie zapada się do zera
-     i sam poster zostaje w tym samym miejscu. */
-  aspect-ratio: 9 / 16;
+     i sam poster zostaje w tym samym miejscu.
+     ⚠ 0809: kadr przycięty o 40 % PUSTKI nad i pod telefonem (user), tym samym
+     chwytem co na desktopie (blok ≥760px): box maleje, materiał NIE — telefon
+     zachowuje wielkość, znika tylko puste tło kadru.
+     Arytmetyka (zmierzone na 324 klatkach @6fps, `demo.mp4` 1:1, tło #F5F3EF):
+     obudowa z cieniem leży między 0,170 a 0,885 wysokości materiału, więc
+     pustka to 0,170 u góry i 0,115 u dołu (razem 0,285). Cięcie 40 % zdejmuje
+     0,068 z góry i 0,046 z dołu = 0,112 wysokości kadru:
+       wysokość boxa: 16 x (1 - 0,112) = 14,208  ->  aspect-ratio 9 / 14,208
+       materiał:      1 / 0,888 = 112,61 % wysokości boxa
+       przesunięcie:  0,068 x 16 / 14,208 = 7,66 % wysokości boxa w GÓRĘ
+     Cięcie jest ASYMETRYCZNE (0,068 vs 0,046), bo pustka w materiale też jest —
+     samo `place-items: center` zdjęłoby po 0,056 i zjadłoby dół mocniej niż
+     górę. */
+  aspect-ratio: 9 / 14.208;
+  /* Nadwyżka materiału wyjeżdża poza box i musi być ścięta — inaczej cream
+     z kadru rysowałby się na tekście nad kwadratem i na kaflach pod nim. */
+  overflow: hidden;
+  position: relative;
   /* ⚠ ?v= podbijasz razem z tym w <source> — patrz komentarz w index.html. */
   background-image: url("assets/demo-poster.jpg?v=4");
-  background-size: cover;
-  background-position: center;
+  /* Poster dopasowany 1:1 do <video> (te same 112,61 % i to samo przesunięcie),
+     inaczej przy prefers-reduced-motion telefon skacze na inną wielkość.
+     `auto 112.61%` = skala od wysokości, szerokość sama (materiał 1:1), a y
+     w procentach to „która linia materiału siada na której linii boxa":
+     60,7 % x (box - materiał) = -7,66 % wysokości boxa, czyli to samo
+     przesunięcie co `top` na <video>. */
+  background-size: auto 112.61%;
+  background-position: 50% 60.7%;
   background-repeat: no-repeat;
 }
 .hero-video {
   display: block;
+  /* Absolutnie, bo przycięcie jest asymetryczne — `top` jest tym samym
+     pokrętłem co `background-position` wyżej i musi się z nim zgadzać. */
+  position: absolute;
+  left: 0;
+  top: -7.66%;
   width: 100%;
-  height: 100%;
+  height: 112.61%;
   object-fit: cover;
 }
 
@@ -1130,13 +1158,22 @@ footer .spacer { flex: 1 1 auto; }
        i 0,31 szerokości klatki. Dokładanie do tego CSS-owego marginesu
        liczyłoby oddech drugi raz. */
     /* Poster dopasowany tak samo jak <video> (`cover`) — inaczej przy
-       prefers-reduced-motion telefon skacze na inną wielkość. */
+       prefers-reduced-motion telefon skacze na inną wielkość.
+       ⚠ `background-position` MUSI wrócić do `center`: baza (mobile) przesuwa
+       poster o 7,66 % w górę pod swoje przycięcie 40 % pustki, a tu box ma
+       własną proporcję i własne 32px z góry/dołu. */
     background-size: cover;
+    background-position: center;
     /* Materiał wyjeżdża poza kwadrat (patrz `scale` niżej) — bez tego rogi
        kadru rysowałyby się na kaflach i na kolumnie tekstu. */
     overflow: hidden;
   }
   .hero-art .hero-video {
+    /* ⚠ Reset pozycjonowania z bazy (mobile), gdzie <video> jest `absolute`
+       z `top: -7.66%` — tutaj środkuje je `place-items: center` na .hero-art,
+       a nadwyżka 64px wychodzi symetrycznie. */
+    position: static;
+    top: auto;
     width: 100%;
     height: 100%;
     /* `cover` (jak w bazie): box jest wyższy niż kadr materiału, więc skala
