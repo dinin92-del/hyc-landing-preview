@@ -116,47 +116,60 @@ Bez `SITE_DOMAIN` skrypt publikuje po staremu pod `dinin92-del.github.io/hyc-lan
 - **`assets/mark-rings.svg` = sygnet nagłówka**: trzy kręgi z HycButtona na kremowym tle.
   ⛔ W nagłówku obok stoi już słowo „Hyc!", więc wordmark w sygnecie czytałby się jako
   powtórzenie — dlatego tam ZOSTAJĄ kręgi. Do 0731 oba miejsca brały ten sam plik.
+- **`assets/logo.png` = wordmark w hero**, 315×144 (3× wobec 105×48, na których
+  się renderuje — retina). Źródło wektorowe leży obok jako **`logo-source.svg`**;
+  raster powstaje z niego przez render w dużej skali, przycięcie do bounding boxa
+  glifu i przeskalowanie do 315×144 (proporcje glifu 2,1878 vs 2,1875 pliku
+  wydanego wcześniej — różnica niewidoczna). ⛔ Nie podmieniaj `logo.png` na
+  inline `<svg>`: user porównał oba rysunki i wybrał ten.
 - **`assets/apple-touch-icon.png` 180×180** — iOS nie czyta SVG i przy braku rastra robi
   za ikonę na ekranie głównym własny zrzut strony. Regeneracja: przeskalowanie mastera
   `1080x1080new.png` (LANCZOS), ten sam plik co ikona apki.
 
 ## TODO (opcjonalne)
 - [x] ~~kupić `gethyc.com` i wpiąć wg §3a~~ — zrobione 2026-07-29
-- [ ] `assets/demo.mp4` — **stoi PLACEHOLDER**: render z Rotato poszedł z pustym
-      ekranem („Drag or paste your video or image here"), więc w hero kręci się
-      telefon bez treści. Podmiana na wersję z nagraniem = wymiana `demo.mp4`
-      i `demo-poster.jpg`, bez ruszania HTML/CSS — **o ile nowy render zachowa
-      kadr 1:1** i telefon w tych samych proporcjach względem klatki.
-      Zmierzone na obecnym materiale (klatki 0/10/20/29): obudowa zajmuje
-      **0,66 wysokości** i **0,31 szerokości** klatki, leżąc między 34% a 66%
-      jej szerokości. Z tych liczb wynikają dwie rzeczy w `styles.css`:
-      `transform: scale(1.0625)` na `.hero-video` (przybliżenie, bo materiał
-      ma dużo pustki dookoła telefonu) i to, że przycięcie ~3% z każdej strony
-      nie dotyka obudowy ani cienia. Render z ciaśniejszym kadrem = trzeba
-      zejść ze skalą, inaczej obetnie telefon.
+- [x] ~~`assets/demo.mp4` stoi placeholderem z pustym ekranem~~ — podmienione
+      2026-08-07 na docelowe nagranie z apki (`?v=4`). Stan faktyczny pliku,
+      zmierzony `ffprobe`: **1440x1440, 30 fps, 1620 klatek, 54,0 s, 2 731 606 B**;
+      poster 37 KB. `hero.png` skasowany (był martwy), na produkcji zwraca 404.
 
-      Przepis na przekodowanie źródła z Rotato (źródło ma alfę; spłaszczamy je
-      do `--cream`, bo Safari nie odtwarza wideo z kanałem alfa):
+- [ ] `assets/demo-poster.jpg` / `demo.mp4` — przepis na kolejną podmianę.
+      Wymiana samych plików wystarcza, **o ile nowy render zachowa kadr 1:1**
+      i telefon w tych samych proporcjach względem klatki — kadrowanie w hero
+      jest policzone z tych proporcji (`.hero-art` ma `aspect-ratio: 1/1.3452`
+      i przycina po 32 px z góry i z dołu przez `height: calc(100% + 64px)`).
+      Ciaśniejszy render = trzeba przeliczyć te liczby, inaczej obetnie obudowę.
+
+      Przekodowanie źródła z Rotato (źródło ma alfę; spłaszczamy je do `--cream`,
+      bo Safari nie odtwarza wideo z kanałem alfa):
       ```
       ffmpeg -i rotato.mov \
-        -filter_complex "[0:v]fps=30,scale=720:720[v];\
-      color=c=0xf9f6f2:s=720x720:d=31,format=rgb24[bg];\
+        -filter_complex "[0:v]scale=1440:1440,fps=30[v];\
+      color=c=0xf9f6f2:s=1440x1440:d=55:r=30,format=rgb24[bg];\
       [bg][v]overlay=shortest=1,format=yuv420p[out]" \
-        -map "[out]" -c:v libx264 -preset slow -crf 26 -profile:v high \
+        -map "[out]" -c:v libx264 -preset slow -crf 24 -profile:v high \
         -movflags +faststart -an assets/demo.mp4
       ffmpeg -i assets/demo.mp4 -frames:v 1 -q:v 4 assets/demo-poster.jpg
       ```
-      (Obecny plik: 720x720, 30 s, 30 fps, 195 KB; poster 17 KB.)
+      ⛔ `r=30` przy filtrze `color` **nie jest ozdobnikiem**: `color` domyślnie
+      generuje 25 fps i przez `overlay` narzuca tę wartość CAŁEJ kompozycji —
+      pierwszy render 1440 wyszedł 25-klatkowy mimo `fps=30` na wejściu wideo.
+      Sprawdzaj po kodowaniu: `ffprobe … -show_entries stream=r_frame_rate`.
       ⚠️ Kolor tła w filtrze musi być równy `--cream` (`#f9f6f2`) — inny odetnie
       widoczny prostokąt na tle strony. (Zmierzone po zakodowaniu: róg klatki
       wychodzi `rgb(249,247,243)` przy tle `rgb(249,246,242)` — konwersja do
       yuv420p przesuwa o 1/255 na kanał, niewidoczne.)
-      ⚠️ Przy podmianie **podbij `?v=`** w `<source>`, w `poster` i w
-      `background-image` (`styles.css`) — `_headers` trzyma `/assets/*` przez
-      7 dni, więc sam nowy plik pod tym samym URL-em do nikogo nie dotrze.
-      ⚠️ `hero.png` (595 KB) przestał być posterem hero i **nie jest już
-      referencjonowany z żadnego pliku** — zostaje na dysku do decyzji, czy
-      kasować (`og-image.jpg` to osobny plik).
+      ⛔ Przy podmianie **podbij `?v=`** w `<source>`, w `poster` (`index.html`)
+      i w `background-image` (`styles.css`). Na GitHub Pages `_headers` jest
+      martwy (patrz niżej), ale wszystko leci z `max-age=600`, więc bez `?v=`
+      podmiana dociera z opóźnieniem i niespójnie: poster może być nowy, a wideo
+      jeszcze stare.
+
+- [ ] Pauza 1 s na pierwszej klatce działa **tylko przy pierwszym odtworzeniu**
+      (`main.js`). `loop` zapętla materiał wewnątrz elementu i JS tej pętli nie
+      widzi. Gdyby pauza miała wracać w każdym cyklu: wypalić ją w materiale
+      (`ffmpeg tpad`) albo zdjąć `loop` i restartować na zdarzeniu `ended`.
+      Nie robimy tego z własnej inicjatywy — to decyzja projektowa, nie błąd.
 
 ## Podgląd siatki (narzędzie dev)
 `dev-grid.html` rysuje kolumny siatki na żywej stronie: ładuje `index.html`

@@ -41,13 +41,18 @@
     <main>
       <section class="hero">
         <div class="hero-copy">
-          <!-- Wordmark jako PNG (podmiana 0806 na plik dostarczony przez usera).
-               ⚠ Wcześniej stał tu inline <svg>, świadomie: <img> przeglądarka
-               rastruje raz, a wektor jest rysowany razem ze stroną i zostaje
-               ostry przy każdym zoomie i DPR. Ten PNG ma 105x48 px, a renderuje
-               się na 29,6 px wysokości — czyli 1x. Na ekranie retina (DPR 2-3)
-               zabraknie mu pikseli. Docelowo: SVG albo raster 315x144. -->
-          <img class="hero-logo" src="assets/logo.png?v=1" alt="Hyc!" width="105" height="48">
+          <!-- Wordmark jako PNG (podmiana 0806 na plik dostarczony przez usera,
+               zostaje świadomie: user porównał go z dawnym inline <svg> i wybrał
+               ten rysunek).
+               ⚠ Plik ma 315x144 px, a renderuje się na 29,6 px wysokości —
+               atrybuty width/height zostają przy 105x48, bo opisują ROZMIAR
+               UKŁADU (rezerwacja miejsca, brak CLS), nie rozdzielczość pliku.
+               Do 0810 leżał tu raster 105x48, czyli 1x: na retinie (DPR 2-3)
+               brakowało mu pikseli i wordmark był miękki.
+               Źródło wektorowe: assets/logo-source.svg — stamtąd renderuje się
+               ten raster (kadr przycięty do bounding boxa glifu, żeby proporcje
+               zgadzały się z poprzednim plikiem: 2,1875 vs 2,1878). -->
+          <img class="hero-logo" src="assets/logo.png?v=2" alt="Hyc!" width="105" height="48">
           <span class="badge">Wersja testowa</span>
           <h1>Jeden przycisk →<br><span class="accent">najbliższe schronienie</span></h1>
           <p class="lead">Łączymy dane z&nbsp;wielu źródeł, tworząc <strong>największą bazę schronień w&nbsp;Polsce</strong> — ponad 27 tysięcy punktów</p>
