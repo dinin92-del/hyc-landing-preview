@@ -115,11 +115,19 @@ body {
 
 a { color: var(--green-dark); }
 
-/* Visible keyboard focus everywhere (a11y) */
-:focus-visible {
-  outline: 2px solid var(--green);
-  outline-offset: 3px;
-  border-radius: 8px;
+/* Visible keyboard focus everywhere (a11y). ⛔ Ograniczone do urządzeń z
+   precyzyjnym wskaźnikiem (myszka/trackpad) — WebKit na iOS ma znany bug:
+   tap na <button>/<a> też włącza :focus-visible (nie tylko klawiatura), więc
+   bez tej bramki zielona ramka zostawała na przycisku po każdym dotknięciu
+   (zgłoszenie z telefonu 0811 — X w modalu, CTA TestFlight). Desktopowa
+   klawiatura nadal działa: `hover:hover` i `pointer:fine` są prawdziwe na
+   każdym komputerze, dotyk ich nie spełnia. */
+@media (hover: hover) and (pointer: fine) {
+  :focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
 }
 
 /* ---- Ambientowe tło ----
@@ -434,10 +442,11 @@ h1 {
 .store-btn--light:hover { background: #f7f8f8; border-color: #c6c9cd; }
 .store-btn--light .label small { opacity: 0.6; }
 
-/* Platforma odwiedzającego — zielona obwódka marki, bez zmiany tła, żeby
-   przycisk nie przestał wyglądać na sklepowy. */
-.store-btn.is-primary { border-color: var(--green); box-shadow: 0 0 0 3px rgba(74, 124, 47, 0.18), var(--shadow-sm); }
-.store-btn.is-primary:hover { border-color: var(--green); }
+/* ⛔ `.is-primary` (main.js) MA już efekt bez stylu: przesuwa właściwy przycisk
+   na górę (`order: -1` inline). Obwódka + cień tu USUNIĘTE świadomie — na
+   telefonie renderowały się jak porzucony focus ring, bez żadnego tekstu
+   tłumaczącego, że to "Twoja platforma" (zgłoszenie z ekranu 0811). Klasa
+   zostaje w JS na wypadek przyszłego, czytelniejszego oznaczenia (badge). */
 
 /* Stan „jeszcze niedostępne" — wspólny dla obu wariantów. */
 .store-btn.is-disabled {
