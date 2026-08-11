@@ -6,7 +6,7 @@
 (function () {
   // Marker pomocniczy przy weryfikacji w przeglądarce — pozwala stwierdzić,
   // czy strona wykonuje aktualny plik, czy wersję z cache.
-  window.__HYC_BUILD = 'ios-modal-2026-08-11';
+  window.__HYC_BUILD = 'ios-modal-always-open-2026-08-11';
   var cfg = window.HYC_CONFIG || {};
   var ios = document.getElementById("btn-ios");
   var iosOpenBtn = document.getElementById("btn-ios-open");
@@ -166,16 +166,12 @@
     document.body.classList.remove("has-modal");
   }
 
-  if (cfg.testflight) {
-    iosOpenBtn.addEventListener("click", openIosModal);
-  } else {
-    // Bez linku modal nie ma czego otwierać — ten sam stan „Wkrótce" co inne
-    // batony, ustawiany ręcznie: `wire()` operuje na <a href>, ten trigger
-    // jest <button> bez odpowiednika href.
-    iosOpenBtn.classList.add("is-disabled");
-    iosOpenBtn.setAttribute("aria-disabled", "true");
-    iosOpenBtn.querySelector("strong").textContent = "Wkrótce";
-  }
+  // Modal jest ZAWSZE dostępny do obejrzenia — tak jak modal Androida
+  // (`btn-android-open` nie gatuje się na `cfg.googlePlay`). Gated jest
+  // wyłącznie finalny link WEWNĄTRZ, przez `wire()` (ten sam mechanizm co
+  // "Wkrótce" na krokach Androida bez gotowego linku) — więc realny odwiedzający
+  // widzi wyjaśnienie procesu, ale nie dostanie martwego linku.
+  iosOpenBtn.addEventListener("click", openIosModal);
   iosCloseBtn.addEventListener("click", closeIosModal);
 
   // Zamknięcie kliknięciem w tło — ta sama ochrona przed zaznaczaniem tekstu
@@ -192,7 +188,7 @@
   var ua = navigator.userAgent || "";
   var isIOS = /iPhone|iPad|iPod/i.test(ua);
   var isAndroid = /Android/i.test(ua);
-  if (isIOS && cfg.testflight) {
+  if (isIOS) {
     iosOpenBtn.classList.add("is-primary"); iosOpenBtn.style.order = "-1";
   } else if (isAndroid) {
     openBtn.classList.add("is-primary"); openBtn.style.order = "-1";
