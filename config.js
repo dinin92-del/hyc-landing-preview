@@ -6,8 +6,10 @@
  */
 window.HYC_CONFIG = {
   // iOS — publiczny link TestFlight (App Store Connect → TestFlight → Public Link).
-  // Format: https://testflight.apple.com/join/XXXXXXXX
-  testflight: "",
+  // Build 13 zgłoszony do Beta App Review 0811 (WAITING_FOR_REVIEW) i przypięty
+  // do grupy zewnętrznej "Beta" — link działa od razu, instalacja odblokuje się
+  // testerom po zatwierdzeniu recenzji (zwykle 24–48h).
+  testflight: "https://testflight.apple.com/join/eAMXEMb9",
 
   // Android idzie przez ZAMKNIĘTY test Play, nie przez testy otwarte — konto
   // deweloperskie jest prywatne i nowe, więc Play wymaga najpierw closed testu
