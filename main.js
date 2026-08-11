@@ -44,6 +44,23 @@
   wire(ios, cfg.testflight);
   wire(group, cfg.googleGroup);
   wire(android, cfg.googlePlay);
+  // ⛔ Krok 2 (Play "Become a tester") to strona WYŁĄCZNIE webowa. Zwykły
+  // https:// link do play.google.com jest na Androidzie przechwytywany przez
+  // natywną apkę Sklep Play (Digital Asset Links) — a ta apka nie umie
+  // wyrenderować strony opt-in i pokazuje „Nie znaleziono elementu" (zgłoszenie
+  // z terenu 0811). `intent://` z jawnym package Chrome omija to przechwycenie.
+  // ⚠ `cfg.googlePlay` ZOSTAJE czystym https URL — krok 3 (`linkText`/kopiowanie
+  // niżej) pokazuje go jako link do zapisania na WRÓĆ PÓŹNIEJ, na dowolnym
+  // urządzeniu; `intent://` tam byłoby bezużyteczne poza Androidem.
+  if (cfg.googlePlay) {
+    var playHost = cfg.googlePlay.replace(/^https:\/\//, "");
+    android.setAttribute(
+      "href",
+      "intent://" + playHost +
+        "#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" +
+        encodeURIComponent(cfg.googlePlay) + ";end"
+    );
+  }
 
   // ---- Kreator instalacji na Androida ----
   // Editable stepper: kroki są klikalne i żaden nie jest zablokowany, więc user
