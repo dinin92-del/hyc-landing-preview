@@ -19,8 +19,6 @@
   var closeBtn = document.getElementById("modal-close");
   var group = document.getElementById("btn-group");
   var android = document.getElementById("btn-android");
-  var linkText = document.getElementById("modal-link-text");
-  var copyBtn = document.getElementById("btn-copy-android");
   var backBtn = document.getElementById("nav-back");
   var nextBtn = document.getElementById("nav-next");
 
@@ -49,9 +47,9 @@
   // natywną apkę Sklep Play (Digital Asset Links) — a ta apka nie umie
   // wyrenderować strony opt-in i pokazuje „Nie znaleziono elementu" (zgłoszenie
   // z terenu 0811). `intent://` z jawnym package Chrome omija to przechwycenie.
-  // ⚠ `cfg.googlePlay` ZOSTAJE czystym https URL — krok 3 (`linkText`/kopiowanie
-  // niżej) pokazuje go jako link do zapisania na WRÓĆ PÓŹNIEJ, na dowolnym
-  // urządzeniu; `intent://` tam byłoby bezużyteczne poza Androidem.
+  // ⚠ Podmieniamy WYŁĄCZNIE `href` przycisku — `cfg.googlePlay` zostaje czystym
+  // https URL-em, bo `intent://` działa tylko na Androidzie i byłby bezużyteczny
+  // wszędzie indziej, gdyby kiedyś trafił do kopiowanego/zapisywanego linku.
   if (cfg.googlePlay) {
     var playHost = cfg.googlePlay.replace(/^https:\/\//, "");
     android.setAttribute(
@@ -139,34 +137,6 @@
   // Klik w „Dołącz do grupy" otwiera kartę i nic poza tym: ani my, ani
   // przeglądarka nie wiemy, czy ktoś faktycznie dołączył (obca domena, brak
   // callbacku), więc przesuwanie kroku za niego byłoby zgadywaniem.
-
-  // Krok 3 pokazuje link do zapisania — Google nie przyśle powiadomienia, gdy
-  // dostęp się aktywuje, więc bez tego linku user nie ma jak wrócić.
-  if (cfg.googlePlay) {
-    linkText.textContent = cfg.googlePlay;
-    copyBtn.disabled = false;
-    copyBtn.addEventListener("click", function () {
-      var reset = function () {
-        copyBtn.textContent = "Kopiuj link";
-        copyBtn.classList.remove("is-copied");
-      };
-      var showCopied = function () {
-        copyBtn.textContent = "Skopiowano ✓";
-        copyBtn.classList.add("is-copied");
-        setTimeout(reset, 2000);
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(cfg.googlePlay).then(showCopied, function () {
-          window.prompt("Skopiuj link ręcznie:", cfg.googlePlay);
-        });
-      } else {
-        window.prompt("Skopiuj link ręcznie:", cfg.googlePlay);
-      }
-    });
-  } else {
-    linkText.textContent = "Link pojawi się, gdy testy wystartują";
-    linkText.classList.add("is-empty");
-  }
 
   // ---- Modal instalacji na iOS ----
   // Jedna zewnętrzna akcja (link TestFlight), nie kreator — bez kroków do

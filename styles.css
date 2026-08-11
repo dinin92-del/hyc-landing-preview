@@ -701,7 +701,6 @@ body.has-modal { overflow: hidden; }
   line-height: 1.2;
   letter-spacing: -0.01em;
 }
-.modal-check { color: var(--green); }
 .modal-lead { margin: 0 0 20px; font-size: 15px; color: var(--bark); }
 .modal-hint {
   margin: 0;
@@ -709,51 +708,6 @@ body.has-modal { overflow: hidden; }
   font-weight: 600;
   color: var(--green-dark);
 }
-/* Link do zapisania (krok 3) — Google nie przyśle powiadomienia, więc bez
-   skopiowanego linku user nie ma jak wrócić. */
-.modal-linkbox {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  width: 100%;
-  margin: 0 0 14px;
-  padding: 12px 14px;
-  border-radius: var(--radius);
-  background: var(--alabaster);
-}
-.modal-link {
-  flex: 1 1 220px;
-  min-width: 0;
-  overflow-wrap: anywhere;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12.5px;
-  color: var(--espresso);
-}
-.modal-link.is-empty { color: var(--bark); font-style: italic; font-family: inherit; }
-
-.copy-link-btn {
-  display: inline-flex;
-  align-items: center;
-  padding: 9px 15px;
-  border-radius: var(--radius);
-  border: 1.5px solid var(--parchment);
-  background: var(--cream);
-  color: var(--green-dark);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    border-color 160ms ease,
-    background 160ms ease,
-    transform 140ms var(--ease-out);
-}
-.copy-link-btn:hover:not(:disabled) { border-color: var(--green); }
-.copy-link-btn:not(:disabled):active { transform: scale(0.97); }
-.copy-link-btn:disabled { color: var(--driftwood); cursor: default; opacity: 0.6; }
-.copy-link-btn.is-copied { border-color: var(--green); background: rgba(74, 124, 47, 0.12); }
-
 /* ---- Nawigacja kreatora ----
    Kolejność Wstecz → Dalej (lewo→prawo), „Wstecz" wyłączony na pierwszym kroku. */
 .modal-nav {
