@@ -42,31 +42,16 @@
   wire(ios, cfg.testflight);
   wire(group, cfg.googleGroup);
   wire(android, cfg.googlePlay);
-  // ⛔ Krok 2 (Play "Become a tester") to strona WYŁĄCZNIE webowa. Zwykły
-  // https:// link do play.google.com jest na Androidzie przechwytywany przez
-  // natywną apkę Sklep Play (Digital Asset Links) — a ta apka nie umie
-  // wyrenderować strony opt-in i pokazuje „Nie znaleziono elementu" (zgłoszenie
-  // z terenu 0811). `intent://` z jawnym package Chrome omija to przechwycenie.
-  // ⚠ Podmieniamy WYŁĄCZNIE `href` przycisku — `cfg.googlePlay` zostaje czystym
-  // https URL-em, bo `intent://` działa tylko na Androidzie i byłby bezużyteczny
-  // wszędzie indziej, gdyby kiedyś trafił do kopiowanego/zapisywanego linku.
-  if (cfg.googlePlay) {
-    var playHost = cfg.googlePlay.replace(/^https:\/\//, "");
-    android.setAttribute(
-      "href",
-      "intent://" + playHost +
-        "#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" +
-        encodeURIComponent(cfg.googlePlay) + ";end"
-    );
-    // ⛔ `wire()` wyżej ustawia `target="_blank"` dla WSZYSTKICH przycisków
-    // sklepowych — dla `intent://` to była realna przyczyna pustej karty
-    // (zgłoszenie z terenu 0811, ten sam dzień co sam fix): Chrome na
-    // Androidzie rozpoznaje `intent://` przy nawigacji W TEJ SAMEJ karcie;
-    // przy `target="_blank"` otwiera pustą nową kartę i NIE dowozi do niej
-    // intencji. System Android i tak przejmuje nawigację (albo Chrome, albo
-    // wskazana apka) — pojęcie "nowej karty" nie ma tu zastosowania.
-    android.removeAttribute("target");
-  }
+  // ⛔ CELOWO gołe https:// z konsoli Play, bez żadnej sztuczki (intent://,
+  // package=com.android.chrome, usuwanie target) — dwie próby obejścia
+  // przechwycenia przez apkę Sklep Play ZAWIODŁY na realnym telefonie
+  // (0811: najpierw „nie znaleziono elementu", potem pusta karta po poprawce
+  // targetu). Ten link jest zweryfikowany ręcznie w przeglądarce jako
+  // poprawny (prawdziwa strona „Become a tester" dla Hyc!) — jeśli na
+  // Androidzie otwiera się w apce Play zamiast w przeglądarce, to decyduje o
+  // tym ustawienie „Otwieraj domyślnie" apki Sklep Play NA TYM TELEFONIE
+  // (Ustawienia → Aplikacje → Sklep Play → Otwieraj domyślnie), nie coś, co
+  // strona może wymusić niezawodnie z poziomu klienta.
 
   // ---- Kreator instalacji na Androida ----
   // Editable stepper: kroki są klikalne i żaden nie jest zablokowany, więc user
