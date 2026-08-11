@@ -21,11 +21,11 @@ window.HYC_CONFIG = {
   googleGroup: "https://groups.google.com/g/hyc-testers",
 
   // Krok 2 — link opt-in konkretnej ścieżki testów (Play Console → Testing →
-  // Closed testing → Testers → "Copy link"). Format:
-  // https://play.google.com/apps/testing/pl.hycdobudy.hyc_do_budy
-  // Puste, dopóki apka nie istnieje w konsoli — patrz docs/runbook-beta-play.md.
+  // Closed testing → Testers → "Copy link"). Build 13 zatwierdzony 0811 (33 min
+  // review), link zweryfikowany na żywo (realna strona "Become a tester" dla
+  // Hyc!, nie strzał w ciemno).
   // ⛔ Działa TYLKO dla członków grupy z Kroku 1 (może być kwestią godzin, zanim
   // rozpozna świeże członkostwo — nieudokumentowane przez Google, stąd notatka
   // "sprawdź później" zamiast twierdzenia że zadziała od razu).
-  googlePlay: "",
+  googlePlay: "https://play.google.com/apps/testing/pl.hycdobudy.hyc_do_budy",
 };
