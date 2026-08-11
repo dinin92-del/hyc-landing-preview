@@ -36,12 +36,12 @@ rm -f _headers                 # GH Pages ignores _headers (CSP only on Cloudfla
 touch .nojekyll                # serve files verbatim, don't skip _-prefixed
 if [[ -n "$SITE_DOMAIN" ]]; then printf '%s\n' "$SITE_DOMAIN" > CNAME; fi
 # OG needs absolute URLs (scrapers don't resolve relative)
-sed -i '' "s#content=\"assets/og-image.jpg\"#content=\"$BASE/assets/og-image.jpg\"#g" index.html
+sed -i '' "s#content=\"assets/og-image.jpg?v=20260811\"#content=\"$BASE/assets/og-image.jpg?v=20260811\"#g" index.html
 sed -i '' "s#<meta property=\"og:type\" content=\"website\">#<meta property=\"og:type\" content=\"website\">\n  <meta property=\"og:url\" content=\"$BASE/\">#" index.html
 # Oba podstawienia dopasowują DOKŁADNY string z index.html — zmiana formatowania
 # tamtych metatagów sprawiłaby, że sed po cichu nic nie robi i podgląd linku na
 # socialach traci obrazek/URL. Dlatego sprawdzamy wynik, zamiast ufać sed-owi.
-grep -q "content=\"$BASE/assets/og-image.jpg\"" index.html \
+grep -q "content=\"$BASE/assets/og-image.jpg?v=20260811\"" index.html \
   || { echo "BŁĄD: og:image nie został przepisany na absolutny URL — sprawdź metatagi w index.html" >&2; exit 1; }
 grep -q "og:url" index.html \
   || { echo "BŁĄD: nie wstrzyknięto og:url — sprawdź metatag og:type w index.html" >&2; exit 1; }
