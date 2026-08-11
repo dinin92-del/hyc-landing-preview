@@ -58,6 +58,14 @@
         "#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=" +
         encodeURIComponent(cfg.googlePlay) + ";end"
     );
+    // ⛔ `wire()` wyżej ustawia `target="_blank"` dla WSZYSTKICH przycisków
+    // sklepowych — dla `intent://` to była realna przyczyna pustej karty
+    // (zgłoszenie z terenu 0811, ten sam dzień co sam fix): Chrome na
+    // Androidzie rozpoznaje `intent://` przy nawigacji W TEJ SAMEJ karcie;
+    // przy `target="_blank"` otwiera pustą nową kartę i NIE dowozi do niej
+    // intencji. System Android i tak przejmuje nawigację (albo Chrome, albo
+    // wskazana apka) — pojęcie "nowej karty" nie ma tu zastosowania.
+    android.removeAttribute("target");
   }
 
   // ---- Kreator instalacji na Androida ----
