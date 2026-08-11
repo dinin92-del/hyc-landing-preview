@@ -59,10 +59,15 @@
           <p class="hero-tags">Wiaty · Chatki · Bacówki · Schroniska · Bazy namiotowe · Miejsca biwakowe · Noclegi · Sklepy · Gastronomia · i&nbsp;inne</p>
 
           <div class="stores" id="stores">
-            <a class="store-btn store-btn--dark store-btn--compact" id="btn-ios" href="#" rel="noopener">
+            <!-- iOS wymaga apki TestFlight, której większość testerów jeszcze
+                 nie ma — instalacja to więc DWA kliknięcia w ten sam przycisk
+                 (TestFlight, potem po powrocie z App Store, Hyc!). Baton
+                 wygląda jak zwykły „pobierz", modal niżej ustawia oczekiwania
+                 PRZED pierwszym kliknięciem — Apple samo tego nie tłumaczy. -->
+            <button class="store-btn store-btn--dark store-btn--compact" id="btn-ios-open" type="button">
               <img src="assets/apple.svg" alt="">
               <span class="label"><small>Pobierz na iPhone</small><strong>TestFlight</strong></span>
-            </a>
+            </button>
 
             <!-- Android idzie przez zamknięty test Play (grupa Google jako lista
                  testerów), więc instalacja ma dwa etapy: grupa → opt-in Play.
@@ -219,7 +224,31 @@
     </footer>
   </dialog>
 
+  <!-- Instalacja na iOS — JEDNA zewnętrzna akcja (link TestFlight), nie
+       kreator: bez steppera, bez Wstecz/Dalej. Modal istnieje wyłącznie po to,
+       żeby ustawić oczekiwania PRZED kliknięciem — Apple nie ostrzega, że po
+       instalacji TestFlight trzeba wrócić i kliknąć ten sam link jeszcze raz.
+       Te same klasy co modal Androida (patrz styles.css), zero nowego CSS. -->
+  <dialog class="flow-modal" id="ios-modal" aria-labelledby="ios-modal-title">
+    <button class="flow-modal-close" id="ios-modal-close" type="button" aria-label="Zamknij">&times;</button>
+
+    <p class="modal-intro">Instalacja ma dwa kroki — ten sam przycisk prowadzi przez oba</p>
+
+    <h2 class="modal-title" id="ios-modal-title">Zainstaluj Hyc! przez TestFlight</h2>
+    <p class="modal-lead">TestFlight to oficjalna apka Apple do testów beta — Hyc! można testować tylko przez nią. Kliknij przycisk: najpierw zainstalujesz TestFlight z&nbsp;App&nbsp;Store, potem wróć tutaj i kliknij go <strong>jeszcze raz</strong>, żeby zainstalować Hyc!.</p>
+
+    <div class="modal-note">
+      <p class="modal-note-title">Masz już TestFlight?</p>
+      <p class="modal-note-text">Kliknięcie przeniesie Cię prosto do instalacji Hyc! — pomiń powyższe.</p>
+    </div>
+
+    <a class="store-btn store-btn--dark" id="btn-ios" href="#" rel="noopener">
+      <img src="assets/apple.svg" alt="">
+      <span class="label"><small>Otworzy TestFlight</small><strong>Kontynuuj</strong></span>
+    </a>
+  </dialog>
+
   <script src="config.js?v=20260806"></script>
-  <script src="main.js?v=20260808"></script>
+  <script src="main.js?v=20260811"></script>
 </body>
 </html>

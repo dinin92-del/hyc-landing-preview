@@ -6,10 +6,14 @@
 (function () {
   // Marker pomocniczy przy weryfikacji w przeglądarce — pozwala stwierdzić,
   // czy strona wykonuje aktualny plik, czy wersję z cache.
-  window.__HYC_BUILD = 'nav-manual-2026-07-30';
+  window.__HYC_BUILD = 'ios-modal-2026-08-11';
   var cfg = window.HYC_CONFIG || {};
   var ios = document.getElementById("btn-ios");
+  var iosOpenBtn = document.getElementById("btn-ios-open");
   var openBtn = document.getElementById("btn-android-open");
+
+  var iosModal = document.getElementById("ios-modal");
+  var iosCloseBtn = document.getElementById("ios-modal-close");
 
   var modal = document.getElementById("android-modal");
   var closeBtn = document.getElementById("modal-close");
@@ -147,12 +151,49 @@
     linkText.classList.add("is-empty");
   }
 
+  // ---- Modal instalacji na iOS ----
+  // Jedna zewnętrzna akcja (link TestFlight), nie kreator — bez kroków do
+  // przełączania, więc bez steppera i bez Wstecz/Dalej z modala Androida.
+
+  function openIosModal() {
+    if (typeof iosModal.showModal === "function") { iosModal.showModal(); }
+    else { iosModal.setAttribute("open", ""); }
+    document.body.classList.add("has-modal");
+  }
+  function closeIosModal() {
+    if (typeof iosModal.close === "function") { iosModal.close(); }
+    else { iosModal.removeAttribute("open"); }
+    document.body.classList.remove("has-modal");
+  }
+
+  if (cfg.testflight) {
+    iosOpenBtn.addEventListener("click", openIosModal);
+  } else {
+    // Bez linku modal nie ma czego otwierać — ten sam stan „Wkrótce" co inne
+    // batony, ustawiany ręcznie: `wire()` operuje na <a href>, ten trigger
+    // jest <button> bez odpowiednika href.
+    iosOpenBtn.classList.add("is-disabled");
+    iosOpenBtn.setAttribute("aria-disabled", "true");
+    iosOpenBtn.querySelector("strong").textContent = "Wkrótce";
+  }
+  iosCloseBtn.addEventListener("click", closeIosModal);
+
+  // Zamknięcie kliknięciem w tło — ta sama ochrona przed zaznaczaniem tekstu
+  // co modal Androida (patrz komentarz niżej przy `downNaTle`).
+  var iosDownNaTle = false;
+  iosModal.addEventListener("mousedown", function (e) { iosDownNaTle = e.target === iosModal; });
+  iosModal.addEventListener("click", function (e) {
+    if (e.target === iosModal && iosDownNaTle) { closeIosModal(); }
+    iosDownNaTle = false;
+  });
+  iosModal.addEventListener("close", function () { document.body.classList.remove("has-modal"); });
+
   // Highlight + surface the button matching the visitor's platform.
   var ua = navigator.userAgent || "";
   var isIOS = /iPhone|iPad|iPod/i.test(ua);
   var isAndroid = /Android/i.test(ua);
-  if (isIOS && !ios.classList.contains("is-disabled")) {
-    ios.classList.add("is-primary"); ios.style.order = "-1";
+  if (isIOS && cfg.testflight) {
+    iosOpenBtn.classList.add("is-primary"); iosOpenBtn.style.order = "-1";
   } else if (isAndroid) {
     openBtn.classList.add("is-primary"); openBtn.style.order = "-1";
   }
