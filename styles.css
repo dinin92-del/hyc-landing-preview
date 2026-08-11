@@ -76,7 +76,18 @@
 
 * { box-sizing: border-box; }
 
-html { -webkit-text-size-adjust: 100%; }
+/* ⛔ Ta sama para deklaracji co niżej na <body> — i MUSI tu być OSOBNO.
+   Na mobile to <html> (documentElement), nie <body>, jest faktycznym
+   kontenerem przewijania wiewportu: zmierzone 0811 (zgłoszenie z telefonu),
+   `window.innerWidth`/`documentElement.scrollWidth` rosły do szerokości
+   wystającego `.hero-art` mimo `overflow-x: clip` na samym <body> —
+   `<html>` miał wciąż `overflow-x: visible` i to ono decydowało. Bez tej
+   pary strona daje się przesunąć w bok poziomym gestem na całej długości. */
+html {
+  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
+}
 
 body {
   margin: 0;
@@ -489,8 +500,20 @@ h1 {
 @keyframes modal-in {
   from { opacity: 0; transform: scale(0.96); }
 }
-/* Tło nie przewija się pod otwartym modalem. */
-body.has-modal { overflow: hidden; }
+/* Tło nie przewija się pod otwartym modalem.
+   ⛔ Samo `overflow: hidden` NIE WYSTARCZA na Safari iOS — to wieloletni,
+   udokumentowany limit WebKita: dokument i tak przewija się (rubber-band)
+   pod spodem otwartego <dialog>, mimo overflow:hidden na <body> (zgłoszenie
+   z telefonu 0811, "modal dziwnie się scrolluje"). Właściwa technika —
+   zamrożenie <body> na `position: fixed` w zapamiętanym miejscu przewinięcia
+   — używana przez każdą poważną bibliotekę modali (react-remove-scroll,
+   body-scroll-lock). `top` ustawia JS (main.js: lockScroll/unlockScroll),
+   bo zależy od bieżącej pozycji przewinięcia w momencie otwarcia. */
+body.has-modal {
+  position: fixed;
+  width: 100%;
+  overflow: hidden;
+}
 
 .flow-modal-close {
   position: absolute;

@@ -27,6 +27,31 @@
   var LAST = steps.length;
   var current = 1;
 
+  // Blokada przewijania tła pod otwartym modalem (dowolnym z dwóch).
+  // ⛔ Samo `has-modal` (overflow: hidden na <body>, patrz styles.css) NIE
+  // WYSTARCZA na Safari iOS — dokument i tak przewija się pod spodem
+  // (wieloletni limit WebKita, zgłoszenie z telefonu 0811). Zamrożenie na
+  // `position: fixed` w zapamiętanym miejscu przewinięcia to jedyna
+  // niezawodna technika — tej samej używa każda poważna biblioteka modali.
+  // ⚠ Strażnik `scrollLocked`: oba modale (Android/iOS) dzielą jeden zamek
+  // na <body>, więc podwójny lock nadpisałby zapamiętane miejsce zerem.
+  var savedScrollY = 0;
+  var scrollLocked = false;
+  function lockScroll() {
+    if (scrollLocked) return;
+    scrollLocked = true;
+    savedScrollY = window.scrollY;
+    document.body.classList.add("has-modal");
+    document.body.style.top = "-" + savedScrollY + "px";
+  }
+  function unlockScroll() {
+    if (!scrollLocked) return;
+    scrollLocked = false;
+    document.body.classList.remove("has-modal");
+    document.body.style.top = "";
+    window.scrollTo(0, savedScrollY);
+  }
+
   // Wire a store button to its link, or lock it as "Wkrótce" when empty.
   function wire(btn, url) {
     if (url) {
@@ -93,13 +118,13 @@
     if (typeof modal.showModal === "function") { modal.showModal(); }
     else { modal.setAttribute("open", ""); }  // starsze przeglądarki bez <dialog>
     // Bez tego tło przewija się pod otwartym modalem.
-    document.body.classList.add("has-modal");
+    lockScroll();
   }
 
   function closeModal() {
     if (typeof modal.close === "function") { modal.close(); }
     else { modal.removeAttribute("open"); }
-    document.body.classList.remove("has-modal");
+    unlockScroll();
   }
 
   openBtn.addEventListener("click", openModal);
@@ -116,7 +141,7 @@
     downNaTle = false;
   });
   // Escape zamyka <dialog> bez naszego udziału — posprzątaj po sobie i wtedy.
-  modal.addEventListener("close", function () { document.body.classList.remove("has-modal"); });
+  modal.addEventListener("close", unlockScroll);
 
   backBtn.addEventListener("click", function () { goToStep(current - 1); });
   nextBtn.addEventListener("click", function () {
@@ -138,12 +163,12 @@
   function openIosModal() {
     if (typeof iosModal.showModal === "function") { iosModal.showModal(); }
     else { iosModal.setAttribute("open", ""); }
-    document.body.classList.add("has-modal");
+    lockScroll();
   }
   function closeIosModal() {
     if (typeof iosModal.close === "function") { iosModal.close(); }
     else { iosModal.removeAttribute("open"); }
-    document.body.classList.remove("has-modal");
+    unlockScroll();
   }
 
   // Modal jest ZAWSZE dostępny do obejrzenia — tak jak modal Androida
@@ -162,7 +187,7 @@
     if (e.target === iosModal && iosDownNaTle) { closeIosModal(); }
     iosDownNaTle = false;
   });
-  iosModal.addEventListener("close", function () { document.body.classList.remove("has-modal"); });
+  iosModal.addEventListener("close", unlockScroll);
 
   // Highlight + surface the button matching the visitor's platform.
   var ua = navigator.userAgent || "";
