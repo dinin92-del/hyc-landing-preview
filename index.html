@@ -33,7 +33,7 @@
        deployu potrafi skleić NOWY index.html ze STARYM styles.css i pokazać
        układ, którego nikt nigdy nie zbudował. Wersja w URL-u wymusza świeże
        pobranie, bo to inny zasób. -->
-  <link rel="stylesheet" href="styles.css?v=20260811c">
+  <link rel="stylesheet" href="styles.css?v=20260812">
 </head>
 <body>
   <div class="wrap">
@@ -173,7 +173,7 @@
 
       <section class="modal-step" data-step="1">
         <p class="modal-eyebrow">Krok 1 z 2</p>
-        <h2 class="modal-title" id="modal-title">Dołącz do grupy testerów</h2>
+        <h2 class="modal-title" id="modal-title" tabindex="-1" autofocus>Dołącz do grupy testerów</h2>
         <p class="modal-lead">Google wymaga dołączenia do grupy testerów. Otworzymy ją w nowej karcie — kliknij tam <strong>„Dołącz do grupy”</strong> i przejdź do następnego kroku.</p>
 
         <div class="modal-note">
@@ -224,7 +224,7 @@
   <dialog class="flow-modal" id="ios-modal" aria-labelledby="ios-modal-title">
     <button class="flow-modal-close" id="ios-modal-close" type="button" aria-label="Zamknij">&times;</button>
 
-    <h2 class="modal-title" id="ios-modal-title">Zainstaluj Hyc! przez TestFlight</h2>
+    <h2 class="modal-title" id="ios-modal-title" tabindex="-1" autofocus>Zainstaluj Hyc! przez TestFlight</h2>
     <p class="modal-lead">TestFlight to aplikacja Apple do testów beta — Hyc! działa tylko przez nią. Otworzymy stronę Apple, gdzie zainstalujesz najpierw TestFlight, a&nbsp;potem Hyc!</p>
 
     <a class="store-btn store-btn--dark" id="btn-ios" href="#" rel="noopener">
@@ -233,7 +233,7 @@
     </a>
   </dialog>
 
-  <script src="config.js?v=20260811c"></script>
-  <script src="main.js?v=20260811c"></script>
+  <script src="config.js?v=20260812"></script>
+  <script src="main.js?v=20260812"></script>
 </body>
 </html>

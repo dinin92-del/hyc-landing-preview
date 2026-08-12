@@ -724,6 +724,18 @@ body.has-modal {
   line-height: 1.2;
   letter-spacing: -0.01em;
 }
+/* ⛔ Nagłówek nosi `tabindex="-1" autofocus` (index.html) — to ON dostaje fokus
+   przy otwarciu modala, NIE przycisk zamknięcia. Powód: `showModal()` bez
+   `autofocus` fokusuje pierwszy element w DOM, czyli X — i Safari na iOS rysuje
+   wtedy swoją DOMYŚLNĄ niebieską obwódkę wokół krzyżyka, bez żadnego dotknięcia
+   przez usera (zgłoszenie z telefonu 0812; to inna obwódka niż nasza zielona
+   z `:focus-visible`, którą zawęziliśmy do myszki w #604).
+   Fokus na nagłówku jest ZGODNY z praktyką a11y dla okien dialogowych — czytnik
+   ekranu odczytuje wtedy tytuł modala zamiast samego słowa „Zamknij".
+   `outline: none` jest tu bezpieczne, bo nagłówek NIE jest interaktywny:
+   użytkownik klawiatury i tak przechodzi Tabem do przycisków, a te mają swój
+   widoczny fokus. */
+.modal-title:focus { outline: none; }
 .modal-lead { margin: 0 0 20px; font-size: 15px; color: var(--bark); }
 .modal-hint {
   margin: 0;
