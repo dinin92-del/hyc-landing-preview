@@ -229,30 +229,21 @@
       // wersja obsługiwała wyłącznie „karta w tle" i po jednym nieudanym
       // podejściu nie miała już czym ponowić. Reguła jest teraz odwrotna:
       // każdy wyzwalacz ponawia, dopóki odtwarzanie NIE JEST potwierdzone.
-      var heroPlaying = false;
+      // ⛔ Nasłuchów NIE ODPINAMY po pierwszym udanym starcie. Wznowienie jest
+      // potrzebne nie tylko przed pierwszym odtworzeniem: WebView pauzuje media
+      // przy schowaniu strony, iOS przy rozmowie i przy wejściu w Low Power —
+      // a `autoplay`, który wznawiałby to sam, jest z <video> zdjęty (patrz
+      // index.html). Odpięcie po starcie zostawiało wtedy poster na zawsze,
+      // czyli ten sam objaw co przed poprawką 0812, tylko później.
+      // Stanem rozstrzygającym jest `heroVideo.paused`, nie własna flaga:
+      // flaga mówi „kiedyś ruszyło", a pytanie brzmi „czy stoi TERAZ".
       var heroTriggers = ["visibilitychange", "touchend", "pointerup", "click"];
-      var detachHeroTriggers = function () {
-        for (var t = 0; t < heroTriggers.length; t++) {
-          document.removeEventListener(heroTriggers[t], onHeroTrigger);
-        }
-      };
       var startHeroVideo = function () {
-        if (heroPlaying) { return; }
+        // Obietnica z `play()` jest tu bez znaczenia — jej odrzucenie zostawia
+        // element zapauzowany, a to i tak sprawdza `onHeroTrigger` przy każdym
+        // kolejnym wyzwalaczu. Cichy `catch` tylko tłumi „unhandled rejection".
         var p = heroVideo.play();
-        // ⚠ Nasłuchy zdejmujemy WYŁĄCZNIE po spełnionej obietnicy, nigdy na
-        // wejściu do handlera. Zdjęcie ich przed potwierdzeniem spalało jedyną
-        // próbę na odrzuceniu i zostawiało poster na zawsze.
-        if (p && p.then) {
-          p.then(function () {
-            heroPlaying = true;
-            detachHeroTriggers();
-          }).catch(function () { /* zostawiamy nasłuchy — ponowimy */ });
-        } else if (!heroVideo.paused) {
-          // Silnik bez obietnicy z `play()` (starsze WebKity) — stan elementu
-          // jest wtedy jedynym dostępnym potwierdzeniem.
-          heroPlaying = true;
-          detachHeroTriggers();
-        }
+        if (p && p.catch) { p.catch(function () {}); }
       };
       // ⛔ `pointerdown` NIE NADAJE user activation dla `pointerType: "touch"`
       // (HTML spec: liczy się tylko dla myszy; na dotyku aktywację daje
@@ -263,7 +254,7 @@
       var onHeroTrigger = function () {
         // Dotknięcia sprzed `armed` (user jeszcze nie dojechał do kadru) mają
         // być zignorowane — ale nasłuch ZOSTAJE, bo nic nie zużyły.
-        if (!armed || heroPlaying) { return; }
+        if (!armed || !heroVideo.paused) { return; }
         startHeroVideo();
       };
       // ⚠ NIE odpalamy po samym `setTimeout` od załadowania strony. Safari na
@@ -303,9 +294,9 @@
       }
       // Ostatnia furtka: tryb niskiego zużycia energii na iOS i polityka mediów
       // in-app browsera blokują KAŻDE odtwarzanie bez gestu, więc nawet widoczny
-      // kadr zostaje na pierwszej klatce. Każde kolejne dotknięcie, kliknięcie
-      // i powrót karty na wierzch próbuje ponownie — aż `startHeroVideo`
-      // potwierdzi odtwarzanie i sam zdejmie nasłuchy.
+      // kadr zostaje na pierwszej klatce. Każde dotknięcie, kliknięcie i powrót
+      // karty na wierzch próbuje ponownie — i robi to przez całe życie strony,
+      // bo zapauzować może też sam system długo po pierwszym starcie.
       for (var t = 0; t < heroTriggers.length; t++) {
         document.addEventListener(heroTriggers[t], onHeroTrigger, { passive: true });
       }
