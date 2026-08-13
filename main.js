@@ -223,21 +223,48 @@
       // ręczne wywołanie przechodzi bez problemu.
       // Atrybut `autoplay` radził sobie z tym sam (przeglądarka wznawia po
       // pokazaniu karty), więc zdejmując go musimy to odtworzyć ręcznie.
-      var startHeroVideo = function () {
-        var p = heroVideo.play();
-        if (p && p.catch) {
-          p.catch(function () {
-            // Odrzucenie prawie zawsze znaczy „karta jest w tle". Ponawiamy
-            // dokładnie raz, w momencie gdy user faktycznie ją zobaczy.
-            if (document.hidden) {
-              document.addEventListener("visibilitychange", function onVisible() {
-                if (document.hidden) { return; }
-                document.removeEventListener("visibilitychange", onVisible);
-                startHeroVideo();
-              });
-            }
-          });
+      // ⛔ 0812: NIE ZGADUJEMY, KTÓRA polityka odrzuciła `play()`. Odrzucenie
+      // ma na mobile co najmniej trzy różne przyczyny (wymagany gest w WebView
+      // Facebooka, Low Power Mode na iOS, oszczędzanie danych), a poprzednia
+      // wersja obsługiwała wyłącznie „karta w tle" i po jednym nieudanym
+      // podejściu nie miała już czym ponowić. Reguła jest teraz odwrotna:
+      // każdy wyzwalacz ponawia, dopóki odtwarzanie NIE JEST potwierdzone.
+      var heroPlaying = false;
+      var heroTriggers = ["visibilitychange", "touchend", "pointerup", "click"];
+      var detachHeroTriggers = function () {
+        for (var t = 0; t < heroTriggers.length; t++) {
+          document.removeEventListener(heroTriggers[t], onHeroTrigger);
         }
+      };
+      var startHeroVideo = function () {
+        if (heroPlaying) { return; }
+        var p = heroVideo.play();
+        // ⚠ Nasłuchy zdejmujemy WYŁĄCZNIE po spełnionej obietnicy, nigdy na
+        // wejściu do handlera. Zdjęcie ich przed potwierdzeniem spalało jedyną
+        // próbę na odrzuceniu i zostawiało poster na zawsze.
+        if (p && p.then) {
+          p.then(function () {
+            heroPlaying = true;
+            detachHeroTriggers();
+          }).catch(function () { /* zostawiamy nasłuchy — ponowimy */ });
+        } else if (!heroVideo.paused) {
+          // Silnik bez obietnicy z `play()` (starsze WebKity) — stan elementu
+          // jest wtedy jedynym dostępnym potwierdzeniem.
+          heroPlaying = true;
+          detachHeroTriggers();
+        }
+      };
+      // ⛔ `pointerdown` NIE NADAJE user activation dla `pointerType: "touch"`
+      // (HTML spec: liczy się tylko dla myszy; na dotyku aktywację daje
+      // `pointerup`/`touchend`). Poprzednia wersja wołała więc `play()` bez
+      // gestu dokładnie tam, gdzie gest był potrzebny — w in-app browserze
+      // Facebooka na Androidzie (Chromium WebView egzekwuje to dosłownie).
+      // `click` zostaje dla myszy i dla klawiatury.
+      var onHeroTrigger = function () {
+        // Dotknięcia sprzed `armed` (user jeszcze nie dojechał do kadru) mają
+        // być zignorowane — ale nasłuch ZOSTAJE, bo nic nie zużyły.
+        if (!armed || heroPlaying) { return; }
+        startHeroVideo();
       };
       // ⚠ NIE odpalamy po samym `setTimeout` od załadowania strony. Safari na
       // iOS odtwarza materiał bez gestu tylko wtedy, gdy element jest WIDOCZNY
@@ -274,17 +301,14 @@
       } else {
         armHeroVideo();
       }
-      // Ostatnia furtka: tryb niskiego zużycia energii na iOS blokuje KAŻDE
-      // odtwarzanie bez gestu, więc nawet widoczny kadr zostaje na pierwszej
-      // klatce. Dotknięcie strony próbuje wtedy raz jeszcze — gest znosi
-      // blokadę. ⚠ Nasłuch zdejmujemy dopiero, gdy nagranie NAPRAWDĘ ruszy:
-      // dotknięcia sprzed `armed` (user jeszcze nie dojechał do kadru) mają
-      // być zignorowane, a nie zużyć jedyną próbę.
-      document.addEventListener("pointerdown", function onTouch() {
-        if (!armed) { return; }
-        document.removeEventListener("pointerdown", onTouch);
-        if (heroVideo.paused) { startHeroVideo(); }
-      }, { passive: true });
+      // Ostatnia furtka: tryb niskiego zużycia energii na iOS i polityka mediów
+      // in-app browsera blokują KAŻDE odtwarzanie bez gestu, więc nawet widoczny
+      // kadr zostaje na pierwszej klatce. Każde kolejne dotknięcie, kliknięcie
+      // i powrót karty na wierzch próbuje ponownie — aż `startHeroVideo`
+      // potwierdzi odtwarzanie i sam zdejmie nasłuchy.
+      for (var t = 0; t < heroTriggers.length; t++) {
+        document.addEventListener(heroTriggers[t], onHeroTrigger, { passive: true });
+      }
     }
   }
 })();
