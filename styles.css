@@ -336,6 +336,15 @@ a { color: var(--green-dark); }
 
 /* ---- Hero ---- */
 .hero {
+  /* Sticky .topbar zasłaniał górę hero po skoku na #top (link logo, albo URL
+     z fragmentem) — ten sam mechanizm jak przy .faq niżej. 114px = wysokość
+     topbara na desktopie (92px, przycisk --nav 44px wyższy niż mobilny
+     hamburger) + margin-top tej reguły (22px) — scroll-margin-top liczy się
+     od border-boxa, nie łapie własnego marginesu automatycznie. Zaokrąglone
+     w górę do desktopowej wartości: na mobile (topbar 88px) da to lądowanie
+     4px NAD dokumentem, przeglądarka przycina do zera, więc oba warianty
+     wychodzą na scrollY:0. */
+  scroll-margin-top: 114px;
   display: grid;
   grid-template-columns: 1fr;
   gap: 28px;
@@ -953,7 +962,7 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
   grid-template-columns: 1fr;
   gap: 24px;
 }
-.feature-row + .feature-row { margin-top: 112px; }
+.feature-row + .feature-row { margin-top: 88px; }
 .feature-media {
   display: block;
   /* Bez podkładu/karty na mobile — sam podkład jest sprawą desktopowej
@@ -1111,7 +1120,7 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
   justify-content: space-between;
   gap: 16px;
   padding: 18px 0;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
   color: var(--espresso);
   cursor: pointer;
@@ -1342,7 +1351,7 @@ footer .spacer { flex: 1 1 auto; }
      odstęp od paska na desktopie. */
   .about-hero { margin-top: 80px; }
   .feature-list { margin-top: 88px; }
-  .feature-row + .feature-row { margin-top: 128px; }
+  .feature-row + .feature-row { margin-top: 104px; }
   .faq-heading { font-size: 34px; }
   .hero-tags { font-size: 19px; }
   footer { margin-top: 96px; }
