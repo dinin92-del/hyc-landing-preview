@@ -9,8 +9,10 @@ DIST="dist"
 rm -rf "$DIST"
 mkdir -p "$DIST"
 
-# Page + behaviour + config
-cp index.html styles.css main.js config.js favicon.svg robots.txt "$DIST/"
+# Pages + behaviour + config
+cp index.html o-aplikacji.html kontakt.html pobierz.html \
+   styles.css scroll-lock.js nav.js main.js config.js \
+   favicon.svg robots.txt "$DIST/"
 
 # Static assets (fonts, hero, og-image, store logos, licenses)
 cp -R assets "$DIST/assets"

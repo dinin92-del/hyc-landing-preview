@@ -5,8 +5,8 @@
    ============================================================ */
 
 /* ---- Fonts (self-hosted → GDPR-clean, no Google CDN) ---- */
-/* DS 2026-07-23: font produktu = Figtree (zastąpił Nunito). Jeden plik
-   variable (oś wght 300–900) — mirror assets/fonts/figtree w apce. */
+/* Font produktu: Figtree, jeden plik variable (oś wght 300–900) — mirror
+   assets/fonts/figtree w apce. */
 @font-face {
   font-family: "Figtree";
   src: url("assets/fonts/Figtree-Variable.woff2") format("woff2");
@@ -22,12 +22,11 @@
      mają konkurować z CTA (ten sam token co banner "Zostań pionierem" w appce). */
   --green-bland: #759c60;
   --espresso: #2c2620;
-  --bark: #5c5248;
+  --bark: #4a423a;
   /* Poza skalą DS: `driftwood` (#8A8070) na tle strony daje 3,27:1, poniżej
-     progu AA (4,5:1) dla drobnego tekstu — więc dla podpisów LŻEJSZYCH niż
-     `bark`, ale wciąż czytelnych, nie ma gotowego tokenu. #6B6157 to
-     najjaśniejszy szary tej rodziny, który jeszcze przechodzi (5,09:1,
-     zmierzone) — dalej w stronę driftwood i próg pęka. */
+     progu AA (4,5:1) dla drobnego tekstu. #6B6157 to najjaśniejszy szary tej
+     rodziny, który jeszcze przechodzi (5,09:1) — dla podpisów lżejszych niż
+     `bark`, ale wciąż czytelnych. */
   --caption: #6b6157;
   --driftwood: #8a8070;
   --cream: #f9f6f2;
@@ -38,29 +37,19 @@
   --mist: #e8e2d8;
   --parchment: #d8d0c0;
   --orange: #d66000;
-  /* Informacyjny błękit — używany na wskazówce „zaloguj się" w kreatorze.
-     Poprzedni #2f6f8f (stonowany teal) user ocenił jako "szarawy, brzydki" —
-     zwykły, rozpoznawalny niebieski informacyjny zamiast przygaszonego. */
+  /* Informacyjny błękit — wskazówka „zaloguj się" w kreatorze Androida.
+     Zwykły, rozpoznawalny niebieski zamiast przygaszonego teala. */
   --info: #2563eb;
 
   --radius: 16px;
   --radius-lg: 24px;
-  /* 960 -> 1200 (0806). Podniesione, bo hero przestało wychodzić poza tę
-     kolumnę (user: „równe przestrzenie z prawej i lewej"), a przy 960px
-     dwanaście kolumn z rynną 24px dawało kolumnę 54,7px — poniżej zdrowego
-     pasma 60-80px — i kolumnę tekstu 369px, w której h1 łamał się na TRZY
-     linie, a batony szły w dwa rzędy. 1200px to standardowe maksimum treści.
-     ⚠ 0806, druga korekta: 1200 -> 1020px (user: „zwęźmy obszar contentu,
-     ok. 15% więcej pustej przestrzeni z lewej i prawej"). Konsekwencja:
-     kolumna schodzi z 78 na 59,7px, czyli PONIŻEJ pasma 60-80 z researchu,
-     i podział hero musiał wrócić z 5+7 na 6+6 — przy 5 kolumnach tekst miał
-     394px i h1 łamał się na trzy linie (zmierzone). Telefon zmalał 467 ->
-     335px. To świadomy handel: węższy content kosztuje wielkość telefonu.
-     Nie ma tu progu: `max-width` nic nie robi na węższych oknach, więc do
-     ~1000px układ jest bajt w bajt taki jak przedtem.
-     ⚠ Dotyczy CAŁEJ strony — kafelki „co robi apka" i stopka też rozciągają
-     się do 1200px. To świadome: wspólna krawędź hero i kafelków to jedyny
-     sposób, żeby marginesy były równe i żeby sekcje się nie rozjeżdżały. */
+  /* Kolumna treści strony. Wartość dobrana tak, żeby h1 hero nie łamał się na
+     trzy linie i batony sklepowe trzymały jeden rząd — węższa kolumna kosztuje
+     wielkość telefonu w hero, świadomy handel. `max-width` nic nie robi na
+     węższych oknach, więc do ~1000px układ jest bez zmian.
+     Dotyczy całej strony — kafelki „co robi apka" i stopka też rozciągają się
+     do tej samej szerokości, żeby marginesy hero i reszty sekcji się nie
+     rozjeżdżały. */
   --maxw: 1020px;
   /* Cienie budowane na brązie marki, nie na neutralnej czerni — czarny cień na
      kremowym tle robi się szary i „brudzi" paletę. */
@@ -76,13 +65,11 @@
 
 * { box-sizing: border-box; }
 
-/* ⛔ Ta sama para deklaracji co niżej na <body> — i MUSI tu być OSOBNO.
-   Na mobile to <html> (documentElement), nie <body>, jest faktycznym
-   kontenerem przewijania wiewportu: zmierzone 0811 (zgłoszenie z telefonu),
-   `window.innerWidth`/`documentElement.scrollWidth` rosły do szerokości
-   wystającego `.hero-art` mimo `overflow-x: clip` na samym <body> —
-   `<html>` miał wciąż `overflow-x: visible` i to ono decydowało. Bez tej
-   pary strona daje się przesunąć w bok poziomym gestem na całej długości. */
+/* Ta sama para deklaracji co niżej na <body> — i musi tu być osobno. Na
+   mobile to <html> (documentElement), nie <body>, jest faktycznym
+   kontenerem przewijania wiewportu: `overflow-x: clip` na samym <body> nie
+   wystarcza, jeśli <html> zostaje na `overflow-x: visible`. Bez tej pary
+   strona daje się przesunąć w bok poziomym gestem na całej długości. */
 html {
   -webkit-text-size-adjust: 100%;
   overflow-x: hidden;
@@ -91,22 +78,17 @@ html {
 
 body {
   margin: 0;
-  /* Kadr hero jest na mobile SZERSZY NIŻ OKNO (patrz `.hero-art`, 116vw) —
-     bez tego wychodzi poziomy pasek przewijania i strona daje się przesunąć
-     w bok. `clip` zamiast `hidden`: `hidden` robi z <body> kontener
-     przewijania i psułoby `position: sticky` u potomków, gdyby kiedyś
-     doszło. Poza mobilem nic nie wystaje, więc reguła jest bezczynna.
-     ⚠ DWIE deklaracje pod rząd, celowo: `overflow: clip` weszło dopiero
-     w Safari 16, a landing ogląda się głównie na telefonach. Starsze iOS-y
-     odrzucą drugą linię jako nieznaną wartość i zostaną przy `hidden`
-     (skutek ten sam, tylko z kontenerem przewijania), nowsze wezmą `clip`. */
+  /* Kadr hero jest na mobile szerszy niż okno (patrz `.hero-art`, 116vw) —
+     bez tego wychodzi poziomy pasek przewijania. `clip` zamiast `hidden`:
+     `hidden` robi z <body> kontener przewijania i psułoby `position: sticky`
+     u potomków. Poza mobilem reguła jest bezczynna.
+     Dwie deklaracje pod rząd, celowo: `overflow: clip` weszło dopiero
+     w Safari 16 — starsze iOS-y odrzucą drugą linię i zostaną przy `hidden`
+     (ten sam skutek, inny mechanizm), nowsze wezmą `clip`. */
   overflow-x: hidden;
   overflow-x: clip;
-  /* cream, nie alabaster — cieplejsze, jaśniejsze tło. Sprawdzone: żadna
-     powierzchnia na stronie nie zakłada, że tło JEST alabastrem — wszystkie
-     użycia --cream na stronie (modal, stepper, przyciski w kreatorze) żyją
-     NAD ciemnym scrimem modala, nie stykają się bezpośrednio z tłem strony,
-     więc nie zlewają się z nowym tłem. */
+  /* cream, nie alabaster — cieplejsze, jaśniejsze tło. Żadna powierzchnia na
+     stronie nie zakłada, że tło jest alabastrem. */
   background: var(--cream);
   color: var(--espresso);
   font-family: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -126,13 +108,12 @@ body {
 
 a { color: var(--green-dark); }
 
-/* Visible keyboard focus everywhere (a11y). ⛔ Ograniczone do urządzeń z
+/* Widoczny fokus klawiatury wszędzie (a11y). Ograniczone do urządzeń z
    precyzyjnym wskaźnikiem (myszka/trackpad) — WebKit na iOS ma znany bug:
-   tap na <button>/<a> też włącza :focus-visible (nie tylko klawiatura), więc
-   bez tej bramki zielona ramka zostawała na przycisku po każdym dotknięciu
-   (zgłoszenie z telefonu 0811 — X w modalu, CTA TestFlight). Desktopowa
-   klawiatura nadal działa: `hover:hover` i `pointer:fine` są prawdziwe na
-   każdym komputerze, dotyk ich nie spełnia. */
+   tap na <button>/<a> też włącza :focus-visible, nie tylko klawiatura, więc
+   bez tej bramki zielona ramka zostawała na przycisku po każdym dotknięciu.
+   Desktopowa klawiatura nadal działa: `hover:hover` i `pointer:fine` są
+   prawdziwe na każdym komputerze, dotyk ich nie spełnia. */
 @media (hover: hover) and (pointer: fine) {
   :focus-visible {
     outline: 2px solid var(--green);
@@ -142,13 +123,8 @@ a { color: var(--green-dark); }
 }
 
 /* ---- Ambientowe tło ----
-   Ta sama ilustracja co na ekranie telefonu, przyklejona do dolnej krawędzi.
-   `fixed`, żeby przy przewinięciu (mobile) scena nie odjeżdżała ze stroną —
-   ma być planem tylnym, nie treścią. Maska wygasza górę: bez niej krawędź
-   ilustracji cięłaby stronę poziomą linią. */
-/* Strona ma się mieścić w jednym oknie, więc zamiast zostawiać nadmiar
-   światła pod stopką rozkładamy go: logo u góry, stopka przy dolnej krawędzi,
-   a hero + kafelki wyśrodkowane w tym, co zostaje. Przy niskim oknie
+   Strona ma się mieścić w jednym oknie: logo u góry, stopka przy dolnej
+   krawędzi, hero + kafelki wyśrodkowane w tym, co zostaje. Przy niskim oknie
    `min-height` przestaje działać w drugą stronę i strona po prostu się
    przewija — nic się nie przycina. */
 .wrap {
@@ -159,195 +135,274 @@ a { color: var(--green-dark); }
   min-height: 100vh;
   max-width: var(--maxw);
   margin: 0 auto;
-  /* Góra 0 (user 0806, finalnie: „usuń tę białą przestrzeń z góry, może się
-     strona zaczynać od kwadratu telefonu"). Historia w tej sesji: 22 -> 24
-     („od góry do logo o 24 dp") -> 54 (kompensacja za usunięty górny pasek)
-     -> 24 („za dużo") -> 0. Dół zostaje 22. */
   padding: 0 20px 22px;
 }
 .wrap > main {
   flex: 1;
   display: flex;
   flex-direction: column;
+  /* flex-start, nie center — center dawał skok pozycji hero w górę dokładnie
+     na progu 1024px (jedno- vs dwukolumnowy układ). flex-start ujednolica
+     pozycję po obu stronach progu. */
+  justify-content: flex-start;
+}
+
+/* ---- Topbar ----
+   Sticky, nie fixed — prościej (nie trzeba kompensować wysokości paska
+   paddingiem na .wrap), a strona jest krótka, więc brak różnicy przy scrollu. */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: var(--cream);
+}
+/* Grid `1fr auto 1fr` dawałby nierówne odstępy logo<->nav vs nav<->CTA: obie
+   skrajne kolumny mają równą szerokość, ale logo i button mają różną
+   szerokość własną, więc kolumna z węższą treścią (logo) zostawia większy
+   luz. `flex` + `justify-content: space-between` na trzech realnych dzieciach
+   dzieli dostępną przestrzeń na dwie równe przerwy z definicji, niezależnie
+   od szerokości logo/buttonu.
+   Stabilność pozycji nav na pobierz.html (bez CTA) zapewnia niewidzialny
+   placeholder o identycznych wymiarach co realny button (patrz pobierz.html)
+   — dla `space-between` to wciąż trzy dzieci, więc przerwy zostają równe. */
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  /* Ujemny margines kompensuje wewnętrzny „oddech" PNG-a wokół glifu —
+     bez niego logo w topbarze wygląda przesunięte w prawo względem
+     .topbar-inner padding-left. */
+  margin-left: -6px;
+}
+.topbar-logo img {
+  display: block;
+  height: 32px;
+  width: auto;
+}
+.topbar-nav {
+  display: none;
+  align-items: center;
+  gap: 56px;
+  font-size: 17px;
+  font-weight: 500;
+}
+.topbar-nav a {
+  /* Hover przyciemnia (opacity), nie zmienia koloru — nie ma już gdzie
+     prowadzić kolorem, skoro tekst jest już espresso. */
+  color: var(--espresso);
+  text-decoration: none;
+  transition: opacity 160ms ease;
+}
+.topbar-nav a:hover { opacity: 0.7; }
+
+/* Hamburger — bez niego linki nawigacji na wąskim ekranie miały display:none
+   i żadnego sposobu ich otworzyć (funkcjonalna dziura, nie kosmetyka).
+   Przycisk 40px, pełne kółko. Na <768px topbar to wyłącznie logo+hamburger —
+   "Pobierz" nie stoi ściśnięty obok, tylko jako pierwszy, wyróżniony element
+   panelu po otwarciu. */
+.topbar-burger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 999px;
+  border: none;
+  background: none;
+  color: var(--espresso);
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .topbar-burger:hover { background: rgba(44, 38, 32, 0.06); }
+}
+.topbar-burger[aria-expanded="true"] { background: rgba(44, 38, 32, 0.06); }
+.topbar-burger svg { display: block; }
+/* Dwie osobne ikony z DS (fill-path, nie stroke) zamiast morphującego się
+   <line>-a — nie da się ich płynnie zmorphować, więc przełącznik jest
+   binarny: jedna widoczna, druga display:none, sterowane aria-expanded. */
+.topbar-burger .icon-close { display: none; }
+.topbar-burger[aria-expanded="true"] .icon-menu { display: none; }
+.topbar-burger[aria-expanded="true"] .icon-close { display: block; }
+
+/* CTA znika z topbaru na mobile — zamiast ściskać się obok hamburgera, ląduje
+   jako pierwszy, wyróżniony element panelu (patrz .topbar-nav-mobile
+   .store-btn--nav niżej). Placeholder na pobierz.html (visibility:hidden)
+   znika tym samym selektorem; ten panel po prostu nie ma pozycji CTA (user
+   jest już na stronie pobierania). */
+@media (max-width: 767px) {
+  .topbar-inner .store-btn--nav { display: none; }
+}
+
+/* Panel jako bottom sheet: fixed do dołu, zaokrąglone górne rogi, wjeżdża
+   z translateY(100%), tło pod spodem przyciemnione (.nav-backdrop). Bez
+   gestów swipe (poza zakresem). Sterowanie klasą .is-open w nav.js, nie
+   atrybutem hidden — transform potrzebuje elementu cały czas w layoucie,
+   żeby mógł się animować. */
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(31, 26, 20, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+  z-index: 190;
+}
+.nav-backdrop.is-open { opacity: 1; pointer-events: auto; }
+
+/* Bez tego [hidden] nic nie robi — domyślne [hidden]{display:none} (arkusz
+   UA) ma tę samą swoistość co .topbar-nav-mobile{display:flex} (arkusz
+   autora), a autor zawsze wygrywa nad UA niezależnie od kolejności. Bez tej
+   reguły panel zostaje display:flex, tylko przesunięty transformem — nadal
+   w layoucie zamiast realnie zniknąć. */
+.topbar-nav-mobile[hidden] { display: none; }
+.topbar-nav-mobile {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 96px);
+  overflow-y: auto;
+  background: var(--cream);
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -12px 32px rgba(31, 26, 20, 0.18);
+  padding: 8px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  transform: translateY(100%);
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.topbar-nav-mobile.is-open { transform: translateY(0); }
+/* Bez dividerów między pozycjami linków. Strzałka po prawej zamiast samego
+   tekstu. */
+.topbar-nav-mobile a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 56px;
+  padding: 4px 4px;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--espresso);
+  text-decoration: none;
+}
+.topbar-nav-mobile a .nav-arrow { flex-shrink: 0; color: #000; }
+/* CTA w panelu musi nosić TAKŻE .store-btn--nav (jak baton w topbarze na
+   desktopie), nie sam bazowy .store-btn — inny wariant. Poniższy reset musi
+   kopiować wartości --nav: .topbar-nav-mobile a (specyficzność 0,1,1) bije
+   samo .store-btn--nav (0,1,0), więc bez jawnego resetu tutaj baton
+   dostawałby padding/min-height/font-size linku listy. Dwie klasy (0,2,0)
+   wygrywają z powrotem. */
+.topbar-nav-mobile .store-btn--nav {
+  margin-top: 12px;
+  min-height: 0;
+  padding: 0 22px;
+  font-size: 17px;
+  /* font-weight musi być powtórzony tutaj — bez niego .topbar-nav-mobile a
+     wygrywa specyficznością właśnie na tej właściwości mimo reszty resetu
+     wyżej. (height/line-height/letter-spacing nie potrzebują restatementu:
+     .topbar-nav-mobile a ich nie ustawia, więc baza .store-btn--nav i tak
+     wygrywa bez konkurencji.) */
+  font-weight: 600;
+  /* Ten sam mechanizm: .topbar-nav-mobile a ma color:espresso z tą samą
+     specyficznością co .store-btn--primary{color:#fff} — bez tego espresso
+     wygrywał i tekst wychodził brązowy zamiast białego. */
+  color: #ffffff;
+  width: 100%;
   justify-content: center;
 }
 
-/* ---- Header ----
-   Wordmark jest wklejonym <svg>, nie obrazem — patrz komentarz w index.html.
-   Żadnego `transform` tutaj: translateZ(0) wypychał logo na własną warstwę
-   kompozytującą, a ta rastruje się raz.
-
-   53 px był matematycznie idealny (viewBox 106 jednostek / DPR 2 = mapowanie
-   1:1, zero resamplingu). 37 px = 53 * 0,7, na wyraźne życzenie usera mimo
-   tego — świadomy odjazd od ideału, nie przypadkowe zaokrąglenie. Na DPR 2
-   wychodzi skala 0,698 (74 fizyczne px na 106 jednostek rysunku): gorzej niż
-   idealne 53px, ale wciąż lepiej niż poprzednie 34px (skala 0,64). Jeśli ktoś
-   znów zgłosi rozpikselowanie, to jest dokładnie ten kompromis, nie nowy bug —
-   patrz historia tej reguły w gicie po pełne pomiary. */
-/* Wordmark siedzi W KOLUMNIE TEKSTU, nie w osobnym górnym pasku (user 0806:
-   „to nie będzie górny pasek jakby dodatkowy"). `<header class="topbar">`
-   usunięty w całości — logo jest teraz pierwszym elementem `.hero-copy`,
-   24px nad plakietką, i jedzie razem z tekstem przy pionowym wyśrodkowaniu
-   kolumny względem kwadratu. */
-.hero-logo {
-  display: block;
-  /* 37 -> 29.6px, czyli -20% (user 0806: „logo za duże"). Wysokość zostaje
-     ta sama po podmianie wordmarku na PNG — user prosił o zachowanie rozmiaru.
-     ⚠ `color` już nic nie robi: PNG ma kolor wypalony w pliku, w odróżnieniu
-     od poprzedniego inline SVG, który dziedziczył `currentColor`. */
-  height: 29.6px;
-  width: auto;
-  margin-bottom: 24px;
+@media (min-width: 768px) {
+  .topbar-nav { display: flex; }
+  .topbar-burger { display: none; }
+  .topbar-nav-mobile,
+  .nav-backdrop { display: none !important; }
+  .topbar-inner .store-btn--nav { display: inline-flex; }
 }
+/* .store-btn--nav / .store-btn--primary są zdefiniowane w sekcji "Store
+   buttons" niżej, po bazowym .store-btn — musi tak zostać: source order
+   decyduje, a min-width:0 tutaj przegrałoby z min-width:208px z bazy przy
+   tej samej specyficzności, gdyby baza była niżej w pliku. */
 
 /* ---- Hero ---- */
 .hero {
   display: grid;
   grid-template-columns: 1fr;
   gap: 28px;
+  /* center, nie start+margin-top stały — stały margines dawał skok tekstu
+     dokładnie na progu 1024px. center liczy pozycję z wysokości kolumn
+     (telefon wyższy niż tekst), więc offset rośnie płynnie z proporcją
+     telefonu, nie jest stałą liczbą przypiętą do jednego progu. Ta sama
+     wartość obowiązuje aż do 1100px, gdzie zmienia się na `start`
+     (patrz ten blok niżej). */
   align-items: center;
-  /* Historia (bazowa reguła, mobile-first): 40px ("zdecydowanie za duży")
-     -> 8px ("za mało") -> 22px (afb10da, ostatnia ŚWIADOMA wartość) —
-     ta reguła nigdy później nietknięta. Zostaje na 22px. */
   margin-top: 22px;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  /* 6 -> 9px (user 0806: „+3 dp"). ⚠ Optycznie odstęp jest MNIEJSZY niż ta
-     liczba: kropka ma aureolę `box-shadow` o promieniu 3px, która wychodzi
-     poza jej box, więc od krawędzi aureoli do tekstu zostaje ~6px. */
-  gap: 9px;
-  /* Bez tła-podlania — usunięte na wyraźną prośbę (poprzednia próba tylko
-     spłaszczała alpha, zostawiając wypełnienie; user zgłosił że dalej
-     widoczne). Sam znacznik (kropka + aureola) plus tekst, bez pigułki. */
-  /* primaryBland cofnięty — user chciał "słabszy" wygląd, ale w praktyce na
-     żywym renderze wyszło gorzej niż primaryDark. Waga fontu przejmuje rolę
-     "słabszy" zamiast koloru (ten sam zabieg co .hero-tags/.stores-note
-     wcześniej w tym pliku: gdy kolor już ustalony, ciężar niesie waga). */
-  color: var(--green-dark);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.badge::before {
-  content: "";
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-  /* Delikatna aureola zamiast płaskiej kropki — nadaje jej wagę punktu na
-     mapie, a nie przypadkowego znacznika. */
-  box-shadow: 0 0 0 3px rgba(74, 124, 47, 0.16);
-  /* Wyśrodkowanie do OPTYCZNEGO środka wielkich liter, nie do line-boxa.
-     `align-items: center` na .badge stawia kropkę na środku line-boxa, a ten
-     jest niesymetryczny względem glifów (Figtree ma descender, którego
-     wersaliki nie używają), więc kropka wypada za nisko.
-     Zmierzone 0806 w żywym renderze przez TextMetrics (actualBoundingBox
-     Ascent/Descent dla „WERSJA TESTOWA" przy 11px/600): górna krawędź
-     wersalików 197,01px, dolna 204,99px, środek optyczny 201,00px.
-     ⚠ Ten pomiar okazał się NIEROZSTRZYGAJĄCY: powtórzenia różniły się o
-     ~0,5px (subpiksele), a w powiększeniu x8 środek kropki i środek
-     wersalików pokrywały się. Czyli optycznego błędu nie było — o pozycji
-     decyduje preferencja usera, nie metryka. Kolejne prośby 0806:
-     „kropka niżej" (-0,37 -> +0,6px), potem „kropka 1 dp wyżej" (+0,6 ->
-     -0,4px). Wartość jest PREFERENCJĄ — nie licz jej od nowa z metryk. */
-  position: relative;
-  top: -0.4px;
-}
-/* ⚠ `inline-flex` (reguła wyżej) wsadzał plakietkę w line-box dziedziczący
-   `line-height` z body, więc nad nią lądowało pół interlinii i odstęp od
-   wordmarku wychodził 33px zamiast zadanych 24 (zmierzone). `flex` +
-   `width: fit-content` robi z niej blok o szerokości treści: pigułka wygląda
-   identycznie, ale margines liczy się od jej realnej krawędzi.
-   Wcześniejsze `top: 3px` (user 0806, „trzy piksele w dół") USUNIĘTE —
-   kompensowało optykę poprzedniego układu z osobnym górnym paskiem; przy
-   logo w kolumnie tekstu doliczałoby się do tych 24px. */
-.badge {
-  display: flex;
-  width: fit-content;
+/* Wyśrodkowane dopóki hero jest 1-kolumnowy, left-align dopiero od 1024px —
+   próg centrowania musi iść w parze z progiem układu (tam, gdzie hero
+   realnie przechodzi na dwie kolumny, patrz blok niżej), inaczej tekst traci
+   sąsiada z prawej, ale już nie jest wyśrodkowany. */
+.hero-copy { text-align: center; }
+.stores { justify-content: center; }
+@media (min-width: 1024px) {
+  .hero-copy { text-align: left; }
+  .stores { justify-content: flex-start; }
 }
 
 /* ---- Rytm pionowy kolumny hero ----
-   Odstęp niesie informację o PRZYNALEŻNOŚCI (prawo bliskości), więc nie może
-   być wszędzie podobny. Kolumna ma trzy grupy, nie pięć luźnych akapitów:
-     [plakietka + nagłówek]  →  [lead + lista typów]  →  [batony]
-   Wewnątrz grupy ciasno, między grupami szeroko.
-   Druga runda (na życzenie "trochę większe") — proporcja ciasno:szeroko
-   zachowana, podniesiona cała skala: 18/22/6/32 -> 20/26/10/38.
-   Najmocniej ruszony najciaśniejszy odstęp (6->10, +67%): 6px w praktyce
-   czytało się jako przypadek, nie decyzja — dobre zasady składu każą temu
-   odstępowi być WYRAŹNIE mniejszemu niż reszta, ale nie na granicy błędu
-   zaokrąglenia. Nadal najciaśniejszy w kolumnie (10 vs 20/26/38), więc
-   hierarchia grup zostaje czytelna, tylko mniej ekstremalna.
-   ⚠ Wartości są OPTYCZNE, nie geometryczne: przy `line-height` 1.5 pod ostatnim
-   wierszem zostaje jeszcze ~4 px półinterlinii, więc margines w kodzie zawsze
-   wygląda o kawałek większy na ekranie niż liczba sugeruje. */
+   Dwie grupy: [nagłówek] -> [opis] -> [batony]. Odstęp hero-tags->batony
+   zostaje najszerszy (32px) — przejście do akcji. */
 h1 {
   font-weight: 700;
-  font-size: clamp(24px, 7vw, 52px);
-  line-height: 1.06;
+  /* Stałe px per breakpoint, nie fluid clamp(…vw…) — na mobile clamp czytał
+     vw z pełnej szerokości ekranu i przy niektórych szerokościach (telefon
+     w poziomie, wąski tablet) wychodził większy niż desktop. Rosnące stałe
+     wartości per breakpoint eliminują to. Baza = mobile. */
+  font-size: 44px;
+  line-height: 1.1;
   color: var(--espresso);
-  /* Skala oparta na researchu (NN/G proximity, Refactoring UI, siatka 8pt):
-     grupowanie wymaga WYRAŹNEGO kontrastu ciasno/szeroko, nie liniowej
-     podwyżki obu naraz — 20/26 (poprzednia próba) dawało kontrast 1:1,3,
-     za słaby, żeby oko odczytało "te dwa należą do siebie". Teraz jedna
-     powtarzalna wartość "tight" (8px, ta sama co .lead->.hero-tags niżej)
-     w GÓRĘ do plakietki, i "loose" (24px, 3x tight) w DÓŁ do leadu —
-     kontrast 1:3 jest w bezpiecznej strefie z badań proximity. */
-  margin: 8px 0 24px;
-  /* Im większy stopień, tym ciaśniej — przy 44px domyślne światło rozjeżdża
-     nagłówek, przy 24px to samo ujemne trackingowanie zlepiałoby litery. */
-  letter-spacing: -0.028em;
+  margin: 0 0 24px;
+  /* Pasmo dla dużego display-type to -0.01 do -0.02em. */
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
-/* Akcent w nagłówku — ten sam zabieg co na grafikach społecznościowych:
-   zielone jest SŁOWO KLUCZ, nie cały nagłówek. */
-.accent { color: var(--green); }
-
-/* Lista typów punktów — kropka jako separator, żeby nie robić z tego
-   wyliczanki na 10 wierszy. Zamiast wagi prozy: mniejsza, wyciszona.
-   Stoi POD leadem i jest jego rozwinięciem („największa baza" → z czego się
-   składa), stąd ciasny odstęp w górę i szeroki w dół, do przycisków. */
-.hero-tags {
-  /* Koniec grupy „treść" — szeroki odstęp do batonów oddziela czytanie od
-     działania. Stopień wyżej niż H1->lead (32 vs 24) — przejście do AKCJI
-     to mocniejsza granica niż przejście nagłówek->body w obrębie czytania.
-     Wciąż mniejsza niż przejście do sekcji kafli niżej (.about margin-top,
-     granica STRUKTURALNA powinna być szersza niż granica grupy). */
-  margin: 0 0 32px;
-  font-size: 13.5px;
-  /* Interlinia luźniejsza niż w leadzie (1,6 vs 1,5): to nie proza, tylko
-     gęsta wyliczanka, którą się SKANUJE — oko potrzebuje wyraźniejszych
-     korytarzy między wierszami, żeby nie gubić się w kropkach. */
-  line-height: 1.6;
-  /* WYRAŹNIEJSZY na wyraźne życzenie: bark (6,41:1) i waga bazowa 500 zamiast
-     --caption (5,09:1) i 400 — ten drobny tekst ma czytać się jako treść,
-     nie jako przypis (wylicza, z czego składa się "27 tys punktów"). Podpis
-     pod batonami (.stores-note), który wcześniej miał identyczny styl, został
-     usunięty na kolejne życzenie — porównanie "tylko ten paragraf" straciło
-     punkt odniesienia, ale sama zasada (bark/500 = treść) tu zostaje. */
-  color: var(--bark);
-  font-weight: 500;
-  max-width: 52ch;
-  text-wrap: pretty;
+/* Wąskie telefony (≤400px) — 44px nie mieści frazy "czego potrzebujesz"
+   w jednej linii nawet z text-wrap:balance. Sztywne <br> w markupie kiedyś
+   wymuszały gorszy podział niż balance by wybrał — usunięte z HTML; to tylko
+   dogrywa rozmiar tam, gdzie balance i tak nie ma z czego wybrać dobry
+   podział przy 44px. 36px daje trzy równe linie bez sierot. */
+@media (max-width: 400px) {
+  h1 { font-size: 36px; }
 }
+/* Akcent na wordmarku. */
+.accent { color: var(--green-dark); }
 
-.lead {
-  font-size: clamp(16px, 2.6vw, 18px);
+/* Rozwinięcie nagłówka — zajmuje miejsce pod h1 przed przyciskami. */
+.hero-tags {
+  /* margin-left/right:auto (nie 0) — blok ma max-width:46ch węższy niż
+     kolumna, więc bez auto-marginesów siada przy lewej krawędzi niezależnie
+     od text-align:center na rodzicu. */
+  margin: 0 auto 32px;
+  font-size: 17px;
   line-height: 1.5;
   color: var(--bark);
-  max-width: 42ch;
-  /* Ciasno do listy typów — lista jest rozwinięciem tego zdania, nie osobnym
-     akapitem. Razem tworzą jeden blok „co to za baza". Ta sama wartość
-     "tight" (8px) co plakietka->H1 wyżej — POWTARZALNOŚĆ tej jednej liczby
-     w całej kolumnie jest częścią systemu, nie przypadkiem (NN/G: "small,
-     CONSISTENT spacing inside a group"). */
-  margin: 0 0 8px;
+  max-width: 46ch;
   text-wrap: pretty;
 }
-.lead strong { color: var(--espresso); font-weight: 700; }
+@media (min-width: 1024px) {
+  .hero-tags { margin-left: 0; margin-right: 0; }
+}
 
 /* ---- Store buttons ---- */
 .stores {
@@ -359,18 +414,16 @@ h1 {
    lewej, dwie linie tekstu (mała wersalikowa nad nazwą), proporcja ok. 3:1
    i małe zaokrąglenie. Kolory i typografia są nasze — nie kopiujemy artworku
    Google ani Apple, tylko konwencję formy.
-   DWA warianty, bo każda platforma ma inną barwę bazową: Apple rozdaje badge
+   Dwa warianty, bo każda platforma ma inną barwę bazową: Apple rozdaje badge
    czarny, a kolorowe „G" Google żyje natywnie na białym tle z szarą ramką —
    czerń pod nim to obce zestawienie. */
-/* Skala ~30% w dół (0730) — baton „pobierz" nie ma konkurować z nagłówkiem
-   o pierwszeństwo w hierarchii. Sam kadr schodzi o 30% (208→146 szerokości,
-   padding 10/18→7/13), ale TEKST tylko o ~20%: przy 10 px wersalik podpisu
-   platformy zaczyna być nieczytelny, a to on niesie „na iPhone / na Androida".
-   Wagę odbieramy rozmiarem pola i ikony, nie kosztem czytelności. */
-/* Baza = duży format (208px+, jak w kreatorze). Mały wariant to WYJĄTEK
-   (`--compact`, tylko ekran główny), nie odwrotnie — bo dużych instancji jest
-   więcej (2 w kreatorze vs 2 na hero) i to one niosą realną akcję "otwórz
-   Sklep Play"; hero to podgląd/skrót. */
+/* Baton „pobierz" nie ma konkurować z nagłówkiem o pierwszeństwo w hierarchii
+   — kadr jest mniejszy niż w kreatorze, ale tekst skalowany ostrożniej niż
+   kadr: przy zbyt małym stopniu wersalik podpisu platformy staje się
+   nieczytelny. Wagę odbieramy rozmiarem pola i ikony, nie czytelnością. */
+/* Baza = duży format (208px+, jak w kreatorze), mały wariant (--compact,
+   tylko ekran główny) to wyjątek — dużych instancji jest więcej i to one
+   niosą realną akcję „otwórz Sklep Play"; hero to podgląd/skrót. */
 .store-btn {
   display: inline-flex;
   align-items: center;
@@ -399,23 +452,20 @@ h1 {
 .store-btn:active { transform: scale(0.975); transition-duration: 100ms; }
 .store-btn img { width: 26px; height: 26px; flex: 0 0 auto; }
 .store-btn .label { display: flex; flex-direction: column; line-height: 1.2; text-align: left; }
-/* Górna linia to podpis platformy — wersaliki i światło między literami.
-   Ma być drugorzędna wobec nazwy pod nią. */
-/* Podpis platformy zdjęty z wersalików. Przy 9 px WIELKIE LITERY z dodatkowym
-   światłem czytają się jak font wąski (condensed): wszystkie znaki mają tę samą
-   wysokość, więc słowo traci sylwetkę, a rozstrzelenie dodatkowo je rozjeżdża.
-   Zwykła wielkość liter daje wyraźne wydłużenia górne i dolne, więc tekst jest
-   czytelny mimo mniejszego stopnia — i optycznie DROBNIEJSZY niż wersaliki,
-   bo pracuje na wysokości x, nie wersalika.
-   ⭐ To zresztą wzorzec z oryginalnego batona Apple („Download on the"), więc
-   nie odchodzimy od konwencji sklepowej, tylko wracamy do niej. */
+/* Podpis platformy (małe litery, nie wersaliki) ma być drugorzędny wobec
+   nazwy pod nim. Przy małym stopniu wielkie litery z dodatkowym światłem
+   czytają się jak font wąski — wszystkie znaki mają tę samą wysokość, więc
+   słowo traci sylwetkę. Zwykła wielkość liter daje wyraźne wydłużenia górne
+   i dolne: czytelna mimo mniejszego stopnia, i optycznie drobniejsza niż
+   wersaliki, bo pracuje na wysokości x. To też wzorzec oryginalnego batona
+   Apple („Download on the"). */
 .store-btn .label small {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0;
   opacity: 0.7;
 }
-.store-btn .label strong { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.store-btn .label strong { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
 
 /* Kompaktowy wariant — WYŁĄCZNIE dwa batony na ekranie głównym, żeby nie
    konkurowały wagą z nagłówkiem. Kreator instalacji zostaje w pełnym
@@ -428,7 +478,22 @@ h1 {
 }
 .store-btn--compact img { width: 24px; height: 24px; }
 .store-btn--compact .label small { font-size: 11px; }
-.store-btn--compact .label strong { font-size: 16px; }
+.store-btn--compact .label strong { font-size: 17px; }
+/* Wąskie telefony (≤400px) — dwa batony min-width:186px (+gap 12) = 384px
+   nie mieszczą się w dostępnych ~335px, batony spadały do dwóch rzędów.
+   Zmniejszone tak, by oba zmieściły się obok siebie: 2×150 + 12 gap = 312px
+   < 335px. */
+@media (max-width: 400px) {
+  .store-btn--compact {
+    gap: 8px;
+    min-width: 0;
+    flex: 1 1 0;
+    padding: 8px 12px;
+  }
+  .store-btn--compact img { width: 20px; height: 20px; }
+  .store-btn--compact .label small { font-size: 10px; }
+  .store-btn--compact .label strong { font-size: 15px; }
+}
 
 /* Wariant ciemny — Apple. */
 .store-btn--dark {
@@ -443,21 +508,11 @@ h1 {
    wybielenie mu nie szkodzi, dlatego zostaje na regule ogólnej. */
 .store-btn--dark img[src*="google"] { filter: none; }
 
-/* Wariant jasny — Google. Szara ramka i ciemny tekst jak w natywnych
-   kontrolkach Google; logo zostaje w oryginalnych kolorach. */
-.store-btn--light {
-  background: #ffffff;
-  border-color: #dadce0;
-  color: #1f1f1f;
-}
-.store-btn--light:hover { background: #f7f8f8; border-color: #c6c9cd; }
-.store-btn--light .label small { opacity: 0.6; }
-
-/* ⛔ `.is-primary` (main.js) MA już efekt bez stylu: przesuwa właściwy przycisk
-   na górę (`order: -1` inline). Obwódka + cień tu USUNIĘTE świadomie — na
-   telefonie renderowały się jak porzucony focus ring, bez żadnego tekstu
-   tłumaczącego, że to "Twoja platforma" (zgłoszenie z ekranu 0811). Klasa
-   zostaje w JS na wypadek przyszłego, czytelniejszego oznaczenia (badge). */
+/* .is-primary (main.js) ma już efekt bez stylu: przesuwa właściwy przycisk
+   na górę (order:-1 inline). Obwódka + cień tu usunięte świadomie — na
+   telefonie renderowały się jak porzucony focus ring bez tekstu tłumaczącego,
+   że to „Twoja platforma". Klasa zostaje w JS na wypadek przyszłego,
+   czytelniejszego oznaczenia (badge). */
 
 /* Stan „jeszcze niedostępne" — wspólny dla obu wariantów. */
 .store-btn.is-disabled {
@@ -469,10 +524,41 @@ h1 {
 }
 .store-btn.is-disabled img { filter: none; opacity: 0.4; }
 
+/* Wariant primary — zielony, DS `primary`. */
+.store-btn--primary {
+  background: var(--green-dark);
+  border-color: transparent;
+  /* Biały, nie --cream — na ciemnej zieleni kremowy odcień czytał się jako
+     "nie do końca biały". --cream ma sens przy ciepłym tle strony; tu tła
+     nie ma, więc czysty biały daje mocniejszy kontrast. */
+  color: #ffffff;
+}
+.store-btn--primary:hover { background: #234010; }
+
+/* Wariant jednolinijkowy — wyłącznie topbar (i "Pobierz Hyc!" jako link
+   gdziekolwiek indziej, nie sklepowy baton). Bazowy .store-btn (dwie linie,
+   min-width 208px) jest za ciężki obok logo i linków na pasku ~56px —
+   ten wariant trzyma jedną linię tekstu bez wymuszonej szerokości.
+   Musi stać PO bazowym .store-btn (source order) — inaczej min-width:0
+   przegrywa z min-width:208px z bazy. */
+.store-btn--nav {
+  min-width: 0;
+  /* Wysokość wprost, nie przez padding+line-height — line-height:1 samo
+     zmniejsza wysokość buttona, więc wysokość jest teraz od niej niezależna. */
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-size: 17px;
+  /* line-height:1 naprawia pionowe centrowanie tekstu. */
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
 /* ---- Kreator instalacji na Androida ----
-   Ekran główny ma zwykły baton „Google Play"; trzy kroki (grupa → dostęp →
-   zapisz link) żyją tylko tutaj. Natywny <dialog> daje focus trap, Escape
-   i backdrop za darmo — patrz komentarz w index.html.
+   Ekran główny ma zwykły baton „Google Play"; dwa kroki (grupa → dostęp) żyją
+   tylko tutaj. Natywny <dialog> daje focus trap, Escape i backdrop za darmo
+   — patrz komentarz w index.html.
    Szerokość wg wytycznych czytelności: ~560 px na desktopie, ale nigdy więcej
    niż 92vw, i max-height 90vh ze scrollem — inaczej na telefonie ucieka
    przycisk zamykania poza ekran. */
@@ -500,35 +586,19 @@ h1 {
 @keyframes modal-in {
   from { opacity: 0; transform: scale(0.96); }
 }
-/* Tło nie przewija się pod otwartym modalem.
-   ⛔ Samo `overflow: hidden` NIE WYSTARCZA na Safari iOS — to wieloletni,
-   udokumentowany limit WebKita: dokument i tak przewija się (rubber-band)
-   pod spodem otwartego <dialog>, mimo overflow:hidden na <body> (zgłoszenie
-   z telefonu 0811, "modal dziwnie się scrolluje"). Właściwa technika —
-   zamrożenie <body> na `position: fixed` w zapamiętanym miejscu przewinięcia
-   — używana przez każdą poważną bibliotekę modali (react-remove-scroll,
-   body-scroll-lock). `top` ustawia JS (main.js: lockScroll/unlockScroll),
-   bo zależy od bieżącej pozycji przewinięcia w momencie otwarcia. */
+/* Tło nie przewija się pod otwartym modalem. Samo overflow:hidden NIE
+   WYSTARCZA na Safari iOS — wieloletni, udokumentowany limit WebKita:
+   dokument i tak przewija się (rubber-band) pod spodem otwartego <dialog>.
+   Właściwa technika — zamrożenie <body> na position:fixed w zapamiętanym
+   miejscu przewinięcia — używana przez każdą poważną bibliotekę modali
+   (react-remove-scroll, body-scroll-lock). `top` ustawia JS (main.js:
+   lockScroll/unlockScroll), bo zależy od pozycji przewinięcia w momencie
+   otwarcia. */
 body.has-modal {
   position: fixed;
   width: 100%;
   overflow: hidden;
 }
-
-.flow-modal-close {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  padding: 4px 8px;
-  border: 0;
-  background: none;
-  color: var(--bark);
-  font-size: 26px;
-  line-height: 1;
-  cursor: pointer;
-  border-radius: 8px;
-}
-.flow-modal-close:hover { color: var(--espresso); }
 
 /* ---- Stepper (klikalny) ----
    Hierarchia wizualna: BIEŻĄCY jest najmocniejszy (wypełniony, ciemny, z ringiem
@@ -724,25 +794,17 @@ body.has-modal {
   line-height: 1.2;
   letter-spacing: -0.01em;
 }
-/* ⛔ Nagłówek nosi `tabindex="-1" autofocus` (index.html) — to ON dostaje fokus
-   przy otwarciu modala, NIE przycisk zamknięcia. Powód: `showModal()` bez
-   `autofocus` fokusuje pierwszy element w DOM, czyli X — i Safari na iOS rysuje
-   wtedy swoją DOMYŚLNĄ niebieską obwódkę wokół krzyżyka, bez żadnego dotknięcia
-   przez usera (zgłoszenie z telefonu 0812; to inna obwódka niż nasza zielona
-   z `:focus-visible`, którą zawęziliśmy do myszki w #604).
-   Fokus na nagłówku jest ZGODNY z praktyką a11y dla okien dialogowych — czytnik
-   ekranu odczytuje wtedy tytuł modala zamiast samego słowa „Zamknij".
-   `outline: none` jest tu bezpieczne, bo nagłówek NIE jest interaktywny:
-   użytkownik klawiatury i tak przechodzi Tabem do przycisków, a te mają swój
-   widoczny fokus. */
+/* Nagłówek nosi tabindex="-1" autofocus — to on dostaje fokus przy otwarciu
+   modala, nie przycisk zamknięcia. showModal() bez autofocus fokusuje
+   pierwszy element w DOM, czyli X, i Safari na iOS rysuje wtedy swoją
+   domyślną niebieską obwódkę wokół krzyżyka bez żadnego dotknięcia przez
+   usera. Fokus na nagłówku jest zresztą zgodny z praktyką a11y dla okien
+   dialogowych — czytnik ekranu odczytuje tytuł modala zamiast słowa
+   „Zamknij". outline:none jest tu bezpieczne, bo nagłówek nie jest
+   interaktywny: klawiatura i tak przechodzi Tabem do przycisków, które mają
+   własny widoczny fokus. */
 .modal-title:focus { outline: none; }
 .modal-lead { margin: 0 0 20px; font-size: 15px; color: var(--bark); }
-.modal-hint {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--green-dark);
-}
 /* ---- Nawigacja kreatora ----
    Kolejność Wstecz → Dalej (lewo→prawo), „Wstecz" wyłączony na pierwszym kroku. */
 .modal-nav {
@@ -785,234 +847,473 @@ body.has-modal {
 button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align: left; }
 
 /* ---- Hero: telefon z filmikiem ----
-   Obudowa telefonu, cień i notch przychodzą Z RENDERU (Rotato), nie z CSS —
-   dlatego tu nie ma żadnej ramki, tylko samo <video>. Wcześniejsza wersja
-   rysowała ramkę 9:19.5 pod nagranie z samego ekranu; render wsadzony w tamtą
-   ramkę dałby telefon w telefonie.
+   Obudowa telefonu, cień i notch przychodzą z renderu (Rotato), nie z CSS —
+   dlatego tu nie ma żadnej ramki, tylko samo <video>. Render wsadzony w
+   dodatkową ramkę rysowaną CSS-em dałby telefon w telefonie.
    Tło renderu jest spłaszczone do --cream przy kodowaniu (źródło ma alfę),
    więc wideo wtapia się w tło strony bez przezroczystości — jeden plik mp4
    zamiast pary webm+mov z kanałem alfa, którego Safari i tak nie odtwarza.
 
-   ⚠ MOBILE ma inny tryb dopasowania niż desktop, i to jest świadome.
-   Materiał jest KWADRATOWY, a telefon zajmuje w nim 0,66 wysokości i tylko
-   0,31 szerokości (zmierzone na klatkach 0/10/20/29). W jednej kolumnie
-   kwadratowy kadr o szerokości ekranu dałby telefon ~220px wysokości —
-   za mało. Dlatego tu kadr jest PIONOWY (9:16) i `object-fit: cover`:
-   skala liczy się od wysokości, a przycięcie zjada boczną pustkę kadru,
-   nie obudowę (telefon leży między 34% a 66% szerokości, widoczne jest
-   22%-78%). Na desktopie kadr wraca do 1:1 z `contain` — patrz blok ≥760px. */
+   Mobile ma inny tryb dopasowania niż desktop, świadomie. Materiał jest
+   kwadratowy, a telefon zajmuje w nim 0,66 wysokości i tylko 0,31 szerokości
+   (zmierzone na klatkach 0/10/20/29). W jednej kolumnie kwadratowy kadr
+   o szerokości ekranu dałby telefon ~220px wysokości — za mało. Dlatego tu
+   kadr jest pionowy (9:16) i object-fit:cover: skala liczy się od wysokości,
+   a przycięcie zjada boczną pustkę kadru, nie obudowę (telefon leży między
+   34% a 66% szerokości, widoczne jest 22%-78%). Na desktopie kadr wraca do
+   1:1 z contain — patrz blok ≥760px. */
 .hero-art {
-  /* `start` + ręczne wyśrodkowanie marginesem (patrz niżej) — `center` i tak
-     nie działa na elemencie szerszym niż kolumna. */
+  /* start + ręczne wyśrodkowanie marginesem (patrz niżej) — center i tak nie
+     działa na elemencie szerszym niż kolumna. */
   justify-self: start;
-  /* 0808, DWA kroki powiększenia na życzenie usera („telefon za mały"):
-     280px -> 360px -> +30% = 468px. Rośnie CAŁY kadr, bez podcinania pustki
-     dookoła telefonu (próba z `transform: scale` na <video> wycofana — user:
-     „chodziło o powiększenie, nie o ucięcie tła").
-     ⚠ 116vw, bo drugie +30% NIE MIEŚCI SIĘ w kolumnie: przy 375px ekranu
-     kolumna ma 335px (`.wrap` = padding 20px), a +30% to 435px. Kadr
-     wychodzi więc poza szerokość okna i tam jest ścinany przez
-     `overflow-x: clip` na <body>. Ścinane jest WYŁĄCZNIE puste tło kadru,
-     spłaszczone przy kodowaniu do --cream, czyli do koloru strony — obudowa
-     leży między 0,343 a 0,657 szerokości materiału (zmierzone na 324
-     klatkach @6fps) i przy 375px zostaje po 66px marginesu z każdej strony.
+  /* Kadr rośnie CAŁY (bez podcinania pustki dookoła telefonu przez transform:
+     scale na <video> — to ucinałoby tło, nie powiększało telefon).
+     116vw, bo docelowa szerokość nie mieści się w kolumnie: przy 375px
+     ekranu kolumna ma 335px (.wrap padding 20px), a docelowa szerokość to
+     435px. Kadr wychodzi więc poza okno i jest ścinany przez overflow-x:clip
+     na <body>. Ścinane jest wyłącznie puste tło kadru (spłaszczone przy
+     kodowaniu do --cream, czyli do koloru strony) — obudowa leży między
+     0,343 a 0,657 szerokości materiału (zmierzone na 324 klatkach @6fps),
+     więc przy 375px zostaje po 66px marginesu z każdej strony.
      Zmierzone w przeglądarce (box -> obudowa):
-       375px ekranu -> 435x773px -> 243x510px (było 187x393)
+       375px ekranu -> 435x773px -> 243x510px
        390px ekranu -> 452x804px -> 253x531
        >=404px ekranu -> 468x832px -> 261x549 (sufit)
      Sufit 468px jest po to, żeby przy 600-759px (duże telefony w poziomie,
-     małe tablety) kadr nie urósł na pół ekranu — reguła bazowa obowiązuje
-     aż do 760px, blok desktopowy zaczyna się dopiero tam. */
+     małe tablety) kadr nie urósł na pół ekranu — reguła bazowa obowiązuje aż
+     do 760px, blok desktopowy zaczyna się dopiero tam. */
   width: 116vw;
   max-width: 468px;
-  /* ⛔ Samo `justify-self: center` NIE wyśrodkuje kadru szerszego niż kolumna.
-     Grid ma twarde „overflow alignment": element większy od swojego obszaru
-     zachowuje się jak `start`, żeby nie uciąć treści od strony początku —
-     zmierzone, kadr wychodził wtedy 80px w PRAWO i robił poziomy pasek
-     przewijania. Ujemny margines liczy wyśrodkowanie ręcznie: połowa kolumny
-     minus połowa kadru (58vw), przy 375px ekranu = -50px, czyli kadr startuje
-     30px przed lewą krawędzią okna i kończy 30px za prawą.
-     ⚠ `min(58vw, 234px)` — połowa TEJ SAMEJ wartości, którą dostaje `width`
-     (razem z sufitem 468px). Samo 58vw rozjeżdżałoby kadr w prawo powyżej
-     404px ekranu, gdzie o szerokości decyduje już sufit, nie vw. */
+  /* Samo justify-self:center nie wyśrodkuje kadru szerszego niż kolumna —
+     grid ma twarde „overflow alignment": element większy od swojego obszaru
+     zachowuje się jak start, żeby nie uciąć treści od strony początku
+     (zmierzone: kadr wychodził wtedy 80px w prawo i robił poziomy pasek
+     przewijania). Ujemny margines liczy wyśrodkowanie ręcznie: połowa
+     kolumny minus połowa kadru (58vw), przy 375px ekranu = -50px.
+     min(58vw, 234px) — połowa TEJ SAMEJ wartości, którą dostaje width (razem
+     z sufitem 468px); samo 58vw rozjeżdżałoby kadr w prawo powyżej 404px
+     ekranu, gdzie o szerokości decyduje już sufit, nie vw. */
   margin-left: calc(50% - min(58vw, 234px));
-  /* Proporcje trzyma KONTENER, nie <video> — dzięki temu przy
+  /* Proporcje trzyma kontener, nie <video> — dzięki temu przy
      prefers-reduced-motion (gdzie <video> znika) kadr nie zapada się do zera
-     i sam poster zostaje w tym samym miejscu.
-     ⚠ 0809: kadr przycięty o 40 % PUSTKI nad i pod telefonem (user), tym samym
-     chwytem co na desktopie (blok ≥760px): box maleje, materiał NIE — telefon
-     zachowuje wielkość, znika tylko puste tło kadru.
-     Arytmetyka (zmierzone na 324 klatkach @6fps, `demo.mp4` 1:1, tło #F5F3EF):
+     i poster zostaje w tym samym miejscu.
+     Kadr przycięty o 40% pustki nad i pod telefonem, tym samym chwytem co na
+     desktopie (blok ≥760px): box maleje, materiał nie — telefon zachowuje
+     wielkość, znika tylko puste tło kadru.
+     Arytmetyka (zmierzone na 324 klatkach @6fps, demo.mp4 1:1, tło #F5F3EF):
      obudowa z cieniem leży między 0,170 a 0,885 wysokości materiału, więc
-     pustka to 0,170 u góry i 0,115 u dołu (razem 0,285). Cięcie 40 % zdejmuje
+     pustka to 0,170 u góry i 0,115 u dołu (razem 0,285). Cięcie 40% zdejmuje
      0,068 z góry i 0,046 z dołu = 0,112 wysokości kadru:
        wysokość boxa: 16 x (1 - 0,112) = 14,208  ->  aspect-ratio 9 / 14,208
-       materiał:      1 / 0,888 = 112,61 % wysokości boxa
-       przesunięcie:  0,068 x 16 / 14,208 = 7,66 % wysokości boxa w GÓRĘ
-     Cięcie jest ASYMETRYCZNE (0,068 vs 0,046), bo pustka w materiale też jest —
-     samo `place-items: center` zdjęłoby po 0,056 i zjadłoby dół mocniej niż
-     górę. */
+       materiał:      1 / 0,888 = 112,61% wysokości boxa
+       przesunięcie:  0,068 x 16 / 14,208 = 7,66% wysokości boxa w górę
+     Cięcie jest asymetryczne (0,068 vs 0,046), bo pustka w materiale też
+     jest — samo place-items:center zdjęłoby po 0,056 i zjadłoby dół mocniej
+     niż górę. */
   aspect-ratio: 9 / 14.208;
   /* Nadwyżka materiału wyjeżdża poza box i musi być ścięta — inaczej cream
      z kadru rysowałby się na tekście nad kwadratem i na kaflach pod nim. */
   overflow: hidden;
   position: relative;
-  /* ⚠ ?v= podbijasz razem z tym w <source> — patrz komentarz w index.html. */
+  /* ?v= podbijasz razem z tym w <source> — patrz komentarz w index.html. */
   background-image: url("assets/demo-poster.jpg?v=4");
-  /* Poster dopasowany 1:1 do <video> (te same 112,61 % i to samo przesunięcie),
+  /* Poster dopasowany 1:1 do <video> (te same 112,61% i to samo przesunięcie),
      inaczej przy prefers-reduced-motion telefon skacze na inną wielkość.
-     `auto 112.61%` = skala od wysokości, szerokość sama (materiał 1:1), a y
-     w procentach to „która linia materiału siada na której linii boxa":
-     60,7 % x (box - materiał) = -7,66 % wysokości boxa, czyli to samo
-     przesunięcie co `top` na <video>. */
+     auto 112.61% = skala od wysokości, szerokość sama (materiał 1:1), a y w
+     procentach to „która linia materiału siada na której linii boxa":
+     60,7% x (box - materiał) = -7,66% wysokości boxa, czyli to samo
+     przesunięcie co top na <video>. */
   background-size: auto 112.61%;
   background-position: 50% 60.7%;
   background-repeat: no-repeat;
 }
 .hero-video {
   display: block;
-  /* Absolutnie, bo przycięcie jest asymetryczne — `top` jest tym samym
-     pokrętłem co `background-position` wyżej i musi się z nim zgadzać. */
+  /* Absolutnie, bo przycięcie jest asymetryczne — top jest tym samym
+     pokrętłem co background-position wyżej i musi się z nim zgadzać. */
   position: absolute;
   left: 0;
   top: -7.66%;
   width: 100%;
   height: 112.61%;
   object-fit: cover;
+  /* Telefon +15%, kontener (.hero-art) bez zmian — scale na samym materiale,
+     przycinany przez istniejący overflow:hidden, powiększa telefon bez
+     ruszania boxa. transform-origin domyślne 50% 50% wystarcza — box i tak
+     centruje kadr (place-items/top wyżej). */
+  transform: scale(1.15);
 }
 
-/* ---- "Co to jest" ---- */
-.about {
-  /* Granica CAŁEJ sekcji (hero -> "co robi apka") — musi być WYRAŹNIE szersza
-     niż najszerszy odstęp WEWNĄTRZ hero (.hero-tags margin-bottom, 32px),
-     inaczej hierarchia się odwraca: przejście do nowej treści wygląda
-     ciaśniej niż przejście między akapitami tej samej treści. Skala z
-     researchu (8pt grid, kontrast tight:loose:section = 8:24-32:56, każdy
-     stopień WYRAŹNIE większy niż poprzedni, nie liniowa podwyżka o stałą
-     wartość).
-     ⚠ 0806: na desktopie ten margines schodzi do zera (patrz reguła w bloku
-     ≥760px) — user: „3 kafle mają się stykać z kwadratem telefonu". Bazowe
-     56px zostaje dla układu jednokolumnowego, gdzie kwadratu nie ma obok. */
-  margin-top: 56px;
+/* ---- "O aplikacji" (feature-list) ----
+   Karta z grafiką + nagłówek/tekst obok, sześć niezależnych bloków, każdy
+   z własną grafiką i własnym pytaniem/odpowiedzią. */
+.feature-list { margin-top: 80px; }
+.feature-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 14px;
+  gap: 24px;
 }
-/* Kafelki o stopień ciemniejsze od tła strony (mist pod alabastrem) — dół
-   strony dostaje własny plan, ale zostaje w jasnej części palety.
-   BEZ ramki, cienia i reakcji na hover: kafel nie jest klikalny, a uniesienie
-   pod kursorem obiecywałoby akcję, której nie ma. Sama powierzchnia wystarcza,
-   żeby odciąć go od tła. */
-.feat {
-  /* Trzecia runda osłabiania z rzędu (token -> -30% -> -60% z tego, co
-     zostało): udział --mist w mieszance 0,7 -> 0,28 (0,7 * 0,4), reszta to
-     nowe tło strony (--cream). #F4F0EB. Wciąż osobny, jednorazowy kolor —
-     token --mist ma stałe znaczenie w DS appki, więc go nie przedefiniowuję.
-     Przy kolejnej prośbie "jeszcze słabiej" różnica względem tła (5-7 w RGB)
-     jest już blisko granicy, za którą karta przestaje być widoczna w ogóle —
-     warto to wtedy powiedzieć userowi wprost zamiast dalej liczyć w ciemno. */
-  background: #f4f0eb;
-  border-radius: var(--radius);
-  padding: 18px 20px;
+.feature-row + .feature-row { margin-top: 112px; }
+.feature-media {
+  display: block;
+  /* Bez podkładu/karty na mobile — sam podkład jest sprawą desktopowej
+     siatki (2 kolumny, patrz blok ≥1024px niżej); na mobile ilustracja jest
+     sama, skalowana naturalnie (height:auto, bez object-fit, bo nie ma tu
+     boxa do docinania). */
+  width: 100%;
+  max-width: 275px;
+  height: auto;
+  box-sizing: border-box;
+  /* Wyśrodkowana na mobile. Od 1024px (2 kolumny, patrz blok niżej) auto
+     z lewej przesuwa kartę bliżej tekstu w węższej kolumnie grafiki, zamiast
+     zostawiać pustkę po prawej obok gapu. */
+  margin-left: auto;
+  margin-right: auto;
 }
-.feat-icon {
+/* Duży bold nagłówek: ciaśniejsza interlinia i lekko ujemny tracking (pasmo
+   -0.01 do -0.02em). Body pod nim nie skaluje się 1:1 z nagłówkiem — zostaje
+   w wygodnym paśmie czytelności 16-18px niezależnie od wielkości nagłówka. */
+/* Piny kategorii nad bulletem — kolory/rozmiary ze specu Figmy, ikony jako
+   realne kształty (nie eksportowane prostokąty). */
+.feature-tags {
+  display: flex;
+  flex-wrap: wrap;
+  /* Wyśrodkowane na mobile, flex-start od 1024px — patrz blok niżej. */
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+.feature-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 24px;
+  font-family: 'Figtree', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  /* line-height:1 ściąga box tekstu do wysokości glifu, ale nie do wysokości
+     linii — przeglądarka dalej liczy miejsce na descender, więc tekst
+     realnie zajmował więcej niż ikona i flex centrował go wobec własnej,
+     wyższej skrzynki. 16px (= wysokość ikony) daje tekstowi i ikonie
+     dokładnie tę samą wysokość flex-itemu. */
+  line-height: 16px;
+}
+/* Bez margin-top na ikonie — chodzi o symetryczny padding ikony do krawędzi
+   pigułki, nie o optyczne dopasowanie do tekstu. Bez przesunięcia ikona 16px
+   w pigułce 24px ma z definicji 4px/4px (flex align-items:center),
+   identycznie na wszystkich tagach. */
+.feature-tag svg { display: block; width: 16px; height: 16px; flex-shrink: 0; fill: currentColor; }
+/* Gołym tekstem (bez wrappera) Range.getBoundingClientRect mierzył 3px
+   odstępu od góry / 4px od dołu — metryki fonta liczone inaczej dla
+   anonimowego flex-itemu z samego tekstu niż dla bloku. Owinięcie w <span
+   class="feature-tag-label"> + display:block wystarczyło: 4px/4px na
+   wszystkich tagach. */
+.feature-tag-label { display: block; margin-top: 1px; }
+/* Tła mają wspólną jasność (L≈0,94 w HSL), różni je tylko odcień — teksty/
+   ikony zostają przy oryginalnych, w pełni nasyconych wartościach marki. */
+.feature-tag--schronienia { background: #E2F1DA; color: #2D5016; }
+.feature-tag--noclegi { background: #E8E5FA; color: #50469D; }
+.feature-tag--woda { background: #E7F2F9; color: #008EE6; }
+.feature-tag--namiot { background: #E2F1DA; color: #2D5016; }
+.feature-tag--medyczna { background: #FAE7E5; color: #B3261E; }
+.feature-tag--sklepy { background: #F6EAF0; color: #C4367C; }
+.feature-tag--restauracje { background: #F5EBE2; color: #C25A00; }
+
+/* Wyśrodkowane na mobile, left-align od 1024px — patrz blok niżej.
+   max-width 480px — dobra praktyka czytelności to ok. 45-75 znaków w linii;
+   przy 18px .feature-copy p to ~480px. Od 1024px (2 kolumny) max-width
+   resetowany w bloku niżej, kolumnę ogranicza już grid. */
+.feature-copy {
+  text-align: center;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.feature-copy h3 {
+  margin: 0 0 12px;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--espresso);
+  text-wrap: balance;
+}
+.feature-copy p {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.5;
+  letter-spacing: 0.1px;
+  color: var(--bark);
+  /* pretty chroni tylko przed pojedynczym wyrazem na ostatniej linii — dwa
+     krótkie wyrazy razem jako cała linia dalej wyglądały jak sierota.
+     balance (jak na h1) rozkłada wszystkie linie krótkiego akapitu
+     równomiernie, nie tylko pilnuje ostatniej. */
+  text-wrap: balance;
+}
+/* Najmniejsze telefony — standardowy zakres dla nagłówków sekcji na mobile to
+   24-28px, dla tekstu 15-17px. .feature-copy dostaje WŁASNE 16px paddingu
+   z boków, dokładając się do gutteru .wrap (20+16=36px od krawędzi ekranu)
+   zamiast go zastępować — inne dzieci .feature-row (ilustracja, badge)
+   zostają na dotychczasowym 20px. Próg 760px to istniejący "mobile tier"
+   w tym pliku, spójny z resztą reguł poniżej. */
+@media (max-width: 760px) {
+  .feature-copy { padding-left: 16px; padding-right: 16px; }
+  .feature-copy h3 { font-size: 28px; line-height: 1.2; }
+  .feature-copy p { font-size: 17px; }
+}
+
+
+/* ---- FAQ ----
+   Nagłówek w lewej kolumnie, accordion w prawej. Natywny <details>/<summary>
+   zamiast JS-owego akordeonu — focus, klawiatura i stan otwarcia za darmo,
+   ta sama filozofia co <dialog> w modalach wyżej. */
+.faq {
+  margin-top: 96px;
+  /* Sticky .topbar zasłaniał nagłówek po skoku z #faq w menu — kotwica bez
+     tego lądowała pod paskiem. 128px = wysokość paska (48 logo + 2×24
+     padding) plus zapas na oddech. */
+  scroll-margin-top: 128px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+/* Nagłówek + podtytuł nie mają się rozciągać na całą szerokość w
+   single-column — rzędy accordionu na pełną szerokość zostają, to normalny
+   wzorzec. Od 640px, żeby na wąskim mobile tekst dalej korzystał z pełnej
+   szerokości ekranu. */
+@media (min-width: 640px) {
+  .faq-intro { max-width: 440px; }
+}
+.faq-heading {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--espresso);
+}
+.faq-subheading {
+  margin: 12px 0 0;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--bark);
+  text-wrap: pretty;
+}
+.faq-intro .about-link { margin-top: 20px; }
+.faq-list { display: flex; flex-direction: column; }
+.faq-item {
+  border-bottom: 1px solid rgba(138, 128, 112, 0.24);
+}
+.faq-item summary {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  margin-bottom: 12px;
-  /* Krążek: neutralny brąz -> lekka zieleń (spójnie z ikoną primaryBland
-     i plakietką "Wersja testowa"), teraz osłabiony o kolejne 20%: 0,12 * 0,8
-     = 0,096. */
-  background: rgba(74, 124, 47, 0.096);
-  border-radius: 50%;
-}
-.feat-icon img { width: 19px; height: 19px; }
-/* Korekta OPTYCZNA, nie kosmetyczna — zmierzona przez centroid tuszu (średnia
-   pozycja nieprzezroczystych pikseli), nie przez bounding box. Bounding box
-   jest symetryczny z definicji ((min+max)/2), więc nie wykrywa przypadku,
-   w którym kształt ma ogonek/dziubek ciągnący masę w jedną stronę.
-   Zmierzone na płótnie 480x480 (i skrośnie na 240x240 — ten sam kierunek):
-     comment:  centroid (+4,-36)/480px -> masa w górnej krawędzi dymka (ogonek u dołu)
-     phone:    centroid (-15,+14)/480px -> masa po przekątnej (słuchawka po skosie)
-     bookmark: centroid (0,-14)/480px  -> masa lekko w górze (ogon wstążki u dołu)
-
-   ⚠ HISTORIA phone (dla przyszłych siebie — czysty centroid pikseli tuszu
-   NIE WYSTARCZA dla tego kształtu): 0,5px „za mało" -> 1,5px (x3) „jeszcze
-   gorzej, górny człon odrywa się od środka" -> powrót do czystej wartości
-   centroidu 0,6/-0,6px (matematycznie: masa tuszu dokładnie na środku boxa)
-   -> user dalej zgłasza przesunięcie w górę-lewo. Zmierzone od nowa izolowanym
-   porównaniem (ikona + krzyżyk na czystym płótnie, bez interferencji reszty
-   strony, 24x powiększenie): przy 0,6/-0,6 słuchawka (większa bryła, dolny-
-   prawy róg kształtu) wygląda ciasno przy górnej-lewej krawędzi kółka, dużo
-   pustego miejsca w dolnym-prawym rogu. Kształt telefonu ma słuchawkę jako
-   wizualnie "cięższy" koniec mimo że matematyczny środek masy pikseli już to
-   uwzględnia — percepcja optyczna kształtów po przekątnej/z hakiem systema-
-   tycznie różni się od centroidu powierzchni (to samo zjawisko co przesunięcie
-   trójkąta play-button względem jego centroidu w typografii ikon). Finalnie:
-   translate(1,2px, 1px) — masa wizualnie wyśrodkowana w izolowanym teście,
-   9,6px margines na dole/prawo vs góra/lewo w kółku 38px. Sprawdzony też
-   wariant 1,6/1,4px — już ciasno przy dolnej-prawej krawędzi, odrzucony.
-
-   ⛔ CAŁA POWYŻSZA HISTORIA JEST ARCHIWALNA — korekty USUNIĘTE 0806 na
-   prośbę usera („skorzystaj przy tych ikonkach z ich naturalnego boxa").
-   Ikona telefonu po tych nudge'ach czytała się jako przesunięta w dół i w
-   prawo — czyli dokładnie o tyle, o ile ją przesuwaliśmy. Wniosek na
-   przyszłość: trzy rundy strojenia centroidu skończyły się tam, skąd
-   wyszliśmy, więc następnym razem zaczynamy od gołego boxa i ruszamy go
-   dopiero, gdy user zgłosi konkretny kierunek. Nie przywracaj tych wartości
-   bez nowego, niezależnego pomiaru. */
-/* Kluczowe słowo w nagłówku kafla — świadomie NA zielonym `primary`, mimo
-   że na `mist` daje 3,87:1 (zmierzone), poniżej progu AA 4,5:1 dla 16px.
-   User poprosił o `primary` po nazwie tokenu, nie o "jakiś zielony" — to
-   zapisane jako ich świadoma decyzja, nie przeoczenie. Gdyby kontrast miał
-   znaczenie, `primaryDark` daje tu 7,18:1 bez zmiany odcienia z rodziny. */
-.feat-accent { color: var(--green); }
-.feat h3 {
-  margin: 0 0 6px;
-  /* Droga 0806: 15px (spoza skali) -> 16 -> 20 -> 18 -> 16px = `headerS`
-     z DS. Tracking z tego samego tokenu: headerS ma 0. Wartość jest W SKALI,
-     więc nie interpolujemy jej ręcznie. */
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.3;
-  letter-spacing: 0;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 0;
+  font-size: 18px;
+  font-weight: 600;
   color: var(--espresso);
-  /* ⛔ ŻADNEGO `text-wrap: balance` (usunięte 0806): wyrównuje DŁUGOŚCI linii,
-     więc nie dopycha pierwszej do końca kafla, i nadpisywałoby ręczne <br>.
-     Miejsca łamania są teraz USTAWIONE JAWNIE w index.html (user 0806: „w
-     pierwszym po weryfikuj, w drugim po własną, w trzecim po zawsze"), a
-     jednoliterowe spójniki trzyma `&nbsp;`. */
+  cursor: pointer;
+  list-style: none;
 }
-/* Nagłówki kafli są jednolicie w `espresso` — bez zielonych wyróżnień.
-   Wcześniej akcent musiał tu chodzić na `primaryDark` (przy 16 px obowiązuje
-   próg 4,5:1, a `primary` na mist dawał 3,87); po usunięciu wyróżnień
-   problem znika razem z nimi. W H1 akcent ZOSTAJE — 44 px to duży tekst. */
-.feat p {
+/* Chrome/Safari rysują też domyślny trójkąt obok `list-style: none` na
+   Webkit — trzeba zdjąć go osobnym selektorem, sama właściwość nie starcza. */
+.faq-item summary::-webkit-details-marker { display: none; }
+/* opacity, nie zmiana koloru — spójne z resztą hoverów na stronie
+   (.topbar-nav a, .about-link): przyciemnienie tego samego koloru, nie skok
+   na inny odcień. */
+.faq-item summary { transition: opacity 160ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .faq-item summary:hover { opacity: 0.7; }
+}
+.faq-chevron {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  color: var(--bark);
+  transition: transform 200ms var(--ease-out);
+}
+.faq-item[open] .faq-chevron { transform: rotate(180deg); }
+.faq-answer {
   margin: 0;
-  /* 12,5 -> 14px, czyli `bodyM` z DS (ta sama prośba co przy .feat h3).
-     12,5px było spoza skali. Tracking z tokenu: bodyM ma +0,15px.
-     ⚠ `line-height` zostaje 1,5 (landingowy rytm), nie 20/14 z DS — DS podaje
-     interlinię dla ekranów appki, a tu akapit ma inną długość linii. */
-  font-size: 14px;
-  line-height: 1.5;
+  padding: 0 0 18px;
+  font-size: 17px;
+  line-height: 1.55;
   letter-spacing: 0.15px;
   color: var(--bark);
-  /* ⛔ ŻADNEGO `text-wrap: pretty` (usunięte 0806, user: „teksty powinny być
-     na całej szerokości kafelka"). `pretty` optymalizuje KOŃCÓWKĘ akapitu —
-     przerzuca słowa do przodu, żeby ostatnia linia nie została sierotą, przez
-     co wcześniejsze linie nie dopychają się do prawej krawędzi. Ta sama
-     klasa problemu co `balance` przy .feat h3. Naturalne zawijanie
-     wykorzystuje pełne 277px. */
 }
-.feat p + p { margin-top: 10px; }
-.feat strong { font-weight: 700; color: var(--espresso); }
 
+/* ---- "Pobierz Hyc!" (pobierz.html) ----
+   Strona docelowa nav-CTA — osobna podstrona, nie modal, z tymi samymi
+   batonami/modalami co hero na stronie głównej (patrz komentarz
+   w pobierz.html). Wyśrodkowane w całości — jedyna sekcja na stronie, więc
+   brak sąsiada do wyrównania w kolumnę, jak w .hero. */
+.pobierz-hero {
+  margin: 64px auto 0;
+  padding: 40px 0 80px;
+  max-width: 640px;
+  text-align: center;
+}
+.pobierz-hero h1 {
+  margin: 0 0 16px;
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--espresso);
+}
+.pobierz-hero .hero-tags { max-width: none; }
+.pobierz-hero .stores { justify-content: center; }
+
+/* ---- "O aplikacji" (o-aplikacji.html) ----
+   Wąska wyśrodkowana kolumna tekstu (nie karty jak feature-list — to strona
+   do czytania), potem sekcja zespołu, na końcu kontakt. */
+.about-hero {
+  /* width:100% jest konieczne — bez niej box jako dziecko flex-column
+     (.wrap > main) dostaje szerokość z WŁASNEJ treści (max-content), bo
+     auto-marginy w osi poprzecznej tłumią stretch. Bez tego sekcja z krótszym
+     tekstem (Kontakt) wychodziła węższa niż Hero/Zespół mimo tego samego
+     max-width. width:100% wymusza sztywne 640px (capped przez max-width)
+     niezależnie od treści — to jedyny sposób na identyczne centrowanie we
+     wszystkich trzech sekcjach.
+     Odstęp od paska ujednolicony z .contact-hero (48px mobile / 80px
+     desktop, patrz override ≥760px niżej). */
+  width: 100%;
+  margin: 48px auto 0;
+  max-width: 640px;
+}
+.about-hero h1 {
+  margin: 0 0 32px;
+  font-size: clamp(32px, 5vw, 44px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--espresso);
+}
+.about-body p {
+  margin: 0 0 20px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--bark);
+  /* Greedy wrap zostawiał sieroty/dziwne złamania — ten sam fix co na
+     .feature-copy p. */
+  text-wrap: pretty;
+}
+.about-body p:last-child { margin-bottom: 0; }
+/* 600, nie domyślne UA 700 — wyważony akcent zamiast pełnego bold. Dotyczy
+   też imion/nazwisk w .about-team-text, ten sam wzorzec. */
+.about-body strong,
+.about-team-text strong { font-weight: 600; }
+
+.about-team,
+.about-contact {
+  width: 100%;
+  margin: 32px auto 0;
+  max-width: 640px;
+}
+.about-team h2,
+.about-contact h2 {
+  margin: 0 0 24px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--espresso);
+}
+.about-team-text {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--bark);
+}
+
+.about-contact { padding-bottom: 80px; }
+.about-contact p { margin: 0 0 20px; font-size: 18px; line-height: 1.6; color: var(--bark); }
+.about-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--green);
+  text-decoration: none;
+  transition: opacity 160ms ease;
+}
+.about-link svg { width: 18px; height: 18px; }
+.about-link:hover { opacity: 0.7; }
+
+/* ---- "Kontakt" (kontakt.html) ----
+   Dwie kolumny jak .faq: nagłówek+tekst z lewej, lista z prawej. Ikony marek
+   prawdziwe (nie generyczne Feather-style). */
+.contact-hero {
+  margin: 48px auto 80px;
+  max-width: 640px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+.contact-intro h1 {
+  margin: 0 0 12px;
+  font-size: clamp(32px, 5vw, 44px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--espresso);
+}
+.contact-intro p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--bark);
+}
+/* <ul> bez resetu UA — margin-block:1em i padding-inline-start:40px nigdy
+   nie były wyzerowane. Efekt: lista siadała 16px niżej niż kolumna z h1
+   (align-items:start w gridzie 2-kolumnowym nie ratuje, bo to margines
+   wewnątrz komórki grida, nie luka gridu) i była wcięta 40px w prawo. */
+.contact-list { display: flex; flex-direction: column; margin: 0; padding: 0; list-style: none; }
+.contact-list-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px 0;
+  border-bottom: 1px solid rgba(138, 128, 112, 0.24);
+}
+.contact-list-item:first-child { padding-top: 0; }
+.contact-meta { display: flex; flex-direction: column; gap: 4px; }
+.contact-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--espresso);
+}
+.contact-icon { width: 14px; height: 14px; flex-shrink: 0; }
+.contact-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #7a7266;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.contact-list-item a {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--green);
+  text-decoration: none;
+  transition: opacity 160ms ease;
+}
+/* E-mail nie jest klikalny — sam tekst, nie link, więc dostaje osobną klasę
+   zamiast dziedziczyć zielony .contact-list-item a. */
+.contact-value { font-size: 17px; font-weight: 600; color: var(--espresso); }
+.contact-list-item a:hover { opacity: 0.7; }
 
 /* ---- Footer ---- */
 footer {
-  margin-top: 22px;
+  margin-top: 64px;
   padding-top: 15px;
   border-top: 1px solid rgba(138, 128, 112, 0.24);
   font-size: 13px;
@@ -1034,90 +1335,99 @@ footer .spacer { flex: 1 1 auto; }
 
 /* ---- Desktop layout ---- */
 @media (min-width: 760px) {
+  /* Jawna wartość w skali z bazą (44 -> 48 -> 52px, patrz blok ≥1100px), nie
+     fluid clamp — patrz uzasadnienie przy h1 bazowym. */
+  h1 { font-size: 48px; }
+  /* Spójne z .contact-hero (patrz ta reguła niżej) — obie strony ten sam
+     odstęp od paska na desktopie. */
+  .about-hero { margin-top: 80px; }
+  .feature-list { margin-top: 88px; }
+  .feature-row + .feature-row { margin-top: 128px; }
+  .faq-heading { font-size: 34px; }
+  .hero-tags { font-size: 19px; }
+  footer { margin-top: 96px; }
+  .scouts-cta { margin-top: 112px; }
+  /* FAQ przechodzi na 2 kolumny już przy 760px, nie 1024 jak feature-row/
+     kontakt — nie potrzebuje tyle miejsca co obraz+tekst obok siebie: lewa
+     kolumna to tylko nagłówek+podtytuł, prawa lista pytań, obie mieszczą się
+     wygodnie już tutaj. */
+  .faq {
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    margin-top: 160px;
+    align-items: start;
+  }
+}
+
+/* ---- Dwie kolumny: feature bullets / FAQ / kontakt ----
+   Próg 1024px, nie 760px — 760px ściskał treść na tabletach/wąskich
+   laptopach (kolumna tekstu i kolumna grafiki/accordionu miały za mało
+   miejsca między 760-1023px). */
+@media (min-width: 1024px) {
+  .feature-row {
+    /* Kolumny muszą być RÓWNE (1fr 1fr), nie calc(50%-68px) asymetryczne —
+       tylko równe kolumny z tym samym gap co .faq (56px) w tym samym
+       kontenerze (.wrap) dają start drugiej kolumny na identycznym punkcie
+       co prawa kolumna FAQ, bez osobnego calc. */
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+  /* Reset centrowania z mobile — w 2 kolumnach grafika/pigułka/tekst wracają
+     do left/right-align właściwego układowi obok siebie. Karta/podkład (tło,
+     padding, zaokrąglenie, stała wysokość+object-fit) to wyłącznie sprawa
+     tego 2-kolumnowego układu — na mobile ich nie ma, stąd dopiero tutaj, nie
+     w bazowej regule .feature-media. */
+  .feature-media {
+    margin-right: 0;
+    max-width: none;
+    background: #F6F2E9;
+    border-radius: 20px;
+    padding: 24px;
+    /* `height:auto` skalowałoby wysokość razem z szerokością kolumny —
+       karta w rzędzie "normalnym" (wide) wychodziłaby wyższa niż w reverse,
+       mimo tego samego obrazka (user: "nierówne"). Stała wysokość +
+       `object-fit:contain` trzyma proporcję niezależnie od szerokości. */
+    height: 280px;
+    object-fit: contain;
+  }
+  .feature-tags { justify-content: flex-start; }
+  .feature-copy { text-align: left; max-width: none; margin-left: 0; margin-right: 0; }
+  /* Naprzemienny układ — co drugi bullet ma grafikę z prawej strony tekstu.
+     Kolumny .feature-row są 1fr 1fr (równe), więc reverse dziedziczy ten sam
+     podział — order na dzieciach robi całą robotę zamiany miejsc, a DOM/
+     czytnik ekranu nadal czyta grafikę przed tekstem mimo wizualnej zamiany. */
+  .feature-row--reverse .feature-media { order: 2; }
+  .feature-row--reverse .feature-copy { order: 1; }
+  .contact-hero {
+    max-width: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    margin: 80px auto 120px;
+    align-items: start;
+  }
+}
+
+/* ---- Hero: dwie kolumny dopiero od 1024px ----
+   Hero na 8-kolumnowej siatce od 760px był za ciasny dla tekstu i telefonu
+   naraz (batony sklepowe nie mieściły się obok siebie — kolumna hero-copy
+   była za wąska). Próg podziału hero na dwie kolumny przesunięty na 1024px,
+   spójnie z resztą sekcji (feature/faq/kontakt, patrz blok wyżej). 760-1023px
+   dostaje zwykły mobilny układ jednokolumnowy, 1024-1099px 8-kolumnową
+   siatkę, ≥1100px 12-kolumnową (blok niżej). */
+@media (min-width: 1024px) {
   .hero {
     /* Tablet = 8 kolumn (standard 12/8/4: Material, UX Design Institute),
        rynna 16px — stała, wielokrotność 8, węższa niż desktopowe 24, bo
        kolumna też jest węższa. Podział 4+4: tekst i telefon po połowie. */
     grid-template-columns: repeat(8, 1fr);
+    /* Tylko column-gap zmienia się tutaj — row-gap i align-items zostają na
+       wartościach z bazowej regule .hero (28px / center). */
     column-gap: 16px;
-    row-gap: 28px;
-    /* ⚠ `start` (2026-07-31) był odpowiedzią na kadr 9:16 o wysokości ~950px:
-       krótka kolumna tekstu centrowała się względem BARDZO wysokiego wiersza
-       i zostawiała martwy odstęp nad plakietką. Od 0806 kadr jest KWADRATEM,
-       więc różnica wysokości jest mała i wraca `center` — user: „wyrównać
-       elementy do połowy kwadratu zajmowanego przez telefon". */
-    align-items: center;
-    /* Ten override wygrywa nad bazową regułą .hero na każdym ekranie ≥760px.
-       Pełna historia (4 zmiany, nie 2 jak wcześniej myślałem):
-       56px (7cdd79d) -> 12px (20dab59, "za duży") -> 28px (afb10da, fix
-       "za mało", ŚWIADOMA wartość) -> 20px (b8de678 — CICHY rewert w środku
-       niepowiązanego commita "polish wizualny", nie miał własnego opisu w
-       treści) -> 32px (moja zgadywanka). To 20px->28px jest prawdziwym
-       "przybliżeniem", o które chodziło userowi — wraca 28px.
-       ⚠ 0806: cała ta historia przestaje obowiązywać. User: „odległość między
-       logo Hyc a kolumnami zmniejszamy do zera, dolna granica logo styka się
-       z linią zaczynania kwadratu". Górna krawędź kwadratu = górna krawędź
-       wiersza siatki, więc zerowy margines daje dokładnie ten styk. */
-    margin-top: 0;
   }
-  /* ⚠ Sam `margin-top: 0` NIE wystarczy: `.wrap > main` ma
-     `justify-content: center` i przy `min-height: 100vh` dokłada pustkę nad
-     hero z centrowania, niezależnie od marginesów. Żeby styk logo-kwadrat był
-     rzeczywisty, treść musi startować od góry. */
-  .wrap > main { justify-content: flex-start; }
-  /* Telefon ma być DUŻY (docelowo leci w nim nagranie z aplikacji), ale to on
-     wyznacza wysokość sekcji i decyduje, czy strona mieści się w oknie.
-     Sterujemy WYSOKOŚCIĄ, nie szerokością: przy `aspect-ratio` szerokość
-     dolicza się sama, więc znika mnożnik 9/19.5 i cała klasa błędów przy jego
-     przeliczaniu.
-     Reszta strony poza sekcją hero (paddingi + logo + odstępy + kafelki +
-     stopka) to ZMIERZONE 379 px przy .hero margin-top:20px — stała 383px
-     zostawiała 4px zapasu. margin-top wraca na 28px (pełna archeologia
-     historii: 20px był CICHYM rewertem wewnątrz niepowiązanego commita,
-     28px to ostatnia świadomie ustawiona wartość) — delta +8px względem
-     bazy 20px, stała przesunięta o tyle samo: 391px. Próba ponownego
-     pomiaru live (zerowanie phone+wrap min-height) dała bezsensowny wynik
-     (740px) — .wrap najwyraźniej nie zwija się tak prosto jak zakładała
-     oryginalna metoda; prosta arytmetyka (383+8) jest tu pewniejsza niż
-     nieudana re-derywacja.
-     ⛔ FORMUŁA PORZUCONA 2026-07-31: cały ten mechanizm (calc(100vh-N))
-     istniał, żeby telefon zmieścił się na jednym ekranie razem z resztą
-     strony. Docelowo w telefonie leci animacja z appki — user zażądał
-     min. 2x większego telefonu, żeby treść była widoczna. Zmierzone:
-     przy dawnym rozmiarze (~475px wysokości) ekran telefonu (bez ramki)
-     miał ~200px szerokości — mniej niż połowa natywnej szerokości iPhone'a
-     (375-430pt), czyli tekst UI z apki renderowałby się poniżej progu
-     16px/czytelności (research: b13.com UI font size guidelines). Cel:
-     ekran ~420px (blisko 1:1 z natywnym), telefon ~950px wysokości.
-     KONSEKWENCJA: hero (telefon+kolumna tekstu) już się NIE mieści w
-     jednym ekranie na typowych wysokościach (800-900px) — to jest
-     ŚWIADOME i zgodne z realną praktyką (research: hero zajmuje 60-100%
-     wysokości okna, sekcje NIŻEJ hero mają być poniżej zgięcia, nie całość
-     strony na raz — landy-ai.com hero section guide). Reguła "bez
-     przewijania CAŁEJ strony" z tej sesji przestaje obowiązywać DLA TEGO
-     elementu; pozioma szerokość i brak nakładania się elementów nadal
-     wymagane i zweryfikowane.
-     -30% (2026-07-31, druga prośba): 950/88vh -> 665/62vh, matematycznie
-     0,7x obu granic naraz (zachowuje ten sam punkt przełączenia między
-     "ograniczone px" a "ograniczone vh"). Ekran telefonu spada z ~420px do
-     ~290px — dalej wyraźnie ponad przedkorektowe ~200px, więc argument o
-     czytelności animacji się utrzymuje, tylko z mniejszym zapasem.
-     ⚠ -30% (2026-07-31, TRZECIA prośba, z rzędu): 665/62vh -> 466/43vh.
-     Dwa kolejne -30% z rzędu (0,7*0,7=0,49) lądują ~466px — niemal
-     DOKŁADNIE tam gdzie było PRZED całą rundą "min. 2x, żeby animacja
-     była czytelna" (baseline ~475px). Ekran spada z powrotem do ~200px,
-     poniżej progu czytelności z tamtego researchu. Zastosowane na
-     wyraźne życzenie, ale to odwraca oryginalny wymóg — do wiadomości. */
-  /* ⚠ Cała historia -30% wyżej jest ARCHIWALNA: dotyczyła ramki rysowanej
-     CSS-em, którą 0806 zastąpił render z Rotato. Kadr wypełnia swoje kolumny
-     siatki, bez limitu px ani vh — wysokość wynika z proporcji materiału. */
-  .hero-copy { grid-column: 1 / span 4; }
-  /* KWADRAT — od 0806 zgodny z materiałem, który sam jest 1:1. Box 1:1 plus
-     `object-fit: contain` pokazuje kadr w całości: nic nie jest przycięte,
-     oddech dookoła telefonu przychodzi z renderu.
-     ⚠ Obowiązuje od 760px, NIE dopiero od 1100px — inaczej tablet dostawał
-     pionowy kadr bazowy z `cover` i tracił boki kadru bez potrzeby, mając
-     na nie miejsce. */
+  .hero-copy {
+    grid-column: 1 / span 4;
+  }
   .hero-art {
     grid-column: 5 / span 4;
     justify-self: stretch;
@@ -1125,182 +1435,75 @@ footer .spacer { flex: 1 1 auto; }
     max-width: none;
     height: auto;
     margin-left: 0;
-    /* ⚠ JUŻ NIE KWADRAT (0806, druga korekta): po zwężeniu contentu do 1020px
-       kolumna kwadratu ma 478px, a telefon zajmuje 0,66 wysokości kadru, więc
-       obudowa spadała do 335px. User: „telefon musi zachować wcześniejszą
-       wielkość, zachowaj obecną szerokość tekstu, możesz przyciąć kwadrat po
-       bokach". Box jest więc WYŻSZY niż szerszy — 1 : 1,479 — a materiał
-       wchodzi w niego przez `object-fit: cover`, czyli skaluje się do
-       WYSOKOŚCI i traci boki, nie górę i dół.
-       Arytmetyka: obudowa = 0,66 x wysokość = 0,66 x 1,479 x szerokość
-       = 0,976 x szerokość. Przy kolumnie 478px daje to 467px — dokładnie
-       tyle, ile telefon miał przed zwężeniem.
-       Widoczne zostaje 67,6% szerokości kadru (16,2%-83,8%), a obudowa leży
-       między 34% a 66% i jej cień sięga ~78% — wszystko w kadrze. */
-    /* ⚠ 0806, korekta: box przycięty o 32px z GÓRY i z DOŁU (user), więc
-       proporcja schodzi z 1:1,479 na 1:1,3452 — przy kolumnie 478px daje to
-       643px zamiast 707px wysokości. Sam telefon NIE maleje: materiał dostaje
-       niżej `height: calc(100% + 64px)`, czyli renderuje się tak jak wcześniej
-       (707px), a te 64px nadwyżki wychodzą po 32px na górę i na dół i są
-       obcinane przez `overflow: hidden`. */
     aspect-ratio: 1 / 1.3452;
-    /* Telefon wyśrodkowany w kwadracie w OBU osiach (user 0806, rysunek na
-       zrzucie: niebieski prostokąt idealnie w środku czerwonego kwadratu). */
     display: grid;
     place-items: center;
-    /* ⛔ ŻADNEGO paddingu ani `background-size: 86%` (usunięte 0806 razem
-       z wgraniem kwadratowego renderu). Tamte dwie wartości istniały tylko po
-       to, żeby z PIONOWEGO kadru 9:16 wyciąć telefon o wysokości ~82% boku
-       kwadratu. Nowy materiał jest już 1:1 i ma oddech wbudowany w kadr:
-       zmierzone na klatkach 0/10/20/29 — obudowa zajmuje 0,66 wysokości
-       i 0,31 szerokości klatki. Dokładanie do tego CSS-owego marginesu
-       liczyłoby oddech drugi raz. */
-    /* Poster dopasowany tak samo jak <video> (`cover`) — inaczej przy
-       prefers-reduced-motion telefon skacze na inną wielkość.
-       ⚠ `background-position` MUSI wrócić do `center`: baza (mobile) przesuwa
-       poster o 7,66 % w górę pod swoje przycięcie 40 % pustki, a tu box ma
-       własną proporcję i własne 32px z góry/dołu. */
     background-size: cover;
     background-position: center;
-    /* Materiał wyjeżdża poza kwadrat (patrz `scale` niżej) — bez tego rogi
-       kadru rysowałyby się na kaflach i na kolumnie tekstu. */
-    overflow: hidden;
+    /* overflow:hidden dziedziczy z bazowej reguły .hero-art — bez zmian tutaj. */
   }
   .hero-art .hero-video {
-    /* ⚠ Reset pozycjonowania z bazy (mobile), gdzie <video> jest `absolute`
-       z `top: -7.66%` — tutaj środkuje je `place-items: center` na .hero-art,
-       a nadwyżka 64px wychodzi symetrycznie. */
     position: static;
     top: auto;
-    width: 100%;
-    height: 100%;
-    /* `cover` (jak w bazie): box jest wyższy niż kadr materiału, więc skala
-       liczy się od wysokości i przycinane są BOKI — tam jest sama pustka. */
-    object-fit: cover;
-    /* +64px wysokości ponad box = po 32px nadwyżki na górze i na dole, ścięte
-       przez `overflow: hidden` na .hero-art. Dzięki temu przycięcie boxa NIE
-       zmniejsza telefonu: materiał renderuje się dalej w 707px (obudowa 467px),
-       a znika tylko pusty kadr nad i pod nim.
-       `width: auto` jest tu konieczne — przy `width: 100%` szerokość wygrywa
-       z wysokością i `cover` przestaje liczyć skalę od tej drugiej. */
+    /* width/height wprost ustawione niżej (auto / calc) — te dwie linie tylko
+       zerują procentowe wartości z bazy, zanim padnie właściwa deklaracja. */
     width: auto;
     height: calc(100% + 64px);
     max-width: none;
-    /* ⛔ ŻADNEGO `transform: scale` (usunięte 0806). Przez chwilę wielkość
-       telefonu robiła skala na <video> (1,25 -> 1,0625), ale to skalowało obie
-       osie naraz i zbliżało obcięcie do góry i dołu obudowy. Odkąd box ma
-       proporcję 1:1,479 i `object-fit: cover`, o wielkości decyduje WYSOKOŚĆ
-       boxa, a przycinane są wyłącznie boki. Jedno pokrętło zamiast dwóch —
-       chcesz większy telefon, zmieniasz proporcję boxa wyżej. */
-    /* ⚠ Bez tego automatyczne minimum grid-itema (min-height: auto) pozwala
-       <video> rozepchnąć kwadrat do własnej proporcji 9:16 i `aspect-ratio`
-       na rodzicu przestaje cokolwiek znaczyć. To był ten sam błąd co wyżej,
-       tylko drugą drogą. */
     min-width: 0;
     min-height: 0;
+    /* object-fit i transform dziedziczą z bazowej reguły .hero-video —
+       bez zmian tutaj. */
   }
-  /* h1 dzieli kolumnę 1.15fr z hero-art (nie cały viewport), więc własny
-     clamp — 7vw z base rule liczy od pełnej szerokości ekranu i łamał
-     "najbliższe schronienie" na dwie linie w całym zakresie od 760px
-     (kolumna tekstu ~389px przy 760px, ~504px od ~960px w górę, bo .wrap
-     ma max-width:960px — zmierzone bezpieczne do 44px przy 504px). */
-  h1 { font-size: clamp(32px, 4.5vw, 44px); }
-  /* Siatka 6-kolumnowa, trzy kafelki po dwie kolumny w rzędzie.
-     margin-top: 0 — user 0806: „3 kafle mają się stykać z kwadratem
-     telefonu". Dolna krawędź kwadratu wyznacza dół wiersza hero, więc zero
-     daje styk. ⚠ Znosi to granicę sekcji 56px opisaną przy .about. */
-  .about { grid-template-columns: repeat(6, 1fr); margin-top: 0; }
-  .feat { grid-column: span 2; }
-  .lead { font-size: 19px; }
 }
 
-/* ---- Szeroki desktop: hero na SIATCE 12-KOLUMNOWEJ ----
-   Do 0806 hero miał dwie sztywne kolumny (`480px` + reszta) i każda korekta
-   pozycji telefonu była przeliczaniem pikseli. Teraz jedna siatka: 12 kolumn,
-   rynna 24px, a elementy dostają `span N`.
+/* ---- Szeroki desktop: hero na siatce 12-kolumnowej ----
+   12 kolumn liczonych od szerokości hero (~1185px), a nie od .wrap (960px):
+   zdrowa kolumna to 60-80px (UX Design Institute). 960/12 z rynną 24 daje
+   58px — poniżej pasma; 1185/12 daje 76,8px — w paśmie. Rynna 24px jest
+   stała (nie procentowa), wielokrotność 8 (Material, Spectrum).
 
-   Dlaczego 12 kolumn liczonych od szerokości HERO (~1185px), a nie od `.wrap`
-   (960px): standard mówi, że zdrowa kolumna ma 60-80px (UX Design Institute).
-   960/12 z rynną 24 daje 58px — poniżej pasma; 1185/12 daje 76,8px — w paśmie,
-   a 1185 to praktycznie standardowe maksimum treści 1200px. Rynna 24px jest
-   STAŁA (nie procentowa) i jest wielokrotnością 8 — tak to definiują Material
-   i Spectrum.
+   Ta siatka obowiązuje tylko w hero — sekcja kafelków i stopka zostają na
+   swoich 6 kolumnach z rynną 14px, ujednolicenie byłoby osobną decyzją.
 
-   ⚠ Ta siatka obowiązuje TYLKO w hero. Sekcja kafelków i stopka zostają na
-   swoich 6 kolumnach z rynną 14px — ujednolicenie ich do 12/24 przesunęłoby
-   krawędzie na całej stronie i jest osobną decyzją, nie skutkiem ubocznym.
-
-   Hero WYCHODZI poza `.wrap` w prawo, do marginesu okna: lewa krawędź tekstu
-   zostaje wyrównana do kafelków i stopki, rusza się tylko prawa.
-   ⚠ Próg 1100px, nie 760px: przy węższym oknie margines okna jest zerowy,
-   nie ma czego wypuszczać. 760-1099px dostaje siatkę 8-kolumnową niżej. */
+   Hero wychodzi poza .wrap w prawo, do marginesu okna: lewa krawędź tekstu
+   zostaje wyrównana do kafelków i stopki, rusza się tylko prawa. Próg
+   1100px, nie 760px: przy węższym oknie margines okna jest zerowy, nie ma
+   czego wypuszczać. 760-1099px dostaje siatkę 8-kolumnową wyżej. */
 @media (min-width: 1100px) {
   .hero {
     grid-template-columns: repeat(12, 1fr);
     column-gap: 24px;
-    /* ⛔ ŻADNEGO wypuszczania w prawy margines (usunięte 0806 na prośbę usera:
-       „równe przestrzenie z prawej i lewej"). Ujemny `margin-right` rozciągał
-       hero do krawędzi okna, więc przy oknie 1490px z lewej zostawało 278px
-       marginesu, a z prawej 20px — układ optycznie uciekał w prawo. Teraz
-       hero kończy się tam, gdzie .wrap, czyli tam, gdzie kafelki i stopka:
-       marginesy są równe z definicji, bo .wrap jest wyśrodkowany.
-       Szerokość odrabia `--maxw: 1200px` na szerokich oknach (patrz niżej) —
-       bez tego 12 kolumn z 960px dawało kolumnę 54,7px, kolumnę tekstu 369px,
-       h1 łamane na TRZY linie i batony w dwóch rzędach. */
+    /* start, nie center — center (z bloku 1024px, łata na skok w wąskim
+       tablecie) zjeżdżał tekst za nisko względem telefonu na desktopie. */
+    align-items: start;
+    /* Żadnego wypuszczania w prawy margines. Ujemny margin-right rozciągałby
+       hero do krawędzi okna: przy szerokim oknie z lewej zostawałoby więcej
+       marginesu niż z prawej, układ optycznie uciekałby w prawo. Hero kończy
+       się tam, gdzie .wrap (kafelki, stopka) — marginesy równe z definicji,
+       bo .wrap jest wyśrodkowany. */
   }
-  /* Podział 6 + 6, nie 5 + 6 z pustą dwunastką: kwadrat dochodzi do prawej
-     krawędzi treści dokładnie tak, jak tekst do lewej, więc „równe przestrzenie
-     z prawej i lewej" (user 0806) wychodzą z samej siatki, a nie z ręcznego
-     dobierania capa.
-     ⚠ 0806: kwadrat dostał jedną kolumnę WIĘCEJ od strony tekstu (user:
-     „zajął jedną kolumnę więcej z lewej strony"), więc podział to teraz
-     5 + 7, nie 6 + 6. Tekst oddaje kolumnę 6 i schodzi z 568 na 486px —
-     h1 dalej mieści się w dwóch liniach (zmierzone: przy 480px było 2). */
-  .hero-copy { grid-column: 1 / span 6; }
-  /* ⛔ Żadnego `max-width` ani `justify-self` na .hero-art — szerokość i
-     pozycję ustala WYŁĄCZNIE `grid-column`. Wcześniejsze `justify-self:
-     center`/`end` spychały kwadrat o 65-100px w prawo, bo kolumna siatki była
-     szersza od capa; przy `span 7` kwadrat po prostu JEST kolumnami 6-12. */
+  /* Podział 6 + 6 (nie asymetryczny): kwadrat dochodzi do prawej krawędzi
+     treści dokładnie tak, jak tekst do lewej, więc równe przestrzenie
+     z prawej i lewej wychodzą z samej siatki, nie z ręcznego dobierania capa. */
+  .hero-copy {
+    grid-column: 1 / span 6;
+    /* To samo wyrównanie do widocznej obudowy co w bloku ≥760px, przeliczone
+       na szerszą kolumnę tego breakpointu — proporcja wysokości boxa zostaje,
+       px rośnie razem z boxem. */
+    margin-top: 125px;
+  }
+  /* Żadnego max-width ani justify-self na .hero-art — szerokość i pozycję
+     ustala wyłącznie grid-column: kwadrat po prostu JEST kolumnami 7-12. */
   .hero-art { grid-column: 7 / span 6; }
-  /* ---- Rytm pionowy kolumny tekstu ----
-     ⛔ UWAGA NA HISTORIĘ TEGO BLOKU: do 0806 komentarz był tu zamykany DWA
-     RAZY (druga sekwencja zamykająca stała w środku tekstu), przez co parser
-     CSS zjadał trzy reguły niżej i żadna z rund „zwiększ odstępy" nie miała
-     ŻADNEGO efektu na stronie, mimo że wartości w pliku się zmieniały.
-     Zmierzone: h1 miał dalej `margin-top: 8px` z reguły bazowej, choć w tym
-     bloku stało 16px. Dwa wnioski na przyszłość: (1) po zmianie wartości
-     sprawdzaj `getComputedStyle`, nie sam plik; (2) NIE cytuj w komentarzu
-     sekwencji zamykającej komentarz — ta uwaga w pierwszej wersji zamykała
-     samą siebie i powtarzała dokładnie ten błąd, który opisuje.
-
-     Telefon jest duży, a kolumna tekstu wąska — przy `align-items: center`
-     dotychczasowy rytm (8/24/10/38) czytał się jak ciasna notka doklejona do
-     wielkiej grafiki, stąd kolejne podbicia.
-     ⚠ „tight" musi zostać JEDNĄ liczbą w całej kolumnie (plakietka->h1 i
-     lead->lista), inaczej rozpada się powtarzalność opisana przy .lead.
-     Runda 2 (user 0806): x1,35 -> x1,75. Runda 3 (user 0806, „zwiększmy
-     trochę odstępy"): x1,75 -> x2 od bazy, czyli 8 -> 16, 24 -> 48, 32 -> 64.
-     Okrągłe x2 celowo — wszystkie trzy wartości siadają na siatce 8pt, z
-     której wyszła baza. Proporcja tight:loose 1:3 dalej nietknięta.
-     ⚠ Runda 4 (user 0806) podaje już KONKRETNE liczby, nie mnożnik, i łamie
-     proporcję 1:3 — świadomie, na wyraźne życzenie:
-       plakietka -> h1  16 -> 32px  („do 32 dp")
-       lista typów -> batony  64 -> 40px  („do 40 dp")
-       h1 -> lead  48 -> 24px  („odległość między headerem a tekstem
-                                 «łączymy dane z wielu źródeł» do 24 dp")
-     Skutkiem odstęp NAD nagłówkiem (32) jest teraz WIĘKSZY niż pod nim (24).
-     Do wiadomości: to odwraca hierarchię z researchu opisanego wyżej —
-     plakietka optycznie przykleja się do nagłówka słabiej niż lead. */
-  h1 { margin: 32px 0 24px; }
-  .lead { margin-bottom: 16px; }
+  h1 { font-size: 52px; }
   .hero-tags { margin-bottom: 40px; }
 }
 
 /* ---- Wejście strony ----
    Kaskada zamiast jednoczesnego pojawienia się wszystkiego: oko dostaje
-   kolejność czytania (plakietka → nagłówek → treść → przyciski), zamiast
-   jednego błysku. Odstępy 40–60 ms — dłuższe sprawiają, że strona sprawia
-   wrażenie wolnej.
+   kolejność czytania (nagłówek → treść → przyciski), zamiast jednego błysku.
+   Odstępy 40-60ms — dłuższe sprawiają, że strona wydaje się wolna.
 
    CAŁOŚĆ siedzi w `no-preference`, nie w globalnym resecie ruchu. Gdyby stan
    początkowy (opacity: 0) żył na zewnątrz, użytkownik z „ogranicz ruch"
@@ -1311,7 +1514,8 @@ footer .spacer { flex: 1 1 auto; }
      (też jest elementem <footer>), a ta ma własne wejście razem z oknem. */
   .hero-copy > *,
   .hero-art,
-  .feat,
+  .feature-media,
+  .feature-copy > *,
   .wrap > footer {
     animation: rise 620ms var(--ease-out) backwards;
   }
@@ -1322,10 +1526,47 @@ footer .spacer { flex: 1 1 auto; }
   .hero-copy > :nth-child(5) { animation-delay: 220ms; }
   .hero-copy > :nth-child(6) { animation-delay: 260ms; }
   .hero-art { animation-delay: 150ms; }
-  .feat:nth-child(1) { animation-delay: 300ms; }
-  .feat:nth-child(2) { animation-delay: 350ms; }
-  .feat:nth-child(3) { animation-delay: 400ms; }
+  .feature-media { animation-delay: 300ms; }
+  .feature-copy > *:nth-child(1) { animation-delay: 340ms; }
+  .feature-copy > *:nth-child(2) { animation-delay: 380ms; }
   .wrap > footer { animation-delay: 450ms; }
+}
+
+/* ---- CTA "Dołącz do Skautów" — karta na zdjęciu ---- */
+.scouts-cta {
+  margin-top: 64px;
+  border-radius: var(--radius-lg, 24px);
+  overflow: hidden;
+  background-image: linear-gradient(rgba(249, 246, 242, 0.65), rgba(249, 246, 242, 0.65)), url("assets/skauci-bg.jpg?v=2");
+  background-size: cover;
+  background-position: center;
+}
+.scouts-cta-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 72px 24px;
+  text-align: center;
+}
+.scouts-cta h2 {
+  margin: 0 0 16px;
+  /* Dolna granica 32px pozwala nagłówkowi zawijać się do 2 linii zamiast
+     wymuszać jedną. */
+  font-size: clamp(32px, 4.5vw, 40px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--espresso);
+}
+.scouts-cta p {
+  margin: 0 0 28px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--bark);
+  text-wrap: pretty;
+}
+.scouts-cta .store-btn--nav {
+  height: auto;
+  padding: 16px 32px;
 }
 
 @keyframes rise {
