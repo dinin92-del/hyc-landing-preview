@@ -1046,7 +1046,11 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
   line-height: 1.15;
   letter-spacing: -0.015em;
   color: var(--espresso);
-  text-wrap: balance;
+  /* pretty, nie balance — balance rozkłada WSZYSTKIE linie równomiernie, co
+     przy krótkim nagłówku daje dwie sztucznie skrócone linie zamiast
+     naturalnego zapełnienia pierwszej. pretty zostawia zachłanny wrap
+     (pierwsza linia pełna) i pilnuje tylko sieroty na ostatniej. */
+  text-wrap: pretty;
 }
 .feature-copy p {
   margin: 0;
@@ -1054,11 +1058,7 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
   line-height: 1.5;
   letter-spacing: 0.1px;
   color: var(--bark);
-  /* pretty chroni tylko przed pojedynczym wyrazem na ostatniej linii — dwa
-     krótkie wyrazy razem jako cała linia dalej wyglądały jak sierota.
-     balance (jak na h1) rozkłada wszystkie linie krótkiego akapitu
-     równomiernie, nie tylko pilnuje ostatniej. */
-  text-wrap: balance;
+  text-wrap: pretty;
 }
 /* Najmniejsze telefony — standardowy zakres dla nagłówków sekcji na mobile to
    24-28px, dla tekstu 15-17px. .feature-copy dostaje WŁASNE 16px paddingu
@@ -1355,7 +1355,7 @@ footer .spacer { flex: 1 1 auto; }
   .faq-heading { font-size: 34px; }
   .hero-tags { font-size: 19px; }
   footer { margin-top: 96px; }
-  .scouts-cta { margin-top: 112px; }
+  .scouts-cta { margin-top: 200px; }
   /* FAQ przechodzi na 2 kolumny już przy 760px, nie 1024 jak feature-row/
      kontakt — nie potrzebuje tyle miejsca co obraz+tekst obok siebie: lewa
      kolumna to tylko nagłówek+podtytuł, prawa lista pytań, obie mieszczą się
@@ -1543,7 +1543,7 @@ footer .spacer { flex: 1 1 auto; }
 
 /* ---- CTA "Dołącz do Skautów" — karta na zdjęciu ---- */
 .scouts-cta {
-  margin-top: 64px;
+  margin-top: 128px;
   border-radius: var(--radius-lg, 24px);
   overflow: hidden;
   background-image: linear-gradient(rgba(249, 246, 242, 0.65), rgba(249, 246, 242, 0.65)), url("assets/skauci-bg.jpg?v=2");
