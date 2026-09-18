@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hyc! — jeden przycisk do najbliższego schronienia</title>
+  <meta name="description" content="Hyc! to prosta aplikacja turystyczna: jeden przycisk, GPS i nawigacja po szlaku do najbliższego schronienia. Dołącz do otwartej bety na iOS i Androida.">
+  <meta name="theme-color" content="#F0EBE0">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <!-- apple-touch-icon MUSI byc PNG — iOS nie czyta SVG i przy braku rastra
+       robi wlasny zrzut strony jako ikone na ekranie glownym. -->
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+
+  <!-- Open Graph / social preview (podgląd linku na sociale) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://dinin92-del.github.io/hyc-landing-preview/">
+  <meta property="og:site_name" content="Hyc!">
+  <meta property="og:title" content="Hyc! — jeden przycisk do najbliższego schronienia">
+  <meta property="og:description" content="Prosta appka turystyczna: przycisk, GPS, nawigacja po szlaku. Dołącz do otwartej bety.">
+  <meta property="og:image" content="https://dinin92-del.github.io/hyc-landing-preview/assets/og-image.jpg?v=20260811">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="pl_PL">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Hyc! — jeden przycisk do najbliższego schronienia">
+  <meta name="twitter:description" content="Prosta appka turystyczna: przycisk, GPS, nawigacja po szlaku. Dołącz do otwartej bety.">
+  <meta name="twitter:image" content="https://dinin92-del.github.io/hyc-landing-preview/assets/og-image.jpg?v=20260811">
+
+  <link rel="preload" href="assets/fonts/Figtree-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- ?v= na CSS i JS jest obowiązkowe — podbij przy każdym wydaniu. Strona
+       stoi na GitHub Pages, które ignorują plik `_headers` (format Netlify/
+       Cloudflare Pages) i serwują wszystko z Cache-Control: max-age=600. Bez
+       wersji w URL-u przeglądarka po deployu potrafi skleić nowy index.html
+       ze starym styles.css. Wersja w URL-u wymusza świeże pobranie, bo to
+       inny zasób. -->
+  <link rel="stylesheet" href="styles.css?v=202609162ao">
+</head>
+<body>
+  <!-- Górny pasek: strona ma sekcje pod hero (O aplikacji, FAQ, Kontakt)
+       i potrzebuje stałej nawigacji do nich. Logo stoi tu, nie w hero. -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="#top" class="topbar-logo" aria-label="Hyc! — strona główna">
+        <img src="assets/logo.png?v=2" alt="Hyc!" width="105" height="48">
+      </a>
+
+      <nav class="topbar-nav" aria-label="Główna nawigacja">
+        <a href="o-aplikacji.html">O aplikacji</a>
+        <a href="#faq">FAQ</a>
+        <a href="kontakt.html">Kontakt</a>
+      </nav>
+
+      <!-- Hamburger — bez niego linki na <768px nie miały żadnego sposobu
+           otwarcia (display:none bez przełącznika). Trzecie dziecko obok
+           logo/CTA na mobile (nav chowa się, patrz styles.css). -->
+      <button type="button" class="topbar-burger" aria-expanded="false" aria-controls="mobile-nav" aria-label="Otwórz menu">
+        <svg class="icon-menu" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M2.797 18.293V16.018H21.203V18.293ZM2.797 13.138V10.862H21.203V13.138ZM2.797 7.982V5.707H21.203V7.982Z"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M6.4 19.191L4.809 17.6L10.409 12.0L4.809 6.4L6.4 4.809L12.0 10.409L17.6 4.809L19.191 6.4L13.591 12.0L19.191 17.6L17.6 19.191L12.0 13.591Z"/></svg>
+      </button>
+
+      <!-- Link na osobną stronę, nie modal TestFlight jak baton na hero — tu
+           dopiero trafią docelowe linki do sklepów, gdy apka będzie tam
+           publicznie dostępna. -->
+      <a class="store-btn store-btn--primary store-btn--nav" href="pobierz.html">Pobierz</a>
+    </div>
+    <div class="nav-backdrop" aria-hidden="true"></div>
+    <nav class="topbar-nav-mobile" id="mobile-nav" aria-label="Główna nawigacja (mobile)" hidden>
+      <a href="o-aplikacji.html"><span>O aplikacji</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a href="#faq"><span>FAQ</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a href="kontakt.html"><span>Kontakt</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a class="store-btn store-btn--primary store-btn--nav" href="pobierz.html">Pobierz</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+
+    <main>
+      <section class="hero" id="top">
+        <div class="hero-copy">
+          <h1><span class="accent">Hyc!</span> → wszystko czego potrzebujesz na szlaku</h1>
+          <p class="hero-tags">Wiaty, chatki, tanie noclegi, miejsca na namiot, woda, apteczki, sklepy, restauracje</p>
+
+          <div class="stores" id="stores">
+            <!-- iOS wymaga apki TestFlight, której większość testerów jeszcze
+                 nie ma — instalacja to więc DWA kliknięcia w ten sam przycisk
+                 (TestFlight, potem po powrocie z App Store, Hyc!). Baton
+                 wygląda jak zwykły „pobierz", modal niżej ustawia oczekiwania
+                 PRZED pierwszym kliknięciem — Apple samo tego nie tłumaczy. -->
+            <button class="store-btn store-btn--dark store-btn--compact" id="btn-ios-open" type="button">
+              <img src="assets/apple.svg" alt="">
+              <span class="label"><small>Pobierz na iPhone</small><strong>TestFlight</strong></span>
+            </button>
+
+            <!-- Android idzie przez zamknięty test Play (grupa Google jako lista
+                 testerów), więc instalacja ma dwa etapy: grupa → opt-in Play.
+                 Tej złożoności NIE pokazujemy na ekranie głównym — baton wygląda
+                 jak zwykły „pobierz", a cały proces prowadzi modal niżej. -->
+            <button class="store-btn store-btn--dark store-btn--compact" id="btn-android-open" type="button">
+              <img src="assets/google.svg" alt="">
+              <span class="label"><small>Pobierz na Androida</small><strong>Google Play</strong></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-art">
+          <!-- Render z Rotato: obracający się telefon z własną obudową wypaloną
+               w kadrze, więc nie opakowujemy go w ramkę rysowaną CSS-em (byłby
+               telefon w telefonie). Kadr jest kwadratowy (1:1) i ma oddech
+               dookoła telefonu wbudowany w materiał — skalujemy całość, nigdy
+               nie kadrujemy i nie dokładamy marginesu w CSS.
+               Podmiana nagrania = wymiana assets/demo.mp4 + postera i podbicie
+               ?v=, bez zmian tutaj — o ile nowy render zachowa kadr 1:1
+               i proporcje obudowy w klatce (0,66 wysokości / 0,31 szerokości;
+               z tego wynika `aspect-ratio` boxa w styles.css). -->
+          <!-- Brak `autoplay` jest celowy: start odpala main.js po 1 sekundzie,
+               żeby pierwsza klatka chwilę postała. Nie dopisuj tu `autoplay` —
+               nagranie ruszyłoby natychmiast i pauza przestałaby istnieć.
+               `preload="metadata"` zamiast `none`, żeby po tej sekundzie
+               materiał ruszył bez doczytywania. -->
+          <video
+            class="hero-video"
+            poster="assets/demo-poster.jpg?v=4"
+            muted loop playsinline
+            preload="metadata"
+            aria-label="Nagranie z aplikacji: nawigacja do najbliższego schronienia">
+            <!-- ?v= podbijasz przy każdej podmianie pliku. `_headers` daje
+                 /assets/* max-age=604800, ale działa tylko na Netlify/
+                 Cloudflare Pages — GitHub Pages, na którym stoi gethyc.com,
+                 ignoruje go i serwuje wszystko z max-age=600. Wersja w URL-u
+                 jest więc jedynym mechanizmem, który działa niezależnie od
+                 hostingu. -->
+            <source src="assets/demo.mp4?v=4" type="video/mp4">
+          </video>
+        </div>
+      </section>
+
+      <!-- Grafika w karcie + nagłówek/bullety obok, kolory/fonty własne. -->
+      <section class="feature-list" id="about" aria-label="O aplikacji">
+        <!-- 6 bulletów, każdy z własną grafiką (assets/feature/feature-1..6.png,
+             kolejność 1:1 z
+             kolejnością bulletów góra-dół) i własnym tekstem (pytanie +
+             odpowiedź). -->
+        <div class="feature-row">
+          <img class="feature-media" src="assets/feature/feature-1.png" alt="" width="440" height="280" loading="lazy">
+          <div class="feature-copy">
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--schronienia"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23 10.4004L21.7998 12L12 4.52539L2.2002 12L1 10.4004L12 2L23 10.4004Z"/><circle cx="12" cy="12" r="3"/><path d="M18 20H6V17.5C6 17.5 8.5 16 12 16C15.5 16 18 17.5 18 17.5V20Z"/></svg><span class="feature-tag-label">Schronienia</span></span>
+            </div>
+            <h3>Dopadła Cię ulewa lub szukasz miejsca na przerwę?</h3>
+            <p>Jednym przyciskiem poprowadzimy cię do najbliższej wiaty</p>
+          </div>
+        </div>
+
+        <div class="feature-row feature-row--reverse">
+          <img class="feature-media" src="assets/feature/feature-2.png" alt="" width="440" height="280" loading="lazy">
+          <div class="feature-copy">
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--noclegi"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M2 18V5H3.81818V13.6667H11.0909V6.73333H18.3636C19.3636 6.73333 20.2197 7.07278 20.9318 7.75167C21.6439 8.43056 22 9.24667 22 10.2V18H20.1818V15.4H3.81818V18H2ZM5.52273 12.0417C4.99242 11.5361 4.72727 10.9222 4.72727 10.2C4.72727 9.47778 4.99242 8.86389 5.52273 8.35833C6.05303 7.85278 6.69697 7.6 7.45455 7.6C8.21212 7.6 8.85606 7.85278 9.38636 8.35833C9.91667 8.86389 10.1818 9.47778 10.1818 10.2C10.1818 10.9222 9.91667 11.5361 9.38636 12.0417C8.85606 12.5472 8.21212 12.8 7.45455 12.8C6.69697 12.8 6.05303 12.5472 5.52273 12.0417Z"/></svg><span class="feature-tag-label">Noclegi</span></span>
+            </div>
+            <h3>Szukasz taniego noclegu na&nbsp;jedną noc?</h3>
+            <p>Tanie i&nbsp;polecane przez społeczność górską noclegi przy szlaku oraz w&nbsp;całej Polsce</p>
+          </div>
+        </div>
+
+        <div class="feature-row">
+          <img class="feature-media" src="assets/feature/feature-3.png" alt="" width="440" height="280" loading="lazy">
+          <div class="feature-copy">
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--woda"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.275 19C12.475 18.9833 12.6458 18.9042 12.7875 18.7625C12.9292 18.6208 13 18.45 13 18.25C13 18.0167 12.925 17.8292 12.775 17.6875C12.625 17.5458 12.4333 17.4833 12.2 17.5C11.5167 17.55 10.7917 17.3625 10.025 16.9375C9.25833 16.5125 8.775 15.7417 8.575 14.625C8.54167 14.4417 8.45417 14.2917 8.3125 14.175C8.17083 14.0583 8.00833 14 7.825 14C7.59167 14 7.4 14.0875 7.25 14.2625C7.1 14.4375 7.05 14.6417 7.1 14.875C7.38333 16.3917 8.05 17.475 9.1 18.125C10.15 18.775 11.2083 19.0667 12.275 19ZM6.2875 19.65C4.7625 18.0833 4 16.1333 4 13.8C4 12.1333 4.6625 10.3208 5.9875 8.3625C7.3125 6.40417 9.31667 4.28333 12 2C14.6833 4.28333 16.6875 6.40417 18.0125 8.3625C19.3375 10.3208 20 12.1333 20 13.8C20 16.1333 19.2375 18.0833 17.7125 19.65C16.1875 21.2167 14.2833 22 12 22C9.71667 22 7.8125 21.2167 6.2875 19.65Z"/></svg><span class="feature-tag-label">Woda</span></span>
+              <span class="feature-tag feature-tag--sklepy"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.9749 2C12.1416 2 12.3005 2.04167 12.4505 2.125C12.6003 2.20831 12.7168 2.31697 12.8001 2.4502L17.2005 9H22.0003C22.3335 9.00007 22.5958 9.1338 22.7874 9.40039C22.979 9.667 23.0338 9.9588 22.9505 10.2754L20.3997 19.5254C20.2664 19.9585 20.025 20.313 19.6751 20.5879C19.3251 20.8628 18.9249 21 18.4749 21H5.52472C5.07505 20.9999 4.6753 20.8626 4.3255 20.5879C3.97558 20.313 3.73327 19.9586 3.59991 19.5254L1.05011 10.2754C0.966816 9.95889 1.02079 9.66695 1.21222 9.40039C1.40388 9.13372 1.66697 9 2.0003 9H6.7503L11.1497 2.4502C11.233 2.31686 11.3503 2.20833 11.5003 2.125C11.6502 2.04176 11.8084 2.00002 11.9749 2ZM9.17511 9H14.8001L11.9749 4.7998L9.17511 9Z"/></svg><span class="feature-tag-label">Sklepy</span></span>
+              <span class="feature-tag feature-tag--restauracje"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.6 21V12.765C6.86333 12.555 6.24583 12.135 5.7475 11.505C5.24917 10.875 5 10.14 5 9.3V3H6.73333V9.3H7.6V3H9.33333V9.3H10.2V3H11.9333V9.3C11.9333 10.14 11.6842 10.875 11.1858 11.505C10.6875 12.135 10.07 12.555 9.33333 12.765V21H7.6ZM16.2667 21V13.8H13.6667V7.5C13.6667 6.255 14.0892 5.19375 14.9342 4.31625C15.7792 3.43875 16.8011 3 18 3V21H16.2667Z"/></svg><span class="feature-tag-label">Restauracje</span></span>
+            </div>
+            <h3>Skończyła Ci się woda lub zapasy?</h3>
+            <p>Znajdź najbliższe źródła, sklepy i&nbsp;miejsca, w&nbsp;których je uzupełnisz</p>
+          </div>
+        </div>
+
+        <div class="feature-row feature-row--reverse">
+          <img class="feature-media" src="assets/feature/feature-4.png" alt="" width="440" height="280" loading="lazy">
+          <div class="feature-copy">
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--namiot"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M2 22V17.35L10.75 5.55L9 3.2L10.6 2L12 3.875L13.4 2L15 3.2L13.25 5.55L22 17.35V22H2ZM8.225 20H15.775L12 14.725L8.225 20Z"/></svg><span class="feature-tag-label">Pod namiot</span></span>
+            </div>
+            <h3>Szukasz miejsca na nocleg pod&nbsp;namiotem?</h3>
+            <p>„Zanocuj w&nbsp;lesie”, miejsca biwakowe lasów państwowych, pola namiotowe i&nbsp;campingowe oraz punkty dodane przez społeczność</p>
+          </div>
+        </div>
+
+        <div class="feature-row">
+          <img class="feature-media" src="assets/feature/feature-6.png" alt="" width="440" height="280" loading="lazy">
+          <div class="feature-copy">
+            <div class="feature-tags">
+              <span class="feature-tag feature-tag--medyczna"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 9H21V15H15V21H9V15H3V9H9V3H15V9Z"/></svg><span class="feature-tag-label">Pomoc medyczna</span></span>
+            </div>
+            <h3>Potrzebujesz pomocy medycznej?</h3>
+            <p>Znajdź najbliższą apteczkę na&nbsp;szlaku, placówkę ratownictwa lub aptekę</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ — nagłówek w lewej kolumnie, accordion w prawej, kolory/fonty
+           własne. Natywny <details>/<summary>: focus, klawiatura (Enter/
+           Space) i stan otwarcia za darmo, bez JS. -->
+      <section class="faq" id="faq" aria-label="Najczęściej zadawane pytania">
+        <div class="faq-intro">
+          <h2 class="faq-heading">Najczęstsze pytania</h2>
+          <p class="faq-subheading">Zebraliśmy odpowiedzi na najczęstsze pytania o Hyc! Jeśli czegoś tu nie znajdziesz, śmiało napisz do nas.</p>
+          <a class="about-link" href="kontakt.html">Kontakt <span aria-hidden="true">→</span></a>
+        </div>
+
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>
+              <span>Czym jest Hyc!?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Hyc! to aplikacja, która bez&nbsp;zatrzymywania się podczas marszu, jedną ręką pomaga znaleźć wszystko, czego potrzebujesz na&nbsp;szlaku. Prowadzi do&nbsp;najbliższego celu przed&nbsp;Tobą lub dookoła. Znajdziesz w&nbsp;niej między innymi schronienia, noclegi, miejsca na namiot, źródła wody, apteczki, restauracje i&nbsp;sklepy.</p>
+            <p class="faq-answer">Możesz też swobodnie przeglądać mapę, wyszukiwać interesujące Cię miejsca i&nbsp;zapisywać je na później.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Czy aplikacja jest darmowa?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Tak. Wszystkie obecne funkcje Hyc! są i&nbsp;zawsze będą darmowe. W&nbsp;przyszłości planujemy rozbudowywać aplikację i&nbsp;mogą pojawić się dodatkowe, płatne funkcje.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Jaki obszar obejmuje Hyc!?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Na ten moment Hyc! obejmuje całą Polskę oraz obszar do 50 km od&nbsp;polskiej granicy na terenie Czech i&nbsp;Słowacji. To dopiero początek. Z&nbsp;czasem będziemy rozszerzać mapę o&nbsp;kolejne państwa.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Jakie noclegi znajdę w&nbsp;aplikacji?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Znajdziesz tu wybrane przez nas niedrogie noclegi oraz miejsca polecane przez społeczność górską, szczególnie te położone przy szlakach, a&nbsp;także ogólnodostępne chatki górskie, bacówki i&nbsp;inne miejsca, w&nbsp;których można przenocować za darmo.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Skąd bierzemy informacje o&nbsp;miejscach?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Bazę budujemy na&nbsp;publicznie dostępnych źródłach, które łączymy i&nbsp;weryfikujemy. Dalej rozwija ją&nbsp;nasza społeczność. Nowe punkty mogą dodawać i&nbsp;aktualizować zarówno użytkownicy, jak i&nbsp;Skauci Hyc!, którzy od&nbsp;czasu do czasu biorą też udział w&nbsp;płatnych akcjach terenowych, sprawdzając miejsca na&nbsp;szlaku i&nbsp;dodając zdjęcia.</p>
+            <p class="faq-answer">Chcesz zostać Skautem Hyc!? Dołącz do społeczności <a href="https://www.facebook.com/groups/1094210523037520/" target="_blank" rel="noopener">tutaj</a>.</p>
+          </details>
+        </div>
+      </section>
+
+      <!-- CTA banner — karta na zdjęciu, wyśrodkowany nagłówek + tekst + baton
+           (assets/skauci-bg.jpg, ta sama ilustracja stylistycznie co "Zanocuj
+           w lesie": łąka/jezioro/góry/zające). Link do grupy Skautów Hyc! na
+           Facebooku — ten sam adres co w FAQ o Skautach; przy zmianie
+           zaktualizuj oba miejsca. -->
+      <section class="scouts-cta">
+        <div class="scouts-cta-inner">
+          <h2>Dołącz do Skautów Hyc!</h2>
+          <p>Skauci Hyc! to osoby, które podczas wędrówek sprawdzają, uzupełniają i&nbsp;dodają punkty na szlaku. Dzięki temu pomagają kolejnym wędrowcom łatwiej i&nbsp;bezpieczniej przejść trasę.</p>
+          <a class="store-btn store-btn--primary store-btn--nav" href="https://www.facebook.com/groups/1094210523037520/" target="_blank" rel="noopener">Dołącz do Skautów</a>
+        </div>
+      </section>
+
+    </main>
+
+    <footer id="kontakt">
+      <span>© <span id="year">2026</span> <strong>Hyc!</strong></span>
+      <span class="spacer"></span>
+      <a href="legal/privacy.html">Prywatność</a>
+      <a href="legal/eula.html">Regulamin</a>
+      <a href="legal/warunki_bezpiecznego_korzystania.html">Bezpieczeństwo</a>
+      <!-- Play wymaga PUBLICZNEGO adresu, pod którym da się zażądać usunięcia
+           konta — także wtedy, gdy usunięcie działa w aplikacji (Data deletion
+           w formularzu App content). Link musi być osiągalny bez logowania. -->
+      <a href="kontakt.html">Kontakt</a>
+    </footer>
+
+  </div>
+
+  <!-- Instalacja na Androida — cały proces w jednym oknie, dwa kroki.
+       Wzorzec: editable stepper (UX Patterns / NN-g) — kroki są klikalne,
+       więc user wraca i skacze swobodnie, nie tylko liniowo. Natywny <dialog>
+       daje focus trap, Escape i backdrop bez własnego kodu. -->
+  <dialog class="flow-modal" id="android-modal" aria-labelledby="modal-title">
+    <p class="modal-intro">By umożliwić testowanie, Google wymaga dwóch kroków. Przeprowadzimy Cię przez nie</p>
+
+    <nav class="stepper" aria-label="Postęp instalacji">
+      <ol>
+        <li><button class="stepper-btn is-current" type="button" data-goto="1"><span class="stepper-num">1</span><span class="stepper-name">Grupa</span></button></li>
+        <li><button class="stepper-btn" type="button" data-goto="2"><span class="stepper-num">2</span><span class="stepper-name">Dostęp</span></button></li>
+      </ol>
+    </nav>
+
+    <div class="modal-body" id="modal-body">
+
+      <section class="modal-step" data-step="1">
+        <p class="modal-eyebrow">Krok 1 z 2</p>
+        <h2 class="modal-title" id="modal-title" tabindex="-1" autofocus>Dołącz do grupy testerów</h2>
+        <p class="modal-lead">Google wymaga dołączenia do grupy testerów. Otworzymy ją w nowej karcie. Kliknij tam <strong>„Dołącz do grupy”</strong> i przejdź do następnego kroku.</p>
+
+        <div class="modal-note">
+          <p class="modal-note-title">Zaloguj się</p>
+          <p class="modal-note-text">Jeśli nie jesteś zalogowany, nie zobaczysz możliwości dołączenia do grupy. Zaloguj się i <strong>kliknij przycisk „Przejdź do grupy” na dole jeszcze raz</strong>. Dopiero wtedy zobaczysz opcję dołączenia, jak na screenshocie poniżej.</p>
+          <p class="modal-note-shot-label">Screenshot</p>
+          <img class="modal-note-shot" src="assets/google-groups-join.png" alt="Strona grupy Google po zalogowaniu, z linkiem „dołącz do grupy”">
+        </div>
+
+        <a class="store-btn store-btn--dark" id="btn-group" href="#" rel="noopener">
+          <img src="assets/google.svg" alt="">
+          <span class="label"><small>Otworzy się w nowej karcie</small><strong>Przejdź do grupy</strong></span>
+        </a>
+      </section>
+
+      <section class="modal-step is-hidden" data-step="2">
+        <p class="modal-eyebrow">Krok 2 z 2</p>
+        <h2 class="modal-title">Aktywuj dostęp w Google Play</h2>
+        <p class="modal-lead">Teraz potwierdzasz udział w testach po stronie Sklepu Play. Użyj <strong>tego samego konta Google</strong>, co przy dołączaniu do grupy. Na otwartej stronie kliknij <strong>„Become a tester”</strong>.</p>
+        <a class="store-btn store-btn--dark" id="btn-android" href="#" rel="noopener">
+          <img src="assets/google.svg" alt="">
+          <span class="label"><small>Otworzy się w nowej karcie</small><strong>Aktywuj dostęp</strong></span>
+        </a>
+      </section>
+
+
+    </div>
+
+    <footer class="modal-nav">
+      <button class="nav-btn" id="nav-back" type="button" disabled>Wstecz</button>
+      <button class="nav-btn is-next" id="nav-next" type="button">Dalej</button>
+    </footer>
+  </dialog>
+
+  <!-- Instalacja na iOS — jedna zewnętrzna akcja (link TestFlight), nie
+       kreator: bez steppera, bez Wstecz/Dalej. Modal istnieje wyłącznie po to,
+       żeby ustawić oczekiwania przed kliknięciem: to nie jest instalacja
+       Hyc! wprost, tylko przejście na stronę Apple z dwoma krokami do
+       wykonania tam.
+       Tekst nie opisuje kroków Apple własnymi słowami — poprzednia wersja
+       („wróć tutaj i kliknij ten sam przycisk jeszcze raz") kłamała: oba
+       kroki (Get TestFlight / View Hyc! Beta) dzieją się na stronie Apple,
+       przez jej przyciski, nie przez powrót na gethyc.com. Streszczanie
+       cudzego UI rozjeżdża się przy każdej zmianie po ich stronie — stąd
+       tylko zapowiedź „będą dwa kroki, zrób je tam".
+       Te same klasy co modal Androida (patrz styles.css), zero nowego CSS. -->
+  <dialog class="flow-modal" id="ios-modal" aria-labelledby="ios-modal-title">
+    <h2 class="modal-title" id="ios-modal-title" tabindex="-1" autofocus>Zainstaluj Hyc! przez TestFlight</h2>
+    <p class="modal-lead">TestFlight to aplikacja Apple do testów beta. Hyc! działa tylko przez nią. Otworzymy stronę Apple, gdzie zainstalujesz najpierw TestFlight, a&nbsp;potem Hyc!</p>
+
+    <a class="store-btn store-btn--dark" id="btn-ios" href="#" rel="noopener">
+      <img src="assets/apple.svg" alt="">
+      <span class="label"><small>Otworzy TestFlight</small><strong>Kontynuuj</strong></span>
+    </a>
+  </dialog>
+
+  <script src="scroll-lock.js?v=1"></script>
+  <script src="config.js?v=20260812"></script>
+  <script src="nav.js?v=20260915c" defer></script>
+  <script src="main.js?v=202609162b"></script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kontakt — Hyc!</title>
+  <meta name="description" content="Skontaktuj się z nami — e-mail i social media Hyc!.">
+  <meta name="theme-color" content="#F0EBE0">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+
+  <link rel="preload" href="assets/fonts/Figtree-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css?v=202609162ao">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="index.html" class="topbar-logo" aria-label="Hyc! — strona główna">
+        <img src="assets/logo.png?v=2" alt="Hyc!" width="105" height="48">
+      </a>
+      <nav class="topbar-nav" aria-label="Główna nawigacja">
+        <a href="o-aplikacji.html">O aplikacji</a>
+        <a href="index.html#faq">FAQ</a>
+        <a href="kontakt.html">Kontakt</a>
+      </nav>
+      <button type="button" class="topbar-burger" aria-expanded="false" aria-controls="mobile-nav" aria-label="Otwórz menu">
+        <svg class="icon-menu" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M2.797 18.293V16.018H21.203V18.293ZM2.797 13.138V10.862H21.203V13.138ZM2.797 7.982V5.707H21.203V7.982Z"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M6.4 19.191L4.809 17.6L10.409 12.0L4.809 6.4L6.4 4.809L12.0 10.409L17.6 4.809L19.191 6.4L13.591 12.0L19.191 17.6L17.6 19.191L12.0 13.591Z"/></svg>
+      </button>
+
+      <a class="store-btn store-btn--primary store-btn--nav" href="pobierz.html">Pobierz</a>
+    </div>
+    <div class="nav-backdrop" aria-hidden="true"></div>
+    <nav class="topbar-nav-mobile" id="mobile-nav" aria-label="Główna nawigacja (mobile)" hidden>
+      <a href="o-aplikacji.html"><span>O aplikacji</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a href="index.html#faq"><span>FAQ</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a href="kontakt.html"><span>Kontakt</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a class="store-btn store-btn--primary store-btn--nav" href="pobierz.html">Pobierz</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <main>
+      <!-- Dwie kolumny jak w .faq (nagłówek+tekst z lewej, lista z prawej).
+           Ikony marek to oryginalne glify (Instagram/Facebook, fill="currentColor")
+           + mail w tym samym filled stylu, dopasowanym do brandów. Opis pod
+           spodem mniejszy i jednolinijkowy. -->
+      <section class="contact-hero">
+        <div class="contact-intro">
+          <h1>Kontakt</h1>
+          <p>Masz pytania albo chcesz się podzielić pomysłami? Napisz do nas albo znajdź nas w&nbsp;social mediach.</p>
+        </div>
+
+        <!-- TODO: podmień href przy Instagramie i Facebooku na docelowe linki
+             (grupa na Facebooku ma już realny adres). -->
+        <ul class="contact-list">
+          <li class="contact-list-item">
+            <div class="contact-meta">
+              <span class="contact-label"><svg class="contact-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>E-mail</span>
+              <p class="contact-desc">Postaramy się szybko odpowiedzieć</p>
+            </div>
+            <span class="contact-value">hyc.kontakt@gmail.com</span>
+          </li>
+          <li class="contact-list-item">
+            <div class="contact-meta">
+              <span class="contact-label"><svg class="contact-icon" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg>Instagram</span>
+              <p class="contact-desc">Zdjęcia ze szlaku i nowości</p>
+            </div>
+            <a href="#" target="_blank" rel="noopener">@hyc <span aria-hidden="true">→</span></a>
+          </li>
+          <li class="contact-list-item">
+            <div class="contact-meta">
+              <span class="contact-label"><svg class="contact-icon" viewBox="0 0 320 512" fill="currentColor" aria-hidden="true"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/></svg>Facebook</span>
+              <p class="contact-desc">Aktualności i kontakt ze społecznością</p>
+            </div>
+            <a href="#" target="_blank" rel="noopener">Hyc! <span aria-hidden="true">→</span></a>
+          </li>
+          <li class="contact-list-item">
+            <div class="contact-meta">
+              <span class="contact-label"><svg class="contact-icon" viewBox="0 0 320 512" fill="currentColor" aria-hidden="true"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/></svg>Grupa na Facebooku</span>
+              <p class="contact-desc">Razem dbamy o&nbsp;punkty na mapie</p>
+            </div>
+            <a href="https://www.facebook.com/groups/1094210523037520/" target="_blank" rel="noopener">Skauci Hyc! <span aria-hidden="true">→</span></a>
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <footer id="kontakt">
+      <span>© <span id="year">2026</span> <strong>Hyc!</strong></span>
+      <span class="spacer"></span>
+      <a href="legal/privacy.html">Prywatność</a>
+      <a href="legal/eula.html">Regulamin</a>
+      <a href="legal/warunki_bezpiecznego_korzystania.html">Bezpieczeństwo</a>
+      <a href="kontakt.html">Kontakt</a>
+    </footer>
+  </div>
+
+  <script src="scroll-lock.js?v=1"></script>
+  <script src="nav.js?v=20260915c" defer></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

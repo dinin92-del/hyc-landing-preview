@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pobierz Hyc!</title>
+  <meta name="description" content="Pobierz Hyc! na iOS i Androida.">
+  <meta name="theme-color" content="#F0EBE0">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <meta name="robots" content="noindex">
+
+  <link rel="preload" href="assets/fonts/Figtree-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css?v=202609162ao">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="index.html" class="topbar-logo" aria-label="Hyc! — strona główna">
+        <img src="assets/logo.png?v=2" alt="Hyc!" width="105" height="48">
+      </a>
+      <nav class="topbar-nav" aria-label="Główna nawigacja">
+        <a href="o-aplikacji.html">O aplikacji</a>
+        <a href="index.html#faq">FAQ</a>
+        <a href="kontakt.html">Kontakt</a>
+      </nav>
+
+      <!-- Ta strona JEST celem CTA z nawigacji, więc drugiego "Pobierz za
+           darmo" tu nie ma — ale na ≥768px `justify-content: space-between`
+           w .topbar-inner liczy odstępy logo<->nav / nav<->trzeci-element
+           z SZEROKOŚCI trzech dzieci. Bez trzeciego dziecka nav przesunąłby
+           się w stronę prawej krawędzi (inne miejsce niż na index.html).
+           Niewidzialny placeholder o IDENTYCZNYCH klasach/tekście zajmuje
+           dokładnie tyle samo miejsca co prawdziwy button na desktopie.
+           Na <768px oba (realny button na innych stronach I ten placeholder)
+           znikają razem przez `.topbar-inner .store-btn--nav{display:none}`
+           — mobilny topbar to wtedy wszędzie po prostu logo+hamburger. -->
+      <button type="button" class="topbar-burger" aria-expanded="false" aria-controls="mobile-nav" aria-label="Otwórz menu">
+        <svg class="icon-menu" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M2.797 18.293V16.018H21.203V18.293ZM2.797 13.138V10.862H21.203V13.138ZM2.797 7.982V5.707H21.203V7.982Z"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M6.4 19.191L4.809 17.6L10.409 12.0L4.809 6.4L6.4 4.809L12.0 10.409L17.6 4.809L19.191 6.4L13.591 12.0L19.191 17.6L17.6 19.191L12.0 13.591Z"/></svg>
+      </button>
+
+      <span class="store-btn store-btn--primary store-btn--nav" aria-hidden="true" style="visibility:hidden">Pobierz</span>
+    </div>
+    <div class="nav-backdrop" aria-hidden="true"></div>
+    <nav class="topbar-nav-mobile" id="mobile-nav" aria-label="Główna nawigacja (mobile)" hidden>
+      <a href="o-aplikacji.html"><span>O aplikacji</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a href="index.html#faq"><span>FAQ</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a href="kontakt.html"><span>Kontakt</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <main>
+      <!-- Te same przyciski + modale co pod hero na stronie głównej — kopia
+           zamiast odsyłacza do #stores, bo ta strona jest celem nav-CTA, nie
+           skrótem z powrotem na hero.
+           TODO: treść mówi o wersji docelowej aplikacji, nie o becie — beta
+           jest tylko tym, do czego linki faktycznie prowadzą, dopóki apka nie
+           wyjdzie publicznie na App Store / Google Play. Gdy wyjdzie,
+           `config.js` (testflight/googleGroup/googlePlay) i teksty w modalach
+           niżej idą na realne linki sklepowe — bez zmiany tej struktury. -->
+      <section class="pobierz-hero">
+        <h1>Pobierz Hyc!</h1>
+        <p class="hero-tags">Jednym przyciskiem poprowadzimy Cię do&nbsp;najbliższego miejsca, które potrzebujesz na&nbsp;szlaku.</p>
+
+        <div class="stores" id="stores">
+          <button class="store-btn store-btn--dark store-btn--compact" id="btn-ios-open" type="button">
+            <img src="assets/apple.svg" alt="">
+            <span class="label"><small>Pobierz na iPhone</small><strong>TestFlight</strong></span>
+          </button>
+
+          <button class="store-btn store-btn--dark store-btn--compact" id="btn-android-open" type="button">
+            <img src="assets/google.svg" alt="">
+            <span class="label"><small>Pobierz na Androida</small><strong>Google Play</strong></span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer id="kontakt">
+      <span>© <span id="year">2026</span> <strong>Hyc!</strong></span>
+      <span class="spacer"></span>
+      <a href="legal/privacy.html">Prywatność</a>
+      <a href="legal/eula.html">Regulamin</a>
+      <a href="legal/warunki_bezpiecznego_korzystania.html">Bezpieczeństwo</a>
+      <a href="kontakt.html">Kontakt</a>
+    </footer>
+  </div>
+
+  <!-- Kopia obu modali z index.html (Android: kreator 2 kroki, iOS: jedna
+       zewnętrzna akcja) — main.js jest wspólny i wiąże się po tych samych
+       id, więc zachowanie jest bajt w bajt takie samo jak na stronie głównej. -->
+  <dialog class="flow-modal" id="android-modal" aria-labelledby="modal-title">
+    <p class="modal-intro">By umożliwić testowanie, Google wymaga dwóch kroków. Przeprowadzimy Cię przez nie</p>
+
+    <nav class="stepper" aria-label="Postęp instalacji">
+      <ol>
+        <li><button class="stepper-btn is-current" type="button" data-goto="1"><span class="stepper-num">1</span><span class="stepper-name">Grupa</span></button></li>
+        <li><button class="stepper-btn" type="button" data-goto="2"><span class="stepper-num">2</span><span class="stepper-name">Dostęp</span></button></li>
+      </ol>
+    </nav>
+
+    <div class="modal-body" id="modal-body">
+
+      <section class="modal-step" data-step="1">
+        <p class="modal-eyebrow">Krok 1 z 2</p>
+        <h2 class="modal-title" id="modal-title" tabindex="-1" autofocus>Dołącz do grupy testerów</h2>
+        <p class="modal-lead">Google wymaga dołączenia do grupy testerów. Otworzymy ją w nowej karcie. Kliknij tam <strong>„Dołącz do grupy”</strong> i przejdź do następnego kroku.</p>
+
+        <div class="modal-note">
+          <p class="modal-note-title">Zaloguj się</p>
+          <p class="modal-note-text">Jeśli nie jesteś zalogowany, nie zobaczysz możliwości dołączenia do grupy. Zaloguj się i <strong>kliknij przycisk „Przejdź do grupy” na dole jeszcze raz</strong>. Dopiero wtedy zobaczysz opcję dołączenia, jak na screenshocie poniżej.</p>
+          <p class="modal-note-shot-label">Screenshot</p>
+          <img class="modal-note-shot" src="assets/google-groups-join.png" alt="Strona grupy Google po zalogowaniu, z linkiem „dołącz do grupy”">
+        </div>
+
+        <a class="store-btn store-btn--dark" id="btn-group" href="#" rel="noopener">
+          <img src="assets/google.svg" alt="">
+          <span class="label"><small>Otworzy się w nowej karcie</small><strong>Przejdź do grupy</strong></span>
+        </a>
+      </section>
+
+      <section class="modal-step is-hidden" data-step="2">
+        <p class="modal-eyebrow">Krok 2 z 2</p>
+        <h2 class="modal-title">Aktywuj dostęp w Google Play</h2>
+        <p class="modal-lead">Teraz potwierdzasz udział w testach po stronie Sklepu Play. Użyj <strong>tego samego konta Google</strong>, co przy dołączaniu do grupy. Na otwartej stronie kliknij <strong>„Become a tester”</strong>.</p>
+        <a class="store-btn store-btn--dark" id="btn-android" href="#" rel="noopener">
+          <img src="assets/google.svg" alt="">
+          <span class="label"><small>Otworzy się w nowej karcie</small><strong>Aktywuj dostęp</strong></span>
+        </a>
+      </section>
+
+    </div>
+
+    <footer class="modal-nav">
+      <button class="nav-btn" id="nav-back" type="button" disabled>Wstecz</button>
+      <button class="nav-btn is-next" id="nav-next" type="button">Dalej</button>
+    </footer>
+  </dialog>
+
+  <dialog class="flow-modal" id="ios-modal" aria-labelledby="ios-modal-title">
+    <h2 class="modal-title" id="ios-modal-title" tabindex="-1" autofocus>Zainstaluj Hyc! przez TestFlight</h2>
+    <p class="modal-lead">TestFlight to aplikacja Apple do testów beta. Hyc! działa tylko przez nią. Otworzymy stronę Apple, gdzie zainstalujesz najpierw TestFlight, a&nbsp;potem Hyc!</p>
+
+    <a class="store-btn store-btn--dark" id="btn-ios" href="#" rel="noopener">
+      <img src="assets/apple.svg" alt="">
+      <span class="label"><small>Otworzy TestFlight</small><strong>Kontynuuj</strong></span>
+    </a>
+  </dialog>
+
+  <script src="scroll-lock.js?v=1"></script>
+  <script src="config.js?v=20260812"></script>
+  <script src="nav.js?v=20260915c" defer></script>
+  <script src="main.js?v=202609162b"></script>
+</body>
+</html>

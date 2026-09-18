@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>O aplikacji — Hyc!</title>
+  <meta name="description" content="Dlaczego powstał Hyc! i kto go tworzy.">
+  <meta name="theme-color" content="#F0EBE0">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+
+  <link rel="preload" href="assets/fonts/Figtree-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css?v=202609162ao">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="index.html" class="topbar-logo" aria-label="Hyc! — strona główna">
+        <img src="assets/logo.png?v=2" alt="Hyc!" width="105" height="48">
+      </a>
+      <nav class="topbar-nav" aria-label="Główna nawigacja">
+        <a href="o-aplikacji.html">O aplikacji</a>
+        <a href="index.html#faq">FAQ</a>
+        <a href="kontakt.html">Kontakt</a>
+      </nav>
+      <button type="button" class="topbar-burger" aria-expanded="false" aria-controls="mobile-nav" aria-label="Otwórz menu">
+        <svg class="icon-menu" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M2.797 18.293V16.018H21.203V18.293ZM2.797 13.138V10.862H21.203V13.138ZM2.797 7.982V5.707H21.203V7.982Z"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="currentColor" d="M6.4 19.191L4.809 17.6L10.409 12.0L4.809 6.4L6.4 4.809L12.0 10.409L17.6 4.809L19.191 6.4L13.591 12.0L19.191 17.6L17.6 19.191L12.0 13.591Z"/></svg>
+      </button>
+
+      <a class="store-btn store-btn--primary store-btn--nav" href="pobierz.html">Pobierz</a>
+    </div>
+    <div class="nav-backdrop" aria-hidden="true"></div>
+    <nav class="topbar-nav-mobile" id="mobile-nav" aria-label="Główna nawigacja (mobile)" hidden>
+      <a href="o-aplikacji.html"><span>O aplikacji</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a href="index.html#faq"><span>FAQ</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a href="kontakt.html"><span>Kontakt</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a class="store-btn store-btn--primary store-btn--nav" href="pobierz.html">Pobierz</a>
+    </nav>
+  </header>
+
+  <div class="wrap">
+    <main>
+      <!-- Wąska wyśrodkowana kolumna (h1 + akapity), potem sekcja zespołu,
+           na końcu kontakt — strona z tekstem do czytania, nie ekran akcji
+           z przyciskami. -->
+      <section class="about-hero">
+        <h1>O aplikacji</h1>
+
+        <div class="about-body">
+          <p>Szukanie schronienia, noclegu czy źródła wody na standardowej mapie bywa czasochłonne. Informacje są rozproszone po wielu źródłach. Brakowało nam aplikacji, która zbierze wszystkie ważne dla wędrowca punkty i <strong>bez zatrzymywania się, obsługując jedną ręką, poprowadzi do najbliższego z nich</strong>.</p>
+          <p>Dlatego powstała Hyc! Aplikacja stworzona przez górzarzy dla&nbsp;górzarzy. Chcemy, żeby z&nbsp;czasem objęła kolejne europejskie kraje, ułatwiając rozeznanie w&nbsp;mniej znanym terenie bez&nbsp;czasochłonnej analizy trasy.</p>
+        </div>
+      </section>
+
+      <section class="about-team">
+        <h2>Zespół Hyc!</h2>
+        <p class="about-team-text">W&nbsp;skład zespołu wchodzą <strong>Filip Kołaczyk</strong>, <strong>Piotr Sochacki</strong> oraz <strong>Józef&nbsp;Kołaczyk</strong>, odpowiedzialny za&nbsp;kod i&nbsp;projekt aplikacji.</p>
+      </section>
+
+      <section class="about-contact">
+        <h2>Kontakt</h2>
+        <p>Masz pytania albo chcesz się podzielić pomysłami? Napisz do nas.</p>
+        <a class="about-link" href="kontakt.html">Kontakt <span aria-hidden="true">→</span></a>
+      </section>
+    </main>
+
+    <footer id="kontakt">
+      <span>© <span id="year">2026</span> <strong>Hyc!</strong></span>
+      <span class="spacer"></span>
+      <a href="legal/privacy.html">Prywatność</a>
+      <a href="legal/eula.html">Regulamin</a>
+      <a href="legal/warunki_bezpiecznego_korzystania.html">Bezpieczeństwo</a>
+      <a href="kontakt.html">Kontakt</a>
+    </footer>
+  </div>
+
+  <script src="scroll-lock.js?v=1"></script>
+  <script src="nav.js?v=20260915c" defer></script>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
