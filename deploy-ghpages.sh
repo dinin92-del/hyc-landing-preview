@@ -1,16 +1,24 @@
 #!/usr/bin/env bash
-# Publish landing/ to GitHub Pages (repo: dinin92-del/hyc-landing).
+# Publish landing/ to GitHub Pages (repo: $REPO, default dinin92-del/hyc-landing).
 # One command to update the live site after editing landing/ (e.g. config.js).
 # Uses the already-authenticated `gh`/git — no passwords entered here.
 # macOS only: `sed -i ''` to składnia BSD (na GNU/Linux trzeba `sed -i`).
 #
-#   cd landing && ./deploy-ghpages.sh
+#   cd landing && ./deploy-ghpages.sh                              # prod (gethyc.com repo)
+#   REPO=dinin92-del/hyc-landing-preview ./deploy-ghpages.sh        # WIP preview, osobny repo
+#   (albo krócej: ./deploy-preview.sh)
 #
-# Live URL: https://dinin92-del.github.io/hyc-landing/
+# ⛔ REPO dobrany świadomie — inny repo niż gethyc.com, żeby zwykły deploy WIP-a
+# NIE nadpisywał CNAME/treści produkcji (0916: dokładnie to się stało — plain
+# deploy bez SITE_DOMAIN skasował CNAME na dinin92-del/hyc-landing i gethyc.com
+# padło na 404, bo oba linki dzieliły jeden branch jednego repo).
+#
+# Live URL: https://dinin92-del.github.io/<REPO-name>/
 set -euo pipefail
 cd "$(dirname "$0")"
 
-REPO="dinin92-del/hyc-landing"
+REPO="${REPO:-dinin92-del/hyc-landing}"
+REPO_NAME="${REPO#*/}"
 # Własna domena: ustaw SITE_DOMAIN, gdy DNS JUŻ wskazuje na GitHub Pages.
 #   SITE_DOMAIN=gethyc.com ./deploy-ghpages.sh
 # Wtedy skrypt dokłada plik CNAME (GH Pages tego wymaga) i wstawia absolutne
@@ -21,7 +29,7 @@ SITE_DOMAIN="${SITE_DOMAIN:-}"
 if [[ -n "$SITE_DOMAIN" ]]; then
   BASE="https://$SITE_DOMAIN"
 else
-  BASE="https://dinin92-del.github.io/hyc-landing"
+  BASE="https://dinin92-del.github.io/$REPO_NAME"
 fi
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT

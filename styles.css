@@ -100,11 +100,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  /* Cyfry o równej szerokości i prawdziwe kerningowanie — „27 tysięcy" i daty
-     w stopce przestają tańczyć. */
-  font-variant-numeric: tabular-nums;
   font-kerning: normal;
 }
+
+/* Zawijanie globalnie: akapity bez jednowyrazowej ostatniej linii, nagłówki
+   h2 równo rozłożone (h1 ma balance w swojej regule, h3 pretty — patrz
+   .feature-copy h3). */
+p { text-wrap: pretty; }
+h2 { text-wrap: balance; }
 
 a { color: var(--green-dark); }
 
@@ -329,6 +332,17 @@ a { color: var(--green-dark); }
   .nav-backdrop { display: none !important; }
   .topbar-inner .store-btn--nav { display: inline-flex; }
 }
+
+/* Te same paddingi co w CTA "Dołącz do Skautów" (.scouts-cta .store-btn--nav:
+   height:auto + padding:16px 32px, realnie 51px). Żeby całkowita wysokość
+   topbaru (92px) nie urosła, .topbar-inner traci na pionowym paddingu
+   dokładnie tyle, ile button zyskuje: (92 − 51) / 2 = 20,5px zamiast 24px.
+   Tylko na ≥768px — na mobile ten button jest ukryty (display:none wyżej),
+   a .topbar-inner poza tym media query zostaje przy 24px dla panelu mobile. */
+@media (min-width: 768px) {
+  .topbar-inner { padding: 20.5px 20px; }
+  .topbar-inner .store-btn--nav { height: auto; padding: 16px 32px; }
+}
 /* .store-btn--nav / .store-btn--primary są zdefiniowane w sekcji "Store
    buttons" niżej, po bazowym .store-btn — musi tak zostać: source order
    decyduje, a min-width:0 tutaj przegrałoby z min-width:208px z bazy przy
@@ -397,6 +411,23 @@ h1 {
 /* Akcent na wordmarku. */
 .accent { color: var(--green-dark); }
 
+/* Hero h1: interlinia 1.2 (research 0919): systemy designu dają nagłówkom
+   1.1–1.25 i ZMNIEJSZAJĄ współczynnik wraz z rozmiarem — Material 3 Display
+   Small 36/44 = 1.22, Medium 45/52 = 1.16, Large 57/64 = 1.12; ogólna
+   rekomendacja dla dużych krojów to 1.2. Tylko w hero — pozostałe h1 zostają
+   jak były.
+   Rozmiar: fraza "czego potrzebujesz" (sklejona &nbsp; w index.html) ma 8,58em
+   szerokości i musi zmieścić się w kolumnie. Kolumna hero-copy ma 477px w
+   zakresie 1024-1099px, więc sufit 54px (463px frazy, ~3% zapasu); od 1100px
+   kolumna jest szersza i dostaje 58px (patrz blok ≥1100px niżej).
+   Poniżej ~517px viewportu font schodzi płynnie, dzielnik 8,84 = 8,58 + 3%
+   zapasu na różnice renderowania między przeglądarkami. Sufit zapobiega
+   rozdęciu w poziomym telefonie / wąskim tablecie. */
+.hero h1 {
+  font-size: min(54px, calc((100vw - 40px) / 8.84));
+  line-height: 1.2;
+}
+
 /* Rozwinięcie nagłówka — zajmuje miejsce pod h1 przed przyciskami. */
 .hero-tags {
   /* margin-left/right:auto (nie 0) — blok ma max-width:46ch węższy niż
@@ -407,7 +438,6 @@ h1 {
   line-height: 1.5;
   color: var(--bark);
   max-width: 46ch;
-  text-wrap: pretty;
 }
 @media (min-width: 1024px) {
   .hero-tags { margin-left: 0; margin-right: 0; }
@@ -474,7 +504,7 @@ h1 {
   letter-spacing: 0;
   opacity: 0.7;
 }
-.store-btn .label strong { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+.store-btn .label strong { font-size: 18px; font-weight: 600; }
 
 /* Kompaktowy wariant — WYŁĄCZNIE dwa batony na ekranie głównym, żeby nie
    konkurowały wagą z nagłówkiem. Kreator instalacji zostaje w pełnym
@@ -561,7 +591,6 @@ h1 {
   /* line-height:1 naprawia pionowe centrowanie tekstu. */
   line-height: 1;
   font-weight: 600;
-  letter-spacing: -0.01em;
 }
 
 /* ---- Kreator instalacji na Androida ----
@@ -1031,7 +1060,7 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
 
 /* Wyśrodkowane na mobile, left-align od 1024px — patrz blok niżej.
    max-width 480px — dobra praktyka czytelności to ok. 45-75 znaków w linii;
-   przy 18px .feature-copy p to ~480px. Od 1024px (2 kolumny) max-width
+   przy 17px .feature-copy p to ~480px. Od 1024px (2 kolumny) max-width
    resetowany w bloku niżej, kolumnę ogranicza już grid. */
 .feature-copy {
   text-align: center;
@@ -1054,11 +1083,9 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
 }
 .feature-copy p {
   margin: 0;
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.5;
-  letter-spacing: 0.1px;
   color: var(--bark);
-  text-wrap: pretty;
 }
 /* Najmniejsze telefony — standardowy zakres dla nagłówków sekcji na mobile to
    24-28px, dla tekstu 15-17px. .feature-copy dostaje WŁASNE 16px paddingu
@@ -1069,7 +1096,6 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
 @media (max-width: 760px) {
   .feature-copy { padding-left: 16px; padding-right: 16px; }
   .feature-copy h3 { font-size: 28px; line-height: 1.2; }
-  .feature-copy p { font-size: 17px; }
 }
 
 
@@ -1107,10 +1133,11 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
   font-size: 17px;
   line-height: 1.5;
   color: var(--bark);
-  text-wrap: pretty;
 }
 .faq-intro .about-link { margin-top: 20px; }
-.faq-list { display: flex; flex-direction: column; }
+/* max-width: w jednej kolumnie (do 1023px) lista rozciągała się do ~745px, czyli
+   ok. 85 znaków w linii — powyżej zalecanych 45–75. 600px daje ok. 70. */
+.faq-list { display: flex; flex-direction: column; max-width: 600px; }
 .faq-item {
   border-bottom: 1px solid rgba(138, 128, 112, 0.24);
 }
@@ -1149,7 +1176,6 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
   padding: 0 0 18px;
   font-size: 17px;
   line-height: 1.55;
-  letter-spacing: 0.15px;
   color: var(--bark);
 }
 
@@ -1202,12 +1228,9 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
 }
 .about-body p {
   margin: 0 0 20px;
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.6;
   color: var(--bark);
-  /* Greedy wrap zostawiał sieroty/dziwne złamania — ten sam fix co na
-     .feature-copy p. */
-  text-wrap: pretty;
 }
 .about-body p:last-child { margin-bottom: 0; }
 /* 600, nie domyślne UA 700 — wyważony akcent zamiast pełnego bold. Dotyczy
@@ -1230,13 +1253,13 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
 }
 .about-team-text {
   margin: 0;
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.6;
   color: var(--bark);
 }
 
 .about-contact { padding-bottom: 80px; }
-.about-contact p { margin: 0 0 20px; font-size: 18px; line-height: 1.6; color: var(--bark); }
+.about-contact p { margin: 0 0 20px; font-size: 17px; line-height: 1.6; color: var(--bark); }
 .about-link {
   display: inline-flex;
   align-items: center;
@@ -1352,20 +1375,10 @@ footer .spacer { flex: 1 1 auto; }
   .about-hero { margin-top: 80px; }
   .feature-list { margin-top: 88px; }
   .feature-row + .feature-row { margin-top: 104px; }
-  .faq-heading { font-size: 34px; }
-  .hero-tags { font-size: 19px; }
+  .faq-heading { font-size: 32px; }
   footer { margin-top: 96px; }
   .scouts-cta { margin-top: 200px; }
-  /* FAQ przechodzi na 2 kolumny już przy 760px, nie 1024 jak feature-row/
-     kontakt — nie potrzebuje tyle miejsca co obraz+tekst obok siebie: lewa
-     kolumna to tylko nagłówek+podtytuł, prawa lista pytań, obie mieszczą się
-     wygodnie już tutaj. */
-  .faq {
-    grid-template-columns: 1fr 1fr;
-    gap: 56px;
-    margin-top: 160px;
-    align-items: start;
-  }
+  .faq { margin-top: 160px; }
 }
 
 /* ---- Dwie kolumny: feature bullets / FAQ / kontakt ----
@@ -1401,6 +1414,13 @@ footer .spacer { flex: 1 1 auto; }
     object-fit: contain;
   }
   .feature-tags { justify-content: flex-start; }
+  /* FAQ w dwóch kolumnach dopiero od 1024px: przy 760–1023px równe kolumny
+     dawały liście pytań ~345px, czyli ok. 38 znaków w linii (poniżej 45). */
+  .faq {
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+  }
   .feature-copy { text-align: left; max-width: none; margin-left: 0; margin-right: 0; }
   /* Naprzemienny układ — co drugi bullet ma grafikę z prawej strony tekstu.
      Kolumny .feature-row są 1fr 1fr (równe), więc reverse dziedziczy ten sam
@@ -1466,13 +1486,15 @@ footer .spacer { flex: 1 1 auto; }
   }
 }
 
-/* ---- Szeroki desktop: hero na siatce 12-kolumnowej ----
-   12 kolumn liczonych od szerokości hero (~1185px), a nie od .wrap (960px):
-   zdrowa kolumna to 60-80px (UX Design Institute). 960/12 z rynną 24 daje
-   58px — poniżej pasma; 1185/12 daje 76,8px — w paśmie. Rynna 24px jest
-   stała (nie procentowa), wielokrotność 8 (Material, Spectrum).
+/* ---- Szeroki desktop: hero w dwóch kolumnach 1,2fr : 1fr ----
+   Wcześniej 12-kolumnowa siatka z podziałem 6 + 6. Nagłówek hero potrzebuje
+   kolumny tekstu o szerokości ok. 520px (fraza "czego potrzebujesz" przy 58px
+   to 498px), więc kolumna telefonu jest węższa (478px -> 435px). Telefon i
+   film zostają tej samej wielkości: wysokość kadru jest stała (643px), ścinane
+   jest tylko puste tło po bokach, nie sam telefon.
+   Rynna 24px jest stała (nie procentowa), wielokrotność 8 (Material, Spectrum).
 
-   Ta siatka obowiązuje tylko w hero — sekcja kafelków i stopka zostają na
+   Ten układ obowiązuje tylko w hero — sekcja kafelków i stopka zostają na
    swoich 6 kolumnach z rynną 14px, ujednolicenie byłoby osobną decyzją.
 
    Hero wychodzi poza .wrap w prawo, do marginesu okna: lewa krawędź tekstu
@@ -1481,7 +1503,7 @@ footer .spacer { flex: 1 1 auto; }
    czego wypuszczać. 760-1099px dostaje siatkę 8-kolumnową wyżej. */
 @media (min-width: 1100px) {
   .hero {
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
     column-gap: 24px;
     /* start, nie center — center (z bloku 1024px, łata na skok w wąskim
        tablecie) zjeżdżał tekst za nisko względem telefonu na desktopie. */
@@ -1492,20 +1514,24 @@ footer .spacer { flex: 1 1 auto; }
        się tam, gdzie .wrap (kafelki, stopka) — marginesy równe z definicji,
        bo .wrap jest wyśrodkowany. */
   }
-  /* Podział 6 + 6 (nie asymetryczny): kwadrat dochodzi do prawej krawędzi
-     treści dokładnie tak, jak tekst do lewej, więc równe przestrzenie
-     z prawej i lewej wychodzą z samej siatki, nie z ręcznego dobierania capa. */
+  /* Kwadrat dochodzi do prawej krawędzi treści dokładnie tak, jak tekst do
+     lewej — równe przestrzenie z prawej i lewej wychodzą z samego układu. */
   .hero-copy {
-    grid-column: 1 / span 6;
+    grid-column: 1;
     /* To samo wyrównanie do widocznej obudowy co w bloku ≥760px, przeliczone
-       na szerszą kolumnę tego breakpointu — proporcja wysokości boxa zostaje,
-       px rośnie razem z boxem. */
+       na wysokość kadru tego breakpointu (643px) — telefon ma tu ten sam
+       rozmiar co przy kolumnie 478px. */
     margin-top: 125px;
   }
-  /* Żadnego max-width ani justify-self na .hero-art — szerokość i pozycję
-     ustala wyłącznie grid-column: kwadrat po prostu JEST kolumnami 7-12. */
-  .hero-art { grid-column: 7 / span 6; }
+  /* Szerokość ustala grid-column (435px). Wysokość jest stała, nie z
+     aspect-ratio: 643px = 478 x 1,3452, czyli kadr sprzed zwężenia kolumny.
+     Film ma wysokość kadru + 64px i jest kwadratem, więc telefon zachowuje
+     wielkość, a zwężona kolumna ścina jedynie puste tło po bokach. */
+  .hero-art { grid-column: 2; aspect-ratio: auto; height: 643px; }
   h1 { font-size: 52px; }
+  /* Kolumna tekstu ma tu ok. 521px; fraza "czego potrzebujesz" przy 58px to
+     498px (~4% zapasu). Powyżej 58px zapasu już nie ma. */
+  .hero h1 { font-size: 58px; }
   .hero-tags { margin-bottom: 40px; }
 }
 
@@ -1571,7 +1597,6 @@ footer .spacer { flex: 1 1 auto; }
   font-size: 17px;
   line-height: 1.6;
   color: var(--bark);
-  text-wrap: pretty;
 }
 .scouts-cta .store-btn--nav {
   height: auto;
