@@ -236,20 +236,22 @@ a { color: var(--green-dark); }
 .topbar-burger[aria-expanded="true"] .icon-menu { display: none; }
 .topbar-burger[aria-expanded="true"] .icon-close { display: block; }
 
-/* CTA znika z topbaru na mobile — zamiast ściskać się obok hamburgera, ląduje
-   jako pierwszy, wyróżniony element panelu (patrz .topbar-nav-mobile
-   .store-btn--nav niżej). Placeholder na pobierz.html (visibility:hidden)
-   znika tym samym selektorem; ten panel po prostu nie ma pozycji CTA (user
-   jest już na stronie pobierania). */
+/* CTA znika z topbaru na mobile — na wąskim ekranie miejsce zajmuje wyłącznie
+   logo+hamburger, bez ściskania obok nich. Panel hamburgera (niżej) niesie
+   tylko linki nawigacji, bez CTA — pobrać apkę można ze strony głównej
+   (baton w hero) albo wprost pod /pobierz.html. */
 @media (max-width: 767px) {
   .topbar-inner .store-btn--nav { display: none; }
 }
 
-/* Panel jako bottom sheet: fixed do dołu, zaokrąglone górne rogi, wjeżdża
-   z translateY(100%), tło pod spodem przyciemnione (.nav-backdrop). Bez
-   gestów swipe (poza zakresem). Sterowanie klasą .is-open w nav.js, nie
-   atrybutem hidden — transform potrzebuje elementu cały czas w layoucie,
-   żeby mógł się animować. */
+/* Panel jako dropdown pod paskiem, nie bottom sheet: wisi na .topbar
+   (position:sticky, więc jest poprawnym kontekstem pozycjonowania dla
+   position:absolute) i zaczyna się dokładnie na jego dolnej krawędzi
+   (top:100%) — bez przepisywania wysokości paska na sztywno w drugim
+   miejscu. Wjeżdża lekkim zsunięciem + fade, jak zwykłe rozwijane menu, nie
+   wysuwa się od dołu ekranu. Tło pod spodem przyciemnione (.nav-backdrop).
+   Sterowanie klasą .is-open w nav.js, nie atrybutem hidden — transform
+   potrzebuje elementu cały czas w layoucie, żeby mógł się animować. */
 .nav-backdrop {
   position: fixed;
   inset: 0;
@@ -268,23 +270,24 @@ a { color: var(--green-dark); }
    w layoucie zamiast realnie zniknąć. */
 .topbar-nav-mobile[hidden] { display: none; }
 .topbar-nav-mobile {
-  position: fixed;
+  position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
+  top: 100%;
   z-index: 200;
   display: flex;
   flex-direction: column;
-  max-height: calc(100dvh - 96px);
+  max-height: calc(100dvh - 120px);
   overflow-y: auto;
   background: var(--cream);
-  border-radius: 20px 20px 0 0;
-  box-shadow: 0 -12px 32px rgba(31, 26, 20, 0.18);
-  padding: 8px 20px calc(20px + env(safe-area-inset-bottom, 0px));
-  transform: translateY(100%);
-  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 16px 32px rgba(31, 26, 20, 0.18);
+  padding: 8px 20px 20px;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 200ms ease, transform 200ms ease;
 }
-.topbar-nav-mobile.is-open { transform: translateY(0); }
+.topbar-nav-mobile.is-open { opacity: 1; transform: translateY(0); }
 /* Bez dividerów między pozycjami linków. Strzałka po prawej zamiast samego
    tekstu. */
 .topbar-nav-mobile a {
@@ -300,30 +303,6 @@ a { color: var(--green-dark); }
   text-decoration: none;
 }
 .topbar-nav-mobile a .nav-arrow { flex-shrink: 0; color: #000; }
-/* CTA w panelu musi nosić TAKŻE .store-btn--nav (jak baton w topbarze na
-   desktopie), nie sam bazowy .store-btn — inny wariant. Poniższy reset musi
-   kopiować wartości --nav: .topbar-nav-mobile a (specyficzność 0,1,1) bije
-   samo .store-btn--nav (0,1,0), więc bez jawnego resetu tutaj baton
-   dostawałby padding/min-height/font-size linku listy. Dwie klasy (0,2,0)
-   wygrywają z powrotem. */
-.topbar-nav-mobile .store-btn--nav {
-  margin-top: 12px;
-  min-height: 0;
-  padding: 0 22px;
-  font-size: 17px;
-  /* font-weight musi być powtórzony tutaj — bez niego .topbar-nav-mobile a
-     wygrywa specyficznością właśnie na tej właściwości mimo reszty resetu
-     wyżej. (height/line-height/letter-spacing nie potrzebują restatementu:
-     .topbar-nav-mobile a ich nie ustawia, więc baza .store-btn--nav i tak
-     wygrywa bez konkurencji.) */
-  font-weight: 600;
-  /* Ten sam mechanizm: .topbar-nav-mobile a ma color:espresso z tą samą
-     specyficznością co .store-btn--primary{color:#fff} — bez tego espresso
-     wygrywał i tekst wychodził brązowy zamiast białego. */
-  color: #ffffff;
-  width: 100%;
-  justify-content: center;
-}
 
 @media (min-width: 768px) {
   .topbar-nav { display: flex; }

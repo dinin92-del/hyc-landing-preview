@@ -33,7 +33,7 @@
        wersji w URL-u przeglądarka po deployu potrafi skleić nowy index.html
        ze starym styles.css. Wersja w URL-u wymusza świeże pobranie, bo to
        inny zasób. -->
-  <link rel="stylesheet" href="styles.css?v=202609162ba">
+  <link rel="stylesheet" href="styles.css?v=202609162bg">
 </head>
 <body>
   <!-- Górny pasek: strona ma sekcje pod hero (O aplikacji, FAQ, Kontakt)
@@ -68,7 +68,6 @@
       <a href="o-aplikacji.html"><span>O aplikacji</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
       <a href="#faq"><span>FAQ</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
       <a href="kontakt.html"><span>Kontakt</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
-      <a class="store-btn store-btn--primary store-btn--nav" href="pobierz.html">Pobierz</a>
     </nav>
   </header>
 
@@ -198,6 +197,19 @@
         </div>
       </section>
 
+      <!-- CTA banner — karta na zdjęciu, wyśrodkowany nagłówek + tekst + baton
+           (assets/skauci-bg.jpg, ta sama ilustracja stylistycznie co "Zanocuj
+           w lesie": łąka/jezioro/góry/zające). Link do grupy Skautów Hyc! na
+           Facebooku — ten sam adres co w FAQ o Skautach; przy zmianie
+           zaktualizuj oba miejsca. -->
+      <section class="scouts-cta">
+        <div class="scouts-cta-inner">
+          <h2>Dołącz do Skautów Hyc!</h2>
+          <p>Skauci Hyc! to osoby, które podczas wędrówek sprawdzają, uzupełniają i&nbsp;dodają punkty na szlaku. Dzięki temu pomagają kolejnym wędrowcom łatwiej i&nbsp;bezpieczniej przejść trasę.</p>
+          <a class="store-btn store-btn--primary store-btn--nav" href="https://www.facebook.com/groups/1094210523037520/" target="_blank" rel="noopener">Dołącz do Skautów</a>
+        </div>
+      </section>
+
       <!-- FAQ — nagłówek w lewej kolumnie, accordion w prawej, kolory/fonty
            własne. Natywny <details>/<summary>: focus, klawiatura (Enter/
            Space) i stan otwarcia za darmo, bez JS. -->
@@ -216,6 +228,14 @@
             </summary>
             <p class="faq-answer">Hyc! to aplikacja, która bez&nbsp;zatrzymywania się podczas marszu, jedną ręką pomaga znaleźć wszystko, czego potrzebujesz na&nbsp;szlaku. Prowadzi do&nbsp;najbliższego celu przed&nbsp;Tobą lub dookoła. Znajdziesz w&nbsp;niej między innymi schronienia, noclegi, miejsca na namiot, źródła wody, apteczki, restauracje i&nbsp;sklepy.</p>
             <p class="faq-answer">Możesz też swobodnie przeglądać mapę, wyszukiwać interesujące Cię miejsca i&nbsp;zapisywać je na później.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Dla kogo jest Hyc?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Hyc! jest dla każdego wędrowca, niezależnie od doświadczenia i długości trasy. Dla rodziców z dziećmi, którzy chcą czuć się pewniej na szlaku i wiedzieć, gdzie po drodze będą mogli schować się przed ulewą albo znaleźć środki do odkażenia rany. Dla doświadczonych wędrowców, którzy ruszają na długie szlaki i chcą lepiej przygotować się do drogi. Dla każdego, kto chce mieć pod ręką informacje o tym, co czeka go na szlaku.</p>
           </details>
 
           <details class="faq-item">
@@ -250,19 +270,6 @@
             <p class="faq-answer">Bazę budujemy na&nbsp;publicznie dostępnych źródłach, które łączymy i&nbsp;weryfikujemy. Dalej rozwija ją&nbsp;nasza społeczność. Nowe punkty mogą dodawać i&nbsp;aktualizować zarówno użytkownicy, jak i&nbsp;Skauci Hyc!, którzy od&nbsp;czasu do czasu biorą też udział w&nbsp;płatnych akcjach terenowych, sprawdzając miejsca na&nbsp;szlaku i&nbsp;dodając zdjęcia.</p>
             <p class="faq-answer">Chcesz zostać Skautem Hyc? Dołącz do społeczności <a href="https://www.facebook.com/groups/1094210523037520/" target="_blank" rel="noopener">tutaj</a>.</p>
           </details>
-        </div>
-      </section>
-
-      <!-- CTA banner — karta na zdjęciu, wyśrodkowany nagłówek + tekst + baton
-           (assets/skauci-bg.jpg, ta sama ilustracja stylistycznie co "Zanocuj
-           w lesie": łąka/jezioro/góry/zające). Link do grupy Skautów Hyc! na
-           Facebooku — ten sam adres co w FAQ o Skautach; przy zmianie
-           zaktualizuj oba miejsca. -->
-      <section class="scouts-cta">
-        <div class="scouts-cta-inner">
-          <h2>Dołącz do Skautów Hyc!</h2>
-          <p>Skauci Hyc! to osoby, które podczas wędrówek sprawdzają, uzupełniają i&nbsp;dodają punkty na szlaku. Dzięki temu pomagają kolejnym wędrowcom łatwiej i&nbsp;bezpieczniej przejść trasę.</p>
-          <a class="store-btn store-btn--primary store-btn--nav" href="https://www.facebook.com/groups/1094210523037520/" target="_blank" rel="noopener">Dołącz do Skautów</a>
         </div>
       </section>
 
@@ -359,7 +366,7 @@
 
   <script src="scroll-lock.js?v=1"></script>
   <script src="config.js?v=20260812"></script>
-  <script src="nav.js?v=20260915c" defer></script>
+  <script src="nav.js?v=20260930a" defer></script>
   <script src="main.js?v=202609162b"></script>
 </body>
 </html>

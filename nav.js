@@ -1,11 +1,11 @@
 // Hamburger nawigacji mobilnej — wspólny dla wszystkich stron (index/pobierz/
 // o-aplikacji/kontakt), stąd osobny plik zamiast duplikatu w main.js (który
 // ładuje się tylko na index.html/pobierz.html).
-// Panel jako bottom sheet: sterowanie klasą .is-open, nie atrybutem hidden,
-// bo hidden ucina display natychmiast i transform nie ma się na czym animować.
-// hidden zostaje na starcie w HTML (panel poza ekranem i niedostępny dla
-// klawiatury/czytnika, zanim JS w ogóle wystartuje), JS zdejmuje go przy
-// pierwszym otwarciu.
+// Panel jako dropdown pod paskiem: sterowanie klasą .is-open, nie atrybutem
+// hidden, bo hidden ucina display natychmiast i transform/opacity nie mają
+// się na czym animować. hidden zostaje na starcie w HTML (panel niewidoczny
+// i niedostępny dla klawiatury/czytnika, zanim JS w ogóle wystartuje), JS
+// zdejmuje go przy pierwszym otwarciu.
 (() => {
   const burger = document.querySelector('.topbar-burger');
   const panel = document.querySelector('.topbar-nav-mobile');
@@ -21,14 +21,14 @@
     backdrop.classList.remove('is-open');
     burger.setAttribute('aria-expanded', 'false');
     unlockScroll();
-    // hidden wraca dopiero po animacji (280ms w CSS) — w trakcie musi być
-    // widoczny/focusowalny, inaczej transform nie ma czego pokazać.
-    window.setTimeout(() => { panel.hidden = true; }, 280);
+    // hidden wraca dopiero po animacji (200ms w CSS) — w trakcie musi być
+    // widoczny/focusowalny, inaczej transform/opacity nie mają czego pokazać.
+    window.setTimeout(() => { panel.hidden = true; }, 200);
   };
   const open = () => {
     panel.hidden = false;
     // Kolejna klatka — inaczej przeglądarka złączy hidden=false i dodanie
-    // .is-open w jedną operację i transform nie wystartuje od translateY(100%).
+    // .is-open w jedną operację i animacja nie wystartuje od stanu początkowego.
     requestAnimationFrame(() => {
       panel.classList.add('is-open');
       backdrop.classList.add('is-open');
