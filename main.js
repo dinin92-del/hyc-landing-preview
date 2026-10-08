@@ -50,6 +50,33 @@
     var skipNavIntro = !!window.location.hash && window.location.hash !== "#top";
     heroIntro.classList.add("hero-intro");
     if (heroNav && !skipNavIntro) { heroNav.classList.add("hero-intro"); }
+    // Block scroll during intro so user watches animations play.
+    // Use preventDefault on events (not HycScrollLock/position:fixed) to
+    // avoid layout side-effects that would break `sync()` calculations.
+    // Unlock after hero-phone-in finishes: delay 3750ms + duration 1200ms = 4950ms
+    // from hero-ready. No lock when: deep-link hash, already scrolled, reduced-motion.
+    var introLocked = false;
+    var introUnlockTimer = null;
+    var preventScrollEvt = function (e) { e.preventDefault(); };
+    var preventScrollKey = function (e) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp" ||
+          e.key === "PageDown"  || e.key === "PageUp"  ||
+          e.key === "End"       || e.key === " ") { e.preventDefault(); }
+    };
+    var unlockIntroScroll = function () {
+      if (!introLocked) { return; }
+      introLocked = false;
+      if (introUnlockTimer) { window.clearTimeout(introUnlockTimer); introUnlockTimer = null; }
+      window.removeEventListener("wheel", preventScrollEvt);
+      window.removeEventListener("touchmove", preventScrollEvt);
+      window.removeEventListener("keydown", preventScrollKey);
+    };
+    if (!skipNavIntro && window.scrollY <= 10) {
+      introLocked = true;
+      window.addEventListener("wheel", preventScrollEvt, { passive: false });
+      window.addEventListener("touchmove", preventScrollEvt, { passive: false });
+      window.addEventListener("keydown", preventScrollKey);
+    }
     var heroImg = heroIntro.querySelector(".hero-img");
     var heroGo = function () {
       heroIntro.classList.add("hero-ready");
@@ -58,6 +85,10 @@
       // .hero-intro), więc menu, które już jest widoczne, zniknęłoby na
       // czas `animation-delay` i wjechało drugi raz.
       if (heroNav && !skipNavIntro) { heroNav.classList.add("hero-ready"); }
+      // Unlock after last intro animation (hero-phone-in: 3750ms delay + 1200ms duration)
+      if (introLocked) {
+        introUnlockTimer = window.setTimeout(unlockIntroScroll, 4950 + 100);
+      }
     };
     var heroTimer = window.setTimeout(heroGo, 2500);
     var heroDone = function () { window.clearTimeout(heroTimer); heroGo(); };
