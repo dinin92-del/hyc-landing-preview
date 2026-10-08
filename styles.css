@@ -78,8 +78,8 @@ html {
 
 body {
   margin: 0;
-  /* Kadr hero jest na mobile szerszy niż okno (patrz `.hero-art`, 116vw) —
-     bez tego wychodzi poziomy pasek przewijania. `clip` zamiast `hidden`:
+  /* Hero jest szerokie na 100vw, a pas z grafiką na mobile szerszy niż okno
+     (patrz `.hero-scene`) — bez tego wychodzi poziomy pasek przewijania. `clip` zamiast `hidden`:
      `hidden` robi z <body> kontener przewijania i psułoby `position: sticky`
      u potomków. Poza mobilem reguła jest bezczynna.
      Dwie deklaracje pod rząd, celowo: `overflow: clip` weszło dopiero
@@ -151,54 +151,81 @@ a { color: var(--green-dark); }
 }
 
 /* ---- Topbar ----
-   Sticky, nie fixed — prościej (nie trzeba kompensować wysokości paska
-   paddingiem na .wrap), a strona jest krótka, więc brak różnicy przy scrollu. */
+   Pływająca pigułka (fixed) z delikatnym szkłem: szkło (62% krycia, kolor #fdf9f5, blur 18px), stała
+   (bez zmian po scrollu), żeby hero/treść pod spodem prześwitywały. Sam
+   .topbar obejmuje całą szerokość okna i NIE łapie kliknięć
+   (pointer-events:none) — klikalna jest tylko pigułka.
+   Pasek jest poza przepływem, więc podstrony (bez hero) dostają odstęp
+   od góry w `.wrap` (patrz niżej: body:not(.page-home) .wrap). */
 .topbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 40;
-  background: var(--cream);
+  padding: 12px 16px 0;
+  pointer-events: none;
 }
-/* Grid `1fr auto 1fr` dawałby nierówne odstępy logo<->nav vs nav<->CTA: obie
-   skrajne kolumny mają równą szerokość, ale logo i button mają różną
-   szerokość własną, więc kolumna z węższą treścią (logo) zostawia większy
-   luz. `flex` + `justify-content: space-between` na trzech realnych dzieciach
-   dzieli dostępną przestrzeń na dwie równe przerwy z definicji, niezależnie
-   od szerokości logo/buttonu.
-   Stabilność pozycji nav na pobierz.html (bez CTA) zapewnia niewidzialny
-   placeholder o identycznych wymiarach co realny button (patrz pobierz.html)
-   — dla `space-between` to wciąż trzy dzieci, więc przerwy zostają równe. */
+/* Trzy realne dzieci + `space-between` dzielą wolne miejsce na dwie równe
+   przerwy niezależnie od szerokości logo/buttonu. Stabilność pozycji nav na
+   pobierz.html (bez CTA) zapewnia niewidzialny placeholder o identycznych
+   wymiarach co realny button (patrz pobierz.html).
+   z-index 210: pigułka zostaje NAD przyciemnieniem (.nav-backdrop, 190) i
+   panelem (200), więc hamburger jest klikalny także przy otwartym menu. */
 .topbar-inner {
+  position: relative;
+  z-index: 210;
+  pointer-events: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: var(--maxw);
+  width: 100%;
+  max-width: 860px;
   margin: 0 auto;
-  padding: 24px 20px;
+  padding: 8px 8px 8px 20px;
+  border-radius: 999px;
+  /* Blur przywrócony (1008): podejrzewany jako koszt scrolla na iOS Safari,
+     ale po naprawie realnej przyczyny (natywny scroll-timeline na hero) blur
+     okazał się bez wpływu — zdjęty niepotrzebnie. */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(253, 249, 245, 0.62);
+  /* Ledwo widoczny, rozmyty cień: tylko oddziela pigułkę od tła. */
+  box-shadow: 0 2px 12px rgba(44, 38, 32, 0.03);
+  transition: background-color 220ms ease;
 }
+/* Przy otwartym menu pigułka jest pełnokryjąca: pod nią leży przyciemnienie,
+   które przez szkło zszarzałoby jej tło. */
+.topbar:has(.topbar-burger[aria-expanded="true"]) .topbar-inner { background: var(--cream); }
+/* Logo jak w makiecie (autolayout): blok z paddingiem 6px od góry i 4px od
+   lewej, grafika 65x30 (mniejsza niż 79x36 z makiety, decyzja usera). Padding górny optycznie zbija glif do osi linków. */
 .topbar-logo {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  /* Ujemny margines kompensuje wewnętrzny „oddech" PNG-a wokół glifu —
-     bez niego logo w topbarze wygląda przesunięte w prawo względem
-     .topbar-inner padding-left. */
-  margin-left: -6px;
+  padding: 6px 0 0 4px;
 }
+/* Logo jako bitmapa o dokładnym rozmiarze (1x/2x/3x przez srcset), nie
+   wektor. Chrome z rasteryzacją GPU rysuje ścieżki SVG z 4x MSAA (zmierzone:
+   5 poziomów krycia zamiast ~180 przy rasteryzacji programowej), co przy
+   kursywie na ekranach 1x daje schodkowe skosy. Obrazek jest rysowany jako
+   tekstura, więc ma wygładzanie wyliczone offline (supersampling 24x, filtr
+   pudełkowy) i wygląda tak samo w każdej przeglądarce. Źródło: assets/logo.svg. */
 .topbar-logo img {
   display: block;
+  width: 69px;
   height: 32px;
-  width: auto;
 }
 .topbar-nav {
   display: none;
   align-items: center;
-  gap: 56px;
-  font-size: 17px;
+  gap: 44px;
+  font-size: 16px;
   font-weight: 500;
 }
 .topbar-nav a {
-  /* Hover przyciemnia (opacity), nie zmienia koloru — nie ma już gdzie
-     prowadzić kolorem, skoro tekst jest już espresso. */
+  /* Hover przyciemnia (opacity), nie zmienia koloru — tekst jest już espresso. */
   color: var(--espresso);
   text-decoration: none;
   transition: opacity 160ms ease;
@@ -206,10 +233,8 @@ a { color: var(--green-dark); }
 .topbar-nav a:hover { opacity: 0.7; }
 
 /* Hamburger — bez niego linki nawigacji na wąskim ekranie miały display:none
-   i żadnego sposobu ich otworzyć (funkcjonalna dziura, nie kosmetyka).
-   Przycisk 40px, pełne kółko. Na <768px topbar to wyłącznie logo+hamburger —
-   "Pobierz" nie stoi ściśnięty obok, tylko jako pierwszy, wyróżniony element
-   panelu po otwarciu. */
+   i żadnego sposobu ich otworzyć. Przycisk 40px, pełne kółko. Na <768px
+   pigułka to wyłącznie logo+hamburger — "Pobierz" nie stoi ściśnięty obok. */
 .topbar-burger {
   display: inline-flex;
   align-items: center;
@@ -229,29 +254,24 @@ a { color: var(--green-dark); }
 }
 .topbar-burger[aria-expanded="true"] { background: rgba(44, 38, 32, 0.06); }
 .topbar-burger svg { display: block; }
-/* Dwie osobne ikony z DS (fill-path, nie stroke) zamiast morphującego się
-   <line>-a — nie da się ich płynnie zmorphować, więc przełącznik jest
-   binarny: jedna widoczna, druga display:none, sterowane aria-expanded. */
+/* Dwie osobne ikony z DS (fill-path, nie stroke) — przełącznik binarny,
+   sterowany aria-expanded. */
 .topbar-burger .icon-close { display: none; }
 .topbar-burger[aria-expanded="true"] .icon-menu { display: none; }
 .topbar-burger[aria-expanded="true"] .icon-close { display: block; }
 
-/* CTA znika z topbaru na mobile — na wąskim ekranie miejsce zajmuje wyłącznie
-   logo+hamburger, bez ściskania obok nich. Panel hamburgera (niżej) niesie
-   tylko linki nawigacji, bez CTA — pobrać apkę można ze strony głównej
-   (baton w hero) albo wprost pod /pobierz.html. */
+/* CTA znika z pigułki na mobile — na wąskim ekranie miejsce zajmuje wyłącznie
+   logo+hamburger. Pobrać apkę można z hero (baton) albo wprost pod
+   /pobierz.html. */
 @media (max-width: 767px) {
   .topbar-inner .store-btn--nav { display: none; }
 }
 
-/* Panel jako dropdown pod paskiem, nie bottom sheet: wisi na .topbar
-   (position:sticky, więc jest poprawnym kontekstem pozycjonowania dla
-   position:absolute) i zaczyna się dokładnie na jego dolnej krawędzi
-   (top:100%) — bez przepisywania wysokości paska na sztywno w drugim
-   miejscu. Wjeżdża lekkim zsunięciem + fade, jak zwykłe rozwijane menu, nie
-   wysuwa się od dołu ekranu. Tło pod spodem przyciemnione (.nav-backdrop).
-   Sterowanie klasą .is-open w nav.js, nie atrybutem hidden — transform
-   potrzebuje elementu cały czas w layoucie, żeby mógł się animować. */
+/* Panel jako karta pod pigułką, nie bottom sheet: wisi na .topbar (fixed, więc
+   jest poprawnym kontekstem dla position:absolute) i zaczyna się tuż pod
+   pigułką (top:100% + 8px). Wjeżdża lekkim zsunięciem + fade. Tło pod spodem
+   przyciemnione (.nav-backdrop). Sterowanie klasą .is-open w nav.js, nie
+   atrybutem hidden — transform potrzebuje elementu cały czas w layoucie. */
 .nav-backdrop {
   position: fixed;
   inset: 0;
@@ -264,32 +284,31 @@ a { color: var(--green-dark); }
 .nav-backdrop.is-open { opacity: 1; pointer-events: auto; }
 
 /* Bez tego [hidden] nic nie robi — domyślne [hidden]{display:none} (arkusz
-   UA) ma tę samą swoistość co .topbar-nav-mobile{display:flex} (arkusz
-   autora), a autor zawsze wygrywa nad UA niezależnie od kolejności. Bez tej
-   reguły panel zostaje display:flex, tylko przesunięty transformem — nadal
-   w layoucie zamiast realnie zniknąć. */
+   UA) ma tę samą swoistość co .topbar-nav-mobile{display:flex}, a autor
+   zawsze wygrywa nad UA niezależnie od kolejności. */
 .topbar-nav-mobile[hidden] { display: none; }
 .topbar-nav-mobile {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 16px;
+  right: 16px;
   top: 100%;
+  margin-top: 8px;
   z-index: 200;
+  pointer-events: auto;
   display: flex;
   flex-direction: column;
   max-height: calc(100dvh - 120px);
   overflow-y: auto;
   background: var(--cream);
-  border-radius: 0 0 20px 20px;
+  border-radius: 24px;
   box-shadow: 0 16px 32px rgba(31, 26, 20, 0.18);
-  padding: 8px 20px 20px;
+  padding: 8px 20px;
   opacity: 0;
   transform: translateY(-8px);
   transition: opacity 200ms ease, transform 200ms ease;
 }
 .topbar-nav-mobile.is-open { opacity: 1; transform: translateY(0); }
-/* Bez dividerów między pozycjami linków. Strzałka po prawej zamiast samego
-   tekstu. */
+/* Bez dividerów między pozycjami linków. Strzałka po prawej. */
 .topbar-nav-mobile a {
   display: flex;
   align-items: center;
@@ -304,62 +323,335 @@ a { color: var(--green-dark); }
 }
 .topbar-nav-mobile a .nav-arrow { flex-shrink: 0; color: #000; }
 
+/* Przycisk w pigułce: delikatnie mniejszy padding niż „Dołącz do Skautów"
+   (14px / 28px zamiast 16px / 32px), reszta stylu wspólna. Selektor z
+   .topbar-inner wygrywa swoistością z bazowym .store-btn--nav niżej w pliku. */
+.topbar-inner .store-btn--nav { padding: 14px 28px; }
+
 @media (min-width: 768px) {
+  .topbar { padding-top: 16px; }
+  .topbar-inner { padding: 12px 20px; }
   .topbar-nav { display: flex; }
   .topbar-burger { display: none; }
   .topbar-nav-mobile,
   .nav-backdrop { display: none !important; }
   .topbar-inner .store-btn--nav { display: inline-flex; }
 }
-
-/* Te same paddingi co w CTA "Dołącz do Skautów" (.scouts-cta .store-btn--nav:
-   height:auto + padding:16px 32px, realnie 51px). Żeby całkowita wysokość
-   topbaru (92px) nie urosła, .topbar-inner traci na pionowym paddingu
-   dokładnie tyle, ile button zyskuje: (92 − 51) / 2 = 20,5px zamiast 24px.
-   Tylko na ≥768px — na mobile ten button jest ukryty (display:none wyżej),
-   a .topbar-inner poza tym media query zostaje przy 24px dla panelu mobile. */
-@media (min-width: 768px) {
-  .topbar-inner { padding: 20.5px 20px; }
-  .topbar-inner .store-btn--nav { height: auto; padding: 16px 32px; }
-}
 /* .store-btn--nav / .store-btn--primary są zdefiniowane w sekcji "Store
    buttons" niżej, po bazowym .store-btn — musi tak zostać: source order
    decyduje, a min-width:0 tutaj przegrałoby z min-width:208px z bazy przy
    tej samej specyficzności, gdyby baza była niżej w pliku. */
 
-/* ---- Hero ---- */
-.hero {
-  /* Sticky .topbar zasłaniał górę hero po skoku na #top (link logo, albo URL
-     z fragmentem) — ten sam mechanizm jak przy .faq niżej. 114px = wysokość
-     topbara na desktopie (92px, przycisk --nav 44px wyższy niż mobilny
-     hamburger) + margin-top tej reguły (22px) — scroll-margin-top liczy się
-     od border-boxa, nie łapie własnego marginesu automatycznie. Zaokrąglone
-     w górę do desktopowej wartości: na mobile (topbar 88px) da to lądowanie
-     4px NAD dokumentem, przeglądarka przycina do zera, więc oba warianty
-     wychodzą na scrollY:0. */
-  scroll-margin-top: 114px;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 28px;
-  /* center, nie start+margin-top stały — stały margines dawał skok tekstu
-     dokładnie na progu 1024px. center liczy pozycję z wysokości kolumn
-     (telefon wyższy niż tekst), więc offset rośnie płynnie z proporcją
-     telefonu, nie jest stałą liczbą przypiętą do jednego progu. Ta sama
-     wartość obowiązuje aż do 1100px, gdzie zmienia się na `start`
-     (patrz ten blok niżej). */
-  align-items: center;
-  margin-top: 22px;
+/* Podstrony bez hero: pigułka jest poza przepływem, więc treść dostaje
+   odstęp od góry równy dawnemu paskowi (88px mobile / 92px desktop) — rytm
+   marginesów sekcji pod spodem zostaje taki jak był. Strona główna zaczyna
+   się od hero przy samej krawędzi okna. */
+body:not(.page-home) .wrap { padding-top: 88px; }
+@media (min-width: 768px) {
+  body:not(.page-home) .wrap { padding-top: 92px; }
 }
 
-/* Wyśrodkowane dopóki hero jest 1-kolumnowy, left-align dopiero od 1024px —
-   próg centrowania musi iść w parze z progiem układu (tam, gdzie hero
-   realnie przechodzi na dwie kolumny, patrz blok niżej), inaczej tekst traci
-   sąsiada z prawej, ale już nie jest wyśrodkowany. */
-.hero-copy { text-align: center; }
+/* ---- Hero ----
+   Scena przypięta na czas pierwszego scrolla. Struktura:
+     .hero (wysoki tor scrolla) > .hero-stage (sticky, 100svh)
+       > .hero-bg (tło + piny, blednie) + .hero-copy (tekst) + .hero-phone
+   main.js liczy postęp 0..1 i wpisuje go w --p na .hero (klasa .is-scrub
+   włącza tor i sticky). Bez JS, przy „ogranicz ruch" i na bardzo niskich
+   oknach (<560px) zostaje statyczny układ: ekran z tłem i tekstem, telefon
+   pod nim (nachodzi na dolną krawędź tła jak w makiecie).
+   --u = „1 px makiety Figmy" (ramka 1670px): kompozycja 16:9 ma zawsze
+   szerokość okna (cały kadr z wszystkimi pinami), więc piny stoją nad swoimi
+   domkami. W oknie szerszym niż 16:9 kadr jest wyższy od ekranu i przycinany
+   symetrycznie góra/dół; w węższym stoi przy dolnej krawędzi, a nad nim
+   zostaje kremowe niebo. */
+.hero {
+  --vh: max(100svh, 620px);
+  --u: calc(100vw / 1670);
+  --p: 0;
+  /* Gdzie zaczyna się górna krawędź telefonu (ułamek wysokości sceny od góry):
+     na wąskim ekranie telefon wystaje wyżej (więcej widać od dołu), na
+     desktopie ledwie wyziera (patrz blok desktopowy niżej). */
+  --peek: 0.76;
+  /* Telefon: wysokość z okna (sufit 800px), szerokość z proporcji ramki
+     (ekran 1179x2556 + 3% ramki z każdej strony = 0,4767). */
+  --ph: min(calc(var(--vh) * 0.74), 800px);
+  --pw: calc(var(--ph) * 0.4767);
+  position: relative;
+  /* Wyjście poza kolumnę .wrap do pełnej szerokości okna. */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+.hero.is-scrub { height: calc(var(--vh) * 2.2); }
+/* Safari na iOS repaintuje te warstwy od zera przy KAŻDEJ zmianie --p (co
+   klatkę scrolla), zamiast je skomponować raz i tylko przesuwać/przenikać —
+   stąd cięcia przy scrollu zgłoszone z telefonu, których nie było widać w
+   desktopowym Chrome. `will-change` wymusza wcześniejszą promocję do
+   własnej warstwy kompozytora; .hero-phone już to miało, reszta (tło z
+   maską, piny, tekst) nie. Tylko w trybie scrub — w statycznym układzie
+   warstwa kosztowałaby pamięć bez żadnego zysku. */
+.hero.is-scrub .hero-bg,
+.hero.is-scrub .hero-pins,
+.hero.is-scrub .hero-copy { will-change: opacity, transform; }
+.hero-stage {
+  position: relative;
+  /* flow-root: margines telefonu (statyczny układ) nie ma prawa wyciec przez
+     scenę i zepchnąć w dół całego hero. */
+  display: flow-root;
+  min-height: var(--vh);
+  padding-bottom: 72px;
+}
+.hero.is-scrub .hero-stage {
+  position: sticky;
+  top: 0;
+  height: var(--vh);
+  min-height: 0;
+  padding-bottom: 0;
+  overflow: clip;
+}
+
+/* Tło: kompozycja. Blednie od 15% do 80% postępu. */
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--vh);
+  overflow: hidden;
+  /* Bez własnego koloru pod grafiką: PNG z makiety jest półprzezroczysty
+     (alfa 70-94%) i ma prześwitywać na kremowym tle strony. */
+  opacity: clamp(0, calc(1 - (var(--p) - 0.15) / 0.65), 1);
+}
+/* Mobile/portret: pas z grafiką przy dolnej krawędzi (szerszy niż okno,
+   kadr środkowy); nad nim zostaje kremowe tło strony. Wygaszenie górnej
+   krawędzi maską, żeby nie było szwu. */
+.hero-scene {
+  position: absolute;
+  left: 50%;
+  /* Pejzaż stoi NAD telefonem: dół grafiki wypada 24px poniżej górnej krawędzi
+     telefonu (14,5% wysokości sceny od dołu), a nie za nim przy dolnej
+     krawędzi ekranu. */
+  bottom: calc(var(--vh) * (1 - var(--peek)) - 24px);
+  /* 208vw = okno 48% szerokości grafiki, wyśrodkowane (26-74%): pejzaż jest
+     wyższy (zajmuje więcej wysokości), a skrajne piny (nocleg, sklep,
+     apteczka) są przycięte; zostają wiata, woda i jedzenie. */
+  width: 208vw;
+  aspect-ratio: 2560 / 1440;
+  transform: translateX(-50%);
+}
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* Miękkie brzegi góra i dół (dół grafiki nie leży już na krawędzi ekranu). */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+}
+.hero-pins {
+  --pin-k: 0.88;
+  position: absolute;
+  inset: 0;
+  opacity: clamp(0, calc(1 - var(--p) / 0.15), 1);
+  transform: translateY(calc(var(--p) * -40px));
+}
+/* Pin wpada od czubka (skala + lekkie „odbicie") i stoi nieruchomo. Ciągłe
+   unoszenie zdjęte: ułamkowe przesunięcia w pikselach rozmywały bitmapy
+   pinów (próbkowanie dwuliniowe w ruchu). */
+.pin {
+  position: absolute;
+  /* Piny w wąskim kadrze (mobile) są powiększane wokół czubka — `scale`
+     jako osobna właściwość składa się z animacjami na `transform`. */
+  scale: calc(var(--pin-k, 1) * var(--pin-m, 0.85) * 1.15);
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  transform-origin: 50% 100%;
+}
+.pin img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Woda zostaje w poprzednim rozmiarze, reszta pinów jest o 15% mniejsza. */
+.pin--woda { --pin-m: 1; }
+/* „Pop" z czubka pinezki: rośnie od zera, przestrzeliwuje do 1,4x, lekko
+   zapada się poniżej 1 i siada na swoim rozmiarze. */
+@keyframes pin-drop {
+  0% { opacity: 0; transform: translateY(6px) scale(0); }
+  40% { opacity: 1; transform: translateY(-4px) scale(1.4); }
+  68% { transform: translateY(1px) scale(0.9); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* Tekst: odjeżdża w górę i gaśnie w pierwszych 18% postępu. */
+.hero-copy {
+  position: absolute;
+  left: 0;
+  right: 0;
+  /* Tekst wyśrodkowany w niebie między pigułką a górami (pas grafiki 66,6vw
+     wysokości stoi przy dolnej krawędzi; ~360px to wysokość bloku tekstu). */
+  top: max(128px, calc(128px + (var(--vh) * var(--peek) + 24px - 52.6vw - 128px - 400px) / 2));
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px;
+  text-align: center;
+  opacity: clamp(0, calc(1 - var(--p) / 0.18), 1);
+  transform: translateY(calc(var(--p) * -70px));
+}
+.hero-br { display: none; }
 .stores { justify-content: center; }
-@media (min-width: 1024px) {
-  .hero-copy { text-align: left; }
-  .stores { justify-content: flex-start; }
+
+/* Telefon: czarna ramka z CSS, ekran to <video> z posterem.
+   Statycznie: pod tekstem, zaczyna się na 85,5% wysokości ekranu (nachodzi na
+   dół tła). W trybie scrub: wjeżdża z dołu na środek i rośnie o 12%. */
+.hero-phone {
+  position: relative;
+  z-index: 3;
+  width: var(--pw);
+  height: var(--ph);
+  margin: calc(var(--vh) * var(--peek)) auto 0;
+  padding: calc(var(--pw) * 0.03);
+  border-radius: calc(var(--pw) * 0.15);
+  background: #0b0b0b;
+  box-shadow:
+    inset 0 0 0 calc(var(--pw) * 0.006) rgba(255, 255, 255, 0.12),
+    0 calc(var(--pw) * 0.09) calc(var(--pw) * 0.2) rgba(44, 38, 32, 0.28),
+    0 calc(var(--pw) * 0.02) calc(var(--pw) * 0.05) rgba(44, 38, 32, 0.16);
+}
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: calc(var(--pw) * 0.12);
+  background: #000;
+}
+.phone-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.phone-island {
+  position: absolute;
+  top: calc(var(--pw) * 0.062);
+  left: 50%;
+  width: calc(var(--pw) * 0.26);
+  height: calc(var(--pw) * 0.075);
+  border-radius: 999px;
+  background: #000;
+  transform: translateX(-50%);
+}
+.hero.is-scrub .hero-phone {
+  --pp: clamp(0, calc(var(--p) / 0.92), 1);
+  --t0: calc(var(--vh) * var(--peek));
+  /* Koniec: wyśrodkowany po powiększeniu, ale nie wyżej niż pod pigułką. */
+  --t1: max(92px, calc((var(--vh) - var(--ph) * 1.12) / 2));
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin: 0 0 0 calc(var(--pw) / -2);
+  transform-origin: 50% 0;
+  transform: translateY(calc(var(--t0) + (var(--t1) - var(--t0)) * var(--pp))) scale(calc(1 + 0.12 * var(--pp)));
+  will-change: transform;
+}
+
+/* Scrub NATYWNY (Safari 26+/Chromium nowe): `view-timeline` na .hero
+   zastępuje JS pisanie --p co klatkę scrolla (main.js sprawdza ten SAM
+   warunek i wtedy nie pisze --p wcale). Silnik liczy postęp i animuje
+   opacity/transform na wątku kompozytora — zero recalc stylu na głównym
+   wątku. Zakres "contain 0%..100%" to dokładnie odcinek scrolla, w którym
+   .hero (wyższe niż okno) W CAŁOŚCI je zakrywa — czyli ten sam przedział,
+   co stary heroTop..heroTop+track liczony w JS. Wartości w @keyframes to
+   przepisane na sztywno granice starych clamp()/calc(var(--p)) z JS. */
+@supports (animation-timeline: view()) {
+  .hero.is-scrub {
+    view-timeline-name: --hero-tl;
+    view-timeline-axis: block;
+  }
+  .hero.is-scrub .hero-bg {
+    animation: hero-bg-scrub 1s linear forwards;
+    animation-timeline: --hero-tl;
+    animation-range: contain 0% contain 100%;
+  }
+  .hero.is-scrub .hero-pins {
+    animation: hero-pins-scrub 1s linear forwards;
+    animation-timeline: --hero-tl;
+    animation-range: contain 0% contain 100%;
+  }
+  .hero.is-scrub .hero-copy {
+    animation: hero-copy-scrub 1s linear forwards;
+    animation-timeline: --hero-tl;
+    animation-range: contain 0% contain 100%;
+  }
+  .hero.is-scrub .hero-phone {
+    animation: hero-phone-scrub 1s linear forwards;
+    animation-timeline: --hero-tl;
+    animation-range: contain 0% contain 100%;
+  }
+  /* `animation` to JEDNA właściwość — gdyby ta reguła i wjazd intro
+     (.hero-ready .hero-phone niżej w pliku, hero-phone-in na opacity+
+     translate) obie ją deklarowały na tym samym elemencie, wygrywa TYLKO
+     jedna (swoistość), więc telefon przestawał wjeżdżać z dołu razem z
+     menu. Po .hero-ready obie animacje muszą być w JEDNEJ regule, bo każda
+     rusza inną właściwość (opacity/translate kontra transform) i mogą iść
+     naraz. Swoistość (4 klasy) bije zarówno samo .hero-ready .hero-phone,
+     jak i regułę wyżej. */
+  .hero.is-scrub.hero-ready .hero-phone {
+    animation-name: hero-phone-in, hero-phone-scrub;
+    animation-duration: 1200ms, 1s;
+    animation-timing-function: cubic-bezier(0.25, 0.75, 0.25, 1), linear;
+    animation-delay: 3750ms, 0s;
+    animation-fill-mode: backwards, forwards;
+    animation-timeline: auto, --hero-tl;
+    animation-range: normal, contain 0% contain 100%;
+  }
+}
+@keyframes hero-bg-scrub {
+  0%, 15% { opacity: 1; }
+  80%, 100% { opacity: 0; }
+}
+@keyframes hero-pins-scrub {
+  0% { opacity: 1; transform: translateY(0); }
+  15% { opacity: 0; transform: translateY(-6px); }
+  100% { opacity: 0; transform: translateY(-40px); }
+}
+@keyframes hero-copy-scrub {
+  0% { opacity: 1; transform: translateY(0); }
+  18% { opacity: 0; transform: translateY(-12.6px); }
+  100% { opacity: 0; transform: translateY(-70px); }
+}
+@keyframes hero-phone-scrub {
+  0% { transform: translateY(var(--t0)) scale(1); }
+  92%, 100% { transform: translateY(var(--t1)) scale(1.12); }
+}
+
+/* Układ desktopowy: okno szersze niż 1,3:1 i min. 900px. Kompozycja 16:9
+   skalowana jak `cover` i wyśrodkowana, tekst przypięty do jej współrzędnych
+   (247/1670 od góry kompozycji), więc nie wchodzi na góry także w niskich
+   oknach. */
+@media (min-aspect-ratio: 13/10) and (min-width: 900px) {
+  .hero { --peek: 0.855; }
+  .hero-scene {
+    left: 50%;
+    /* Kadr niższy od ekranu: przy dolnej krawędzi (0). Wyższy: wyśrodkowany,
+       czyli przycięty symetrycznie (ujemny bottom = połowa nadwyżki). */
+    bottom: min(0px, calc((var(--vh) - 942 * var(--u)) / 2));
+    width: calc(1670 * var(--u));
+    height: calc(942 * var(--u));
+    aspect-ratio: auto;
+    transform: translateX(-50%);
+  }
+  .hero-img {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
+  }
+  .hero-pins { --pin-k: 0.8; }
+  /* max(): w niskich oknach tekst nie wchodzi pod pigułkę nawigacji. */
+  .hero-copy { top: max(128px, calc((var(--vh) - 942 * var(--u)) / 2 + 247 * var(--u) + 28px)); }
+  .hero-br { display: inline; }
 }
 
 /* ---- Rytm pionowy kolumny hero ----
@@ -390,36 +682,48 @@ h1 {
 /* Akcent na wordmarku. */
 .accent { color: var(--green-dark); }
 
-/* Hero h1: interlinia 1.2 (research 0919): systemy designu dają nagłówkom
-   1.1–1.25 i ZMNIEJSZAJĄ współczynnik wraz z rozmiarem — Material 3 Display
-   Small 36/44 = 1.22, Medium 45/52 = 1.16, Large 57/64 = 1.12; ogólna
-   rekomendacja dla dużych krojów to 1.2. Tylko w hero — pozostałe h1 zostają
-   jak były.
-   Rozmiar: fraza "czego potrzebujesz" (sklejona &nbsp; w index.html) ma 8,58em
-   szerokości i musi zmieścić się w kolumnie. Kolumna hero-copy ma 477px w
-   zakresie 1024-1099px, więc sufit 54px (463px frazy, ~3% zapasu); od 1100px
-   kolumna jest szersza i dostaje 58px (patrz blok ≥1100px niżej).
-   Poniżej ~517px viewportu font schodzi płynnie, dzielnik 8,84 = 8,58 + 3%
-   zapasu na różnice renderowania między przeglądarkami. Sufit zapobiega
-   rozdęciu w poziomym telefonie / wąskim tablecie. */
+/* Hero h1: mobile skaluje się z szerokością okna; w układzie desktopowym
+   rozmiar liczy się z kompozycji (76px makiety, sufit 70px na największych ekranach), dwie linie
+   łamane <br class="hero-br">. Interlinia 1.15: system designu schodzi z
+   współczynnikiem wraz z rozmiarem. */
 .hero h1 {
-  font-size: min(54px, calc((100vw - 40px) / 8.84));
-  line-height: 1.2;
+  font-size: clamp(32px, 9.6vw, 52px);
+  line-height: 1.15;
+  margin: 0 auto 20px;
+  /* Mobile: większe marginesy boczne (8vw z każdej strony), więc nagłówek
+     łamie się na trzy linie. */
+  width: 84vw;
 }
-
-/* Rozwinięcie nagłówka — zajmuje miejsce pod h1 przed przyciskami. */
 .hero-tags {
-  /* margin-left/right:auto (nie 0) — blok ma max-width:46ch węższy niż
-     kolumna, więc bez auto-marginesów siada przy lewej krawędzi niezależnie
-     od text-align:center na rodzicu. */
   margin: 0 auto 32px;
   font-size: 17px;
   line-height: 1.5;
   color: var(--bark);
   max-width: 46ch;
 }
-@media (min-width: 1024px) {
-  .hero-tags { margin-left: 0; margin-right: 0; }
+/* Podtytuł hero: ten sam krój co opisy bulletów (.feature-copy p): 17px,
+   interlinia 1,5, kolor --bark, na każdej szerokości. Większy odstęp pod nim
+   do przycisków sklepów. */
+.hero .hero-tags {
+  margin-bottom: 38px;
+  font-size: 17px;
+  color: var(--bark);
+  max-width: 40ch;
+}
+@media (min-aspect-ratio: 13/10) and (min-width: 900px) {
+  .hero h1 {
+    width: auto;
+    font-size: min(calc(72 * var(--u)), 66px);
+    margin-bottom: calc(21 * var(--u));
+  }
+  .hero .hero-tags {
+    font-size: 17px;
+    line-height: 1.5;
+    /* Szeroki na tyle, żeby podtytuł zmieścił się w dwóch liniach. */
+    max-width: 40em;
+    text-wrap: balance;
+    margin-bottom: calc(51 * var(--u));
+  }
 }
 
 /* ---- Store buttons ---- */
@@ -512,6 +816,21 @@ h1 {
   .store-btn--compact .label small { font-size: 10px; }
   .store-btn--compact .label strong { font-size: 15px; }
 }
+/* Gdy main.js chowa drugi baton (wykrycie iOS/Android), zostaje jeden —
+   ciasnota ≤400px wyżej była tylko po to, żeby DWA batony zmieściły się
+   obok siebie. Jeden nie musi być ucięty do tej samej miary — ale wraca
+   do zwykłej skali .store-btn (base, niżej w pliku), nie większy niż to. */
+.stores--single { justify-content: center; }
+.stores--single .store-btn--compact {
+  min-width: 0;
+  flex: 0 1 auto;
+  gap: 12px;
+  padding: 10px 18px;
+  border-radius: 12px;
+}
+.stores--single .store-btn--compact img { width: 26px; height: 26px; }
+.stores--single .store-btn--compact .label small { font-size: 11px; }
+.stores--single .store-btn--compact .label strong { font-size: 18px; }
 
 /* Wariant ciemny — Apple. */
 .store-btn--dark {
@@ -561,11 +880,13 @@ h1 {
    przegrywa z min-width:208px z bazy. */
 .store-btn--nav {
   min-width: 0;
-  /* Wysokość wprost, nie przez padding+line-height — line-height:1 samo
-     zmniejsza wysokość buttona, więc wysokość jest teraz od niej niezależna. */
-  height: 44px;
-  padding: 0 22px;
+  /* Te same wymiary co przycisk „Dołącz do Skautów" (jedna definicja dla obu):
+     wysokość z paddingu 16px + line-height:1, boki 32px. */
+  height: auto;
+  padding: 16px 32px;
   border-radius: 999px;
+  /* 17px / 600 jak nazwa sklepu na batonach (.store-btn--compact .label
+     strong), żeby kroje na przyciskach były spójne. */
   font-size: 17px;
   /* line-height:1 naprawia pionowe centrowanie tekstu. */
   line-height: 1;
@@ -613,6 +934,8 @@ h1 {
    otwarcia. */
 body.has-modal {
   position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   overflow: hidden;
 }
@@ -863,104 +1186,6 @@ body.has-modal {
 /* Baton otwierający modal jest <button>, nie <a> — wyrównaj do reszty. */
 button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align: left; }
 
-/* ---- Hero: telefon z filmikiem ----
-   Obudowa telefonu, cień i notch przychodzą z renderu (Rotato), nie z CSS —
-   dlatego tu nie ma żadnej ramki, tylko samo <video>. Render wsadzony w
-   dodatkową ramkę rysowaną CSS-em dałby telefon w telefonie.
-   Tło renderu jest spłaszczone do --cream przy kodowaniu (źródło ma alfę),
-   więc wideo wtapia się w tło strony bez przezroczystości — jeden plik mp4
-   zamiast pary webm+mov z kanałem alfa, którego Safari i tak nie odtwarza.
-
-   Mobile ma inny tryb dopasowania niż desktop, świadomie. Materiał jest
-   kwadratowy, a telefon zajmuje w nim 0,66 wysokości i tylko 0,31 szerokości
-   (zmierzone na klatkach 0/10/20/29). W jednej kolumnie kwadratowy kadr
-   o szerokości ekranu dałby telefon ~220px wysokości — za mało. Dlatego tu
-   kadr jest pionowy (9:16) i object-fit:cover: skala liczy się od wysokości,
-   a przycięcie zjada boczną pustkę kadru, nie obudowę (telefon leży między
-   34% a 66% szerokości, widoczne jest 22%-78%). Na desktopie kadr wraca do
-   1:1 z contain — patrz blok ≥760px. */
-.hero-art {
-  /* start + ręczne wyśrodkowanie marginesem (patrz niżej) — center i tak nie
-     działa na elemencie szerszym niż kolumna. */
-  justify-self: start;
-  /* Kadr rośnie CAŁY (bez podcinania pustki dookoła telefonu przez transform:
-     scale na <video> — to ucinałoby tło, nie powiększało telefon).
-     116vw, bo docelowa szerokość nie mieści się w kolumnie: przy 375px
-     ekranu kolumna ma 335px (.wrap padding 20px), a docelowa szerokość to
-     435px. Kadr wychodzi więc poza okno i jest ścinany przez overflow-x:clip
-     na <body>. Ścinane jest wyłącznie puste tło kadru (spłaszczone przy
-     kodowaniu do --cream, czyli do koloru strony) — obudowa leży między
-     0,343 a 0,657 szerokości materiału (zmierzone na 324 klatkach @6fps),
-     więc przy 375px zostaje po 66px marginesu z każdej strony.
-     Zmierzone w przeglądarce (box -> obudowa):
-       375px ekranu -> 435x773px -> 243x510px
-       390px ekranu -> 452x804px -> 253x531
-       >=404px ekranu -> 468x832px -> 261x549 (sufit)
-     Sufit 468px jest po to, żeby przy 600-759px (duże telefony w poziomie,
-     małe tablety) kadr nie urósł na pół ekranu — reguła bazowa obowiązuje aż
-     do 760px, blok desktopowy zaczyna się dopiero tam. */
-  width: 116vw;
-  max-width: 468px;
-  /* Samo justify-self:center nie wyśrodkuje kadru szerszego niż kolumna —
-     grid ma twarde „overflow alignment": element większy od swojego obszaru
-     zachowuje się jak start, żeby nie uciąć treści od strony początku
-     (zmierzone: kadr wychodził wtedy 80px w prawo i robił poziomy pasek
-     przewijania). Ujemny margines liczy wyśrodkowanie ręcznie: połowa
-     kolumny minus połowa kadru (58vw), przy 375px ekranu = -50px.
-     min(58vw, 234px) — połowa TEJ SAMEJ wartości, którą dostaje width (razem
-     z sufitem 468px); samo 58vw rozjeżdżałoby kadr w prawo powyżej 404px
-     ekranu, gdzie o szerokości decyduje już sufit, nie vw. */
-  margin-left: calc(50% - min(58vw, 234px));
-  /* Proporcje trzyma kontener, nie <video> — dzięki temu przy
-     prefers-reduced-motion (gdzie <video> znika) kadr nie zapada się do zera
-     i poster zostaje w tym samym miejscu.
-     Kadr przycięty o 40% pustki nad i pod telefonem, tym samym chwytem co na
-     desktopie (blok ≥760px): box maleje, materiał nie — telefon zachowuje
-     wielkość, znika tylko puste tło kadru.
-     Arytmetyka (zmierzone na 324 klatkach @6fps, demo.mp4 1:1, tło #F5F3EF):
-     obudowa z cieniem leży między 0,170 a 0,885 wysokości materiału, więc
-     pustka to 0,170 u góry i 0,115 u dołu (razem 0,285). Cięcie 40% zdejmuje
-     0,068 z góry i 0,046 z dołu = 0,112 wysokości kadru:
-       wysokość boxa: 16 x (1 - 0,112) = 14,208  ->  aspect-ratio 9 / 14,208
-       materiał:      1 / 0,888 = 112,61% wysokości boxa
-       przesunięcie:  0,068 x 16 / 14,208 = 7,66% wysokości boxa w górę
-     Cięcie jest asymetryczne (0,068 vs 0,046), bo pustka w materiale też
-     jest — samo place-items:center zdjęłoby po 0,056 i zjadłoby dół mocniej
-     niż górę. */
-  aspect-ratio: 9 / 14.208;
-  /* Nadwyżka materiału wyjeżdża poza box i musi być ścięta — inaczej cream
-     z kadru rysowałby się na tekście nad kwadratem i na kaflach pod nim. */
-  overflow: hidden;
-  position: relative;
-  /* ?v= podbijasz razem z tym w <source> — patrz komentarz w index.html. */
-  background-image: url("assets/demo-poster.jpg?v=4");
-  /* Poster dopasowany 1:1 do <video> (te same 112,61% i to samo przesunięcie),
-     inaczej przy prefers-reduced-motion telefon skacze na inną wielkość.
-     auto 112.61% = skala od wysokości, szerokość sama (materiał 1:1), a y w
-     procentach to „która linia materiału siada na której linii boxa":
-     60,7% x (box - materiał) = -7,66% wysokości boxa, czyli to samo
-     przesunięcie co top na <video>. */
-  background-size: auto 112.61%;
-  background-position: 50% 60.7%;
-  background-repeat: no-repeat;
-}
-.hero-video {
-  display: block;
-  /* Absolutnie, bo przycięcie jest asymetryczne — top jest tym samym
-     pokrętłem co background-position wyżej i musi się z nim zgadzać. */
-  position: absolute;
-  left: 0;
-  top: -7.66%;
-  width: 100%;
-  height: 112.61%;
-  object-fit: cover;
-  /* Telefon +15%, kontener (.hero-art) bez zmian — scale na samym materiale,
-     przycinany przez istniejący overflow:hidden, powiększa telefon bez
-     ruszania boxa. transform-origin domyślne 50% 50% wystarcza — box i tak
-     centruje kadr (place-items/top wyżej). */
-  transform: scale(1.15);
-}
-
 /* ---- "O aplikacji" (feature-list) ----
    Karta z grafiką + nagłówek/tekst obok, sześć niezależnych bloków, każdy
    z własną grafiką i własnym pytaniem/odpowiedzią. */
@@ -969,14 +1194,18 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
   display: grid;
   grid-template-columns: 1fr;
   gap: 24px;
+  /* Na mobile CAŁY bullet (grafika + pigułka + nagłówek + tekst) leży w
+     jednym kaflu — ten sam motyw co podkład grafiki na desktopie (tło,
+     zaokrąglenie), rozciągnięty na cały blok, bo na mobile nie ma już
+     dwukolumnowego podziału, który by to naturalnie rozdzielał. Zdjęte
+     ≥1024px, gdzie podkład zostaje WYŁĄCZNIE sprawą .feature-media. */
+  background: #F6F2E9;
+  border-radius: 20px;
+  padding: 44px 24px;
 }
-.feature-row + .feature-row { margin-top: 88px; }
+.feature-row + .feature-row { margin-top: 28px; }
 .feature-media {
   display: block;
-  /* Bez podkładu/karty na mobile — sam podkład jest sprawą desktopowej
-     siatki (2 kolumny, patrz blok ≥1024px niżej); na mobile ilustracja jest
-     sama, skalowana naturalnie (height:auto, bez object-fit, bo nie ma tu
-     boxa do docinania). */
   width: 100%;
   max-width: 275px;
   height: auto;
@@ -1049,16 +1278,31 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
 }
 .feature-copy h3 {
   margin: 0 0 12px;
-  font-size: 32px;
+  /* Ten sam rozmiar, interlinia i tracking co nagłówek banera „Dołącz do
+     Skautów Hyc!" (.scouts-cta h2): jedna skala dla nagłówków sekcji. */
+  font-size: clamp(32px, 4.5vw, 40px);
   font-weight: 700;
   line-height: 1.15;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
   color: var(--espresso);
-  /* pretty, nie balance — balance rozkłada WSZYSTKIE linie równomiernie, co
-     przy krótkim nagłówku daje dwie sztucznie skrócone linie zamiast
-     naturalnego zapełnienia pierwszej. pretty zostawia zachłanny wrap
-     (pierwsza linia pełna) i pilnuje tylko sieroty na ostatniej. */
+  /* pretty, nie balance — na desktopie (2 linie) balance rozkłada WSZYSTKIE
+     linie równomiernie, co przy krótkim nagłówku daje dwie sztucznie
+     skrócone linie zamiast naturalnego zapełnienia pierwszej. pretty
+     zostawia zachłanny wrap (pierwsza linia pełna) i pilnuje tylko sieroty
+     na ostatniej. */
   text-wrap: pretty;
+}
+/* Na mobile kolumna jest dużo węższa, więc te same nagłówki łamią się na
+   3-4 linie — pretty (zachłanny wrap) tam zostawiał bardzo krótkie środkowe
+   linie (np. jedno słowo), co wyglądało nienaturalnie. balance rozkłada
+   słowa równo między liniami, dokładnie to, do czego jest pomyślany przy
+   wielolinijkowych nagłówkach. */
+@media (max-width: 760px) {
+  /* Podłoga 32px (clamp wyżej) przy wąskiej kolumnie (~271px) łamała zdania
+     na 3-4 linie z bardzo krótką linią w środku (np. jedno słowo, 95-113px)
+     — zmierzone jako wyraźnie gorsze niż mniejszy font. 26px mieści większość
+     nagłówków w 2 liniach, najdłuższy w 3, bez sierotek w środku. */
+  .feature-copy h3 { font-size: 26px; text-wrap: balance; }
 }
 .feature-copy p {
   margin: 0;
@@ -1066,15 +1310,14 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
   line-height: 1.5;
   color: var(--bark);
 }
-/* Najmniejsze telefony — standardowy zakres dla nagłówków sekcji na mobile to
-   24-28px, dla tekstu 15-17px. .feature-copy dostaje WŁASNE 16px paddingu
-   z boków, dokładając się do gutteru .wrap (20+16=36px od krawędzi ekranu)
-   zamiast go zastępować — inne dzieci .feature-row (ilustracja, badge)
-   zostają na dotychczasowym 20px. Próg 760px to istniejący "mobile tier"
-   w tym pliku, spójny z resztą reguł poniżej. */
+/* Dawniej .feature-copy dostawał tu własne +16px paddingu, bo jedynym
+   obramowaniem był gutter .wrap (20px). Teraz cały bullet leży w kaflu
+   z własnym paddingiem 24px (patrz .feature-row) — pełne dawne 16px na to
+   dokładane dawało realną szerokość tekstu ~250px (linie nienaturalnie
+   krótkie); zero dodatku dawało pełne 327px (linie zbyt długie). 8px to
+   środek między tymi dwoma skrajnościami. */
 @media (max-width: 760px) {
-  .feature-copy { padding-left: 16px; padding-right: 16px; }
-  .feature-copy h3 { font-size: 28px; line-height: 1.2; }
+  .feature-copy { padding-left: 8px; padding-right: 8px; }
 }
 
 
@@ -1101,10 +1344,11 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
 }
 .faq-heading {
   margin: 0;
-  font-size: 28px;
+  /* Ten sam krój co nagłówki bulletów (.feature-copy h3) i baneru Skautów. */
+  font-size: clamp(32px, 4.5vw, 40px);
   font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   color: var(--espresso);
 }
 .faq-subheading {
@@ -1163,8 +1407,14 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
    batonami/modalami co hero na stronie głównej (patrz komentarz
    w pobierz.html). Wyśrodkowane w całości — jedyna sekcja na stronie, więc
    brak sąsiada do wyrównania w kolumnę, jak w .hero. */
+/* Wyśrodkowana bardziej w pionie względem całej wysokości ekranu (nie tylko
+   przyklejona pod topbarem) — jedyna treść strony, stopka zostaje osobno pod
+   spodem. `.wrap > main` domyślnie ma `justify-content: flex-start` (patrz
+   komentarz przy tej regule), tu to jedyna podstrona bez sąsiedniej kolumny,
+   więc nadpisanie na tej jednej stronie jest bezpieczne. */
+body.page-pobierz .wrap > main { justify-content: center; }
 .pobierz-hero {
-  margin: 64px auto 0;
+  margin: 0 auto;
   padding: 40px 0 80px;
   max-width: 640px;
   text-align: center;
@@ -1354,9 +1604,11 @@ footer .spacer { flex: 1 1 auto; }
   .about-hero { margin-top: 80px; }
   .feature-list { margin-top: 88px; }
   .feature-row + .feature-row { margin-top: 104px; }
-  .faq-heading { font-size: 32px; }
   footer { margin-top: 96px; }
-  .scouts-cta { margin-top: 200px; }
+  /* Szlak ma pod tekstem własną sporą pustkę (wysoki artboard), więc tu
+     starczy mniej — 200px dawało odstęp >400px licząc od ostatniej widocznej
+     linii tekstu do baneru. */
+  .scouts-cta { margin-top: 80px; }
   .faq { margin-top: 160px; }
 }
 
@@ -1373,18 +1625,26 @@ footer .spacer { flex: 1 1 auto; }
     grid-template-columns: 1fr 1fr;
     gap: 56px;
     align-items: center;
+    /* Kafel całego bulletu jest WYŁĄCZNIE mobile (patrz baza wyżej) — od
+       2 kolumn podkład wraca do samej grafiki (.feature-media niżej). */
+    background: none;
+    border-radius: 0;
+    padding: 0;
   }
+  /* Ciaśniejszy odstęp (28px) jest sprawą sztaplowanych kafli na mobile —
+     w dwóch kolumnach wraca pełny oddech między rzędami. */
+  .feature-row + .feature-row { margin-top: 88px; }
   /* Reset centrowania z mobile — w 2 kolumnach grafika/pigułka/tekst wracają
      do left/right-align właściwego układowi obok siebie. Karta/podkład (tło,
-     padding, zaokrąglenie, stała wysokość+object-fit) to wyłącznie sprawa
-     tego 2-kolumnowego układu — na mobile ich nie ma, stąd dopiero tutaj, nie
-     w bazowej regule .feature-media. */
+     zaokrąglenie, padding, stała wysokość+object-fit) to tu znowu wyłącznie
+     sprawa .feature-media, nie całego rzędu. */
   .feature-media {
-    margin-right: 0;
-    max-width: none;
     background: #F6F2E9;
     border-radius: 20px;
     padding: 24px;
+    box-sizing: border-box;
+    margin-right: 0;
+    max-width: none;
     /* `height:auto` skalowałoby wysokość razem z szerokością kolumny —
        karta w rzędzie "normalnym" (wide) wychodziłaby wyższa niż w reverse,
        mimo tego samego obrazka (user: "nierówne"). Stała wysokość +
@@ -1416,103 +1676,70 @@ footer .spacer { flex: 1 1 auto; }
   }
 }
 
-/* ---- Hero: dwie kolumny dopiero od 1024px ----
-   Hero na 8-kolumnowej siatce od 760px był za ciasny dla tekstu i telefonu
-   naraz (batony sklepowe nie mieściły się obok siebie — kolumna hero-copy
-   była za wąska). Próg podziału hero na dwie kolumny przesunięty na 1024px,
-   spójnie z resztą sekcji (feature/faq/kontakt, patrz blok wyżej). 760-1023px
-   dostaje zwykły mobilny układ jednokolumnowy, 1024-1099px 8-kolumnową
-   siatkę, ≥1100px 12-kolumnową (blok niżej). */
-@media (min-width: 1024px) {
-  .hero {
-    /* Tablet = 8 kolumn (standard 12/8/4: Material, UX Design Institute),
-       rynna 16px — stała, wielokrotność 8, węższa niż desktopowe 24, bo
-       kolumna też jest węższa. Podział 4+4: tekst i telefon po połowie. */
-    grid-template-columns: repeat(8, 1fr);
-    /* Tylko column-gap zmienia się tutaj — row-gap i align-items zostają na
-       wartościach z bazowej regule .hero (28px / center). */
-    column-gap: 16px;
+/* ---- Intro hero (sekwencja jak na cooldock.app) ----
+   Kolejność: tło -> piny po kolei -> nagłówek -> podtytuł -> przyciski ->
+   na końcu z dołu wyjeżdża telefon. Napisy: wejście jak tam, czyli samo
+   rozjaśnienie + przesunięcie o 30px w górę (właściwość `translate`, nie
+   `transform`, więc nie koliduje ze scrubem scrolla), 1s, krzywa
+   cubic-bezier(.25,.75,.25,1). main.js dodaje .hero-intro (stan wyjściowy:
+   wszystko ukryte), a po zdekodowaniu tła .hero-ready (start animacji). Bez
+   JS i przy „ogranicz ruch" hero jest od razu cały. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-intro:not(.hero-ready) .hero-img,
+  .hero-intro:not(.hero-ready) .pin,
+  .hero-intro:not(.hero-ready) .hero-copy > *,
+  .hero-intro:not(.hero-ready) .hero-phone { opacity: 0; }
+  /* Nagłówek rozbity na słowa (main.js): sam kontener jest widoczny, ukryte
+     są słowa. */
+  .hero-intro:not(.hero-ready) .hero-copy > h1.is-split { opacity: 1; }
+  .hero-intro:not(.hero-ready) .hw { opacity: 0; }
+
+  .hero-ready .hero-img { animation: hero-bg-in 1100ms ease-out backwards; }
+  .hero-ready .pin {
+    animation: pin-drop 680ms cubic-bezier(0.3, 0.7, 0.4, 1) backwards;
+    animation-delay: calc(700ms + var(--i) * 190ms);
   }
-  .hero-copy {
-    grid-column: 1 / span 4;
+  .hero-ready .hero-copy > * {
+    animation: hero-text-in 1000ms cubic-bezier(0.25, 0.75, 0.25, 1) backwards;
   }
-  .hero-art {
-    grid-column: 5 / span 4;
-    justify-self: stretch;
-    width: 100%;
-    max-width: none;
-    height: auto;
-    margin-left: 0;
-    aspect-ratio: 1 / 1.3452;
-    display: grid;
-    place-items: center;
-    background-size: cover;
-    background-position: center;
-    /* overflow:hidden dziedziczy z bazowej reguły .hero-art — bez zmian tutaj. */
+  .hero-ready .hero-copy > h1 { animation-delay: 2100ms; }
+  .hero-ready .hero-copy > h1.is-split { animation: none; }
+  .hero-ready .hero-copy > .hero-tags { animation-delay: 3150ms; }
+  .hero-ready .hero-copy > .stores { animation-delay: 3400ms; }
+  /* „Hyc!" wyskakuje pierwsze (pop z przestrzałem, lekki obrót i rozmycie,
+     jak piny), potem pozostałe słowa wchodzą po kolei: rozjaśnienie, 0,45em
+     w górę i zdejmowane rozmycie, co 95ms. */
+  .hero-ready .hw {
+    animation: hero-word-in 750ms cubic-bezier(0.25, 0.75, 0.25, 1) backwards;
+    animation-delay: calc(2700ms + (var(--wi, 1) - 1) * 95ms);
   }
-  .hero-art .hero-video {
-    position: static;
-    top: auto;
-    /* width/height wprost ustawione niżej (auto / calc) — te dwie linie tylko
-       zerują procentowe wartości z bazy, zanim padnie właściwa deklaracja. */
-    width: auto;
-    height: calc(100% + 64px);
-    max-width: none;
-    min-width: 0;
-    min-height: 0;
-    /* object-fit i transform dziedziczą z bazowej reguły .hero-video —
-       bez zmian tutaj. */
+  .hero-ready .hw--lead {
+    animation: hero-lead-pop 950ms cubic-bezier(0.3, 0.7, 0.4, 1) 2100ms backwards;
+    transform-origin: 30% 85%;
+  }
+  .hero-ready .hero-phone {
+    animation: hero-phone-in 1200ms cubic-bezier(0.25, 0.75, 0.25, 1) 3750ms backwards;
+  }
+  /* Menu wyjeżdża z góry w tej samej chwili, w której z dołu wjeżdża telefon
+     (klasy dostaje .topbar od main.js, tylko na stronie głównej). */
+  .topbar.hero-intro:not(.hero-ready) .topbar-inner { opacity: 0; }
+  .topbar.hero-ready .topbar-inner {
+    animation: hero-nav-in 1200ms cubic-bezier(0.25, 0.75, 0.25, 1) 3750ms backwards;
   }
 }
-
-/* ---- Szeroki desktop: hero w dwóch kolumnach 1,2fr : 1fr ----
-   Wcześniej 12-kolumnowa siatka z podziałem 6 + 6. Nagłówek hero potrzebuje
-   kolumny tekstu o szerokości ok. 520px (fraza "czego potrzebujesz" przy 58px
-   to 498px), więc kolumna telefonu jest węższa (478px -> 435px). Telefon i
-   film zostają tej samej wielkości: wysokość kadru jest stała (643px), ścinane
-   jest tylko puste tło po bokach, nie sam telefon.
-   Rynna 24px jest stała (nie procentowa), wielokrotność 8 (Material, Spectrum).
-
-   Ten układ obowiązuje tylko w hero — sekcja kafelków i stopka zostają na
-   swoich 6 kolumnach z rynną 14px, ujednolicenie byłoby osobną decyzją.
-
-   Hero wychodzi poza .wrap w prawo, do marginesu okna: lewa krawędź tekstu
-   zostaje wyrównana do kafelków i stopki, rusza się tylko prawa. Próg
-   1100px, nie 760px: przy węższym oknie margines okna jest zerowy, nie ma
-   czego wypuszczać. 760-1099px dostaje siatkę 8-kolumnową wyżej. */
-@media (min-width: 1100px) {
-  .hero {
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    column-gap: 24px;
-    /* start, nie center — center (z bloku 1024px, łata na skok w wąskim
-       tablecie) zjeżdżał tekst za nisko względem telefonu na desktopie. */
-    align-items: start;
-    /* Żadnego wypuszczania w prawy margines. Ujemny margin-right rozciągałby
-       hero do krawędzi okna: przy szerokim oknie z lewej zostawałoby więcej
-       marginesu niż z prawej, układ optycznie uciekałby w prawo. Hero kończy
-       się tam, gdzie .wrap (kafelki, stopka) — marginesy równe z definicji,
-       bo .wrap jest wyśrodkowany. */
-  }
-  /* Kwadrat dochodzi do prawej krawędzi treści dokładnie tak, jak tekst do
-     lewej — równe przestrzenie z prawej i lewej wychodzą z samego układu. */
-  .hero-copy {
-    grid-column: 1;
-    /* To samo wyrównanie do widocznej obudowy co w bloku ≥760px, przeliczone
-       na wysokość kadru tego breakpointu (643px) — telefon ma tu ten sam
-       rozmiar co przy kolumnie 478px. */
-    margin-top: 125px;
-  }
-  /* Szerokość ustala grid-column (435px). Wysokość jest stała, nie z
-     aspect-ratio: 643px = 478 x 1,3452, czyli kadr sprzed zwężenia kolumny.
-     Film ma wysokość kadru + 64px i jest kwadratem, więc telefon zachowuje
-     wielkość, a zwężona kolumna ścina jedynie puste tło po bokach. */
-  .hero-art { grid-column: 2; aspect-ratio: auto; height: 643px; }
-  h1 { font-size: 52px; }
-  /* Kolumna tekstu ma tu ok. 521px; fraza "czego potrzebujesz" przy 58px to
-     498px (~4% zapasu). Powyżej 58px zapasu już nie ma. */
-  .hero h1 { font-size: 58px; }
-  .hero-tags { margin-bottom: 40px; }
+@keyframes hero-bg-in { 0% { opacity: 0; } }
+@keyframes hero-text-in { 0% { opacity: 0; translate: 0 30px; } }
+@keyframes hero-phone-in { 0% { opacity: 0; translate: 0 24vh; } }
+.hw { display: inline-block; }
+@keyframes hero-word-in {
+  0% { opacity: 0; translate: 0 0.45em; }
 }
+@keyframes hero-lead-pop {
+  0% { opacity: 0; scale: 0.2; rotate: -14deg; }
+  55% { opacity: 1; scale: 1.5; rotate: 3deg; }
+  78% { scale: 0.94; rotate: -1.5deg; }
+}
+@keyframes hero-nav-in { 0% { opacity: 0; translate: 0 -60px; } }
 
 /* ---- Wejście strony ----
    Kaskada zamiast jednoczesnego pojawienia się wszystkiego: oko dostaje
@@ -1526,34 +1753,65 @@ footer .spacer { flex: 1 1 auto; }
 @media (prefers-reduced-motion: no-preference) {
   /* `> footer` celowo — samo `footer` łapie też stopkę nawigacyjną modala
      (też jest elementem <footer>), a ta ma własne wejście razem z oknem. */
-  .hero-copy > *,
-  .hero-art,
-  .feature-media,
-  .feature-copy > *,
   .wrap > footer {
     animation: rise 620ms var(--ease-out) backwards;
   }
-  .hero-copy > :nth-child(1) { animation-delay: 40ms; }
-  .hero-copy > :nth-child(2) { animation-delay: 90ms; }
-  .hero-copy > :nth-child(3) { animation-delay: 140ms; }
-  .hero-copy > :nth-child(4) { animation-delay: 180ms; }
-  .hero-copy > :nth-child(5) { animation-delay: 220ms; }
-  .hero-copy > :nth-child(6) { animation-delay: 260ms; }
-  .hero-art { animation-delay: 150ms; }
-  .feature-media { animation-delay: 300ms; }
-  .feature-copy > *:nth-child(1) { animation-delay: 340ms; }
-  .feature-copy > *:nth-child(2) { animation-delay: 380ms; }
   .wrap > footer { animation-delay: 450ms; }
 }
 
+/* ---- Pojawianie elementów przy scrollu ----
+   Minimalnie: element wjeżdża 24px z dołu i się rozjaśnia (opacity + transform,
+   nic więcej), 650ms z krzywą „expo out", raz, gdy wchodzi w ekran. Klasę
+   .reveal dokłada main.js TYLKO elementom spoza pierwszego ekranu i tylko
+   przy braku „ogranicz ruch" — bez JS wszystko jest widoczne od razu. Po
+   zakończeniu klasy są zdejmowane, żeby nie blokowały hoverów. */
+:root {
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Pozwala animować `height: auto` (rozwijanie FAQ) tam, gdzie przeglądarka
+     to umie; gdzie nie, odpowiedź po prostu otwiera się od razu. */
+  interpolate-size: allow-keywords;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 650ms var(--ease-reveal),
+      transform 650ms var(--ease-reveal);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal.is-in { opacity: 1; transform: none; }
+
+  /* FAQ: płynne rozwijanie odpowiedzi (::details-content, Chrome/Safari
+     nowsze; starsze ignorują regułę). Strzałka już się obraca wyżej. */
+  .faq-item::details-content {
+    block-size: 0;
+    overflow: clip;
+    transition:
+      block-size 320ms var(--ease-out),
+      content-visibility 320ms allow-discrete;
+  }
+  .faq-item[open]::details-content { block-size: auto; }
+}
 /* ---- CTA "Dołącz do Skautów" — karta na zdjęciu ---- */
 .scouts-cta {
-  margin-top: 128px;
   border-radius: var(--radius-lg, 24px);
   overflow: hidden;
   background-image: linear-gradient(rgba(249, 246, 242, 0.65), rgba(249, 246, 242, 0.65)), url("assets/skauci-bg.jpg?v=2");
   background-size: cover;
   background-position: center;
+}
+/* margin-top osobno, w media query zamiast w regule bazowej — ta reguła
+   bazowa stoi w pliku PO bloku ≥760px (patrz wyżej), więc przy równej
+   swoistości zawsze by go przebijała niezależnie od szerokości okna
+   (kolejność w źródle rozstrzyga remis). Stąd mobile dostaje własny zakres
+   zamiast współdzielić "bazową" wartość z desktopem. */
+@media (max-width: 759px) {
+  /* Szlak ma pod tekstem własne ~100px pustki (wysoki artboard), więc tu
+     starczy dużo mniej niż na desktopie (200px, patrz blok ≥760px) —
+     inaczej odstęp od ostatniej widocznej linii do baneru rośnie do
+     grubo ponad 100px. */
+  .scouts-cta { margin-top: 16px; }
 }
 .scouts-cta-inner {
   max-width: 640px;
@@ -1577,9 +1835,108 @@ footer .spacer { flex: 1 1 auto; }
   line-height: 1.6;
   color: var(--bark);
 }
-.scouts-cta .store-btn--nav {
-  height: auto;
-  padding: 16px 32px;
+
+/* ---- Sekcja ze szlakiem ----
+   „Artboard" o stałych proporcjach skalowany z szerokością: tekst i szlak
+   żyją w tym samym układzie współrzędnych, więc zawsze się zgadzają. Desktop
+   (≥700px) 1695x1025 jak w makiecie, wąski ekran osobny pionowy układ 390x590, ścieżka z makiety obrócona o 90°
+   z własną, krótszą ścieżką. Kontener `cqw` = 1% szerokości artboardu.
+   Pełna szerokość okna (jak hero), kadr wyśrodkowany i ograniczony do 1695px,
+   żeby na bardzo szerokich ekranach tekst nie rósł bez końca. Bez własnego
+   tła: sekcja leży na kremie strony. */
+.trail {
+  --trail-w: min(100vw, 1695px);
+  position: relative;
+  width: var(--trail-w);
+  margin: 64px 0 0 calc(50% - var(--trail-w) / 2);
+  aspect-ratio: 390 / 590;
+  container-type: inline-size;
+}
+.trail-stage {
+  position: absolute;
+  inset: 0;
+  /* `stroke-dashoffset` (niżej) nie jest kompozytowalny jak transform/opacity
+     — każda klatka animacji rysowania szlaku to realny repaint geometrii
+     ścieżki SVG na głównym wątku. Bez containment ten repaint mógł wymuszać
+     przeliczenie też u sąsiadów (kolumna tekstu), co w połączeniu ze
+     scrollem na Safari/iOS dawało zgłoszone zacinanie/przeskoki akurat na
+     wysokości tej sekcji. `contain: paint` zamyka efekt repaintu w tym
+     poddrzewie. */
+  contain: paint;
+}
+/* Na mobile szlak ma się zmieścić w tej samej kolumnie co tekst (20px gutter
+   po obu stronach), nie rozlewać się na cały ekran — inaczej wystaje poza
+   tekst bardziej niż na desktopie, gdzie artboard jest już skalowany do
+   tekstu (patrz komentarz przy --trail-w w media query niżej). */
+.trail-stage--narrow { inset: 0 20px; }
+.trail-stage--wide { display: none; }
+.trail-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.trail-copy {
+  position: absolute;
+  /* 20px — ten sam gutter co .wrap na resztę strony (nie węziej). Działa jako
+     stały px, nie %, bo .trail na mobile to zawsze 100vw: dokładny odpowiednik
+     gutteru niezależnie od szerokości ekranu. */
+  left: 20px;
+  /* Tekst wyśrodkowany w pionie na środku artboardu (liczba wierszy może się
+     zmienić bez rozjeżdżania z szlakiem). */
+  top: 50%;
+  transform: translateY(-50%);
+  width: calc(100% - 40px);
+}
+.trail-title,
+.trail-text {
+  margin: 0;
+  /* Własny rytm zawijania: łamania i rozmiar jak w makiecie, nie globalny
+     `text-wrap: balance` nagłówków / `pretty` akapitów. */
+  text-wrap: wrap;
+  font-size: 11.4cqw;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0;
+  color: var(--espresso);
+}
+.trail-title { text-wrap: balance; }
+.trail-text { text-wrap: pretty; }
+.trail-br { display: none; }
+/* Łamanie mobile i desktop różni się miejscem (inny układ artboardu), więc
+   każdy ma własny zestaw <br> w HTML — oba ułożone ręcznie pod zmierzoną
+   szerokość kolumny, bo natural wrap (nawet `pretty`) dawał nierówne wiersze
+   (jedna linia 312px, sąsiednia 221px). */
+.trail-br-m { display: inline; }
+@media (min-width: 700px) {
+  .trail {
+    /* Artboard skaluje się z ROZMIAREM TEKSTU, nie z oknem: font = rozmiar
+       nagłówka hero (min(76/1670 szerokości okna, 70px)), a szerokość kadru
+       to ten font x 1695/92 (proporcje makiety: 92px tekstu na kadr 1695px).
+       Dzięki temu szlak ma zawsze te same proporcje względem wierszy tekstu,
+       co w oryginale, i nie wystaje ponad tekst bardziej niż tam. */
+    --trail-fs: min(4.551vw, 70px);
+    --trail-w: calc(var(--trail-fs) * 18.4239);
+    margin-top: 96px;
+    aspect-ratio: 1695 / 1025;
+  }
+  .trail-stage--wide { display: block; }
+  .trail-stage--narrow { display: none; }
+  /* Pozycja tekstu 1:1 z makiety (222/1695 od lewej, 225/1025 od góry). */
+  .trail-copy { left: 13.1%; top: 47.05%; width: 78.4%; }
+  .trail-title,
+  .trail-text { font-size: 5.427cqw; line-height: 1.4; white-space: nowrap; }
+  .trail-br { display: inline; }
+  .trail-br-m { display: none; }
+}
+
+/* Rysowanie szlaku: maska z linią o pełnej (znormalizowanej) długości 1000.
+   Domyślnie szlak jest narysowany w całości (bez JS, „ogranicz ruch"). main.js
+   dodaje .is-armed (szlak ukryty) i po wjechaniu sekcji w ekran .is-drawn
+   (przejście do zera). */
+.trail-reveal { stroke-dasharray: 1000; stroke-dashoffset: 0; }
+.trail.is-armed .trail-reveal { stroke-dashoffset: 1000; }
+.trail.is-armed.is-drawn .trail-reveal {
+  stroke-dashoffset: 0;
+  /* 900ms (próba skrócenia) cofnięte — wyglądało gorzej i NIE rozwiązywało
+     skakania scrolla (potwierdzone przez usera), więc nie było warte
+     kompromisu wizualnego. Wraca 2200ms. */
+  transition: stroke-dashoffset 2200ms cubic-bezier(0.55, 0, 0.35, 1);
 }
 
 @keyframes rise {
@@ -1591,8 +1948,6 @@ footer .spacer { flex: 1 1 auto; }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
-  /* Wyłączenie animacji NIE zatrzymuje zapętlonego <video> — a to najbardziej
-     ruchliwy element strony. Chowamy je i zostawiamy sam poster, który maluje
-     .hero-art przez background-image. */
-  .hero-video { display: none; }
+  /* Wyłączenie animacji NIE zatrzymuje <video> — main.js nie odpala nagrania
+     przy „ogranicz ruch", zostaje sam poster. */
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Hyc! — jeden przycisk do najbliższego schronienia</title>
+  <title>Hyc!</title>
   <meta name="description" content="Hyc! to prosta aplikacja turystyczna: jeden przycisk, GPS i nawigacja po szlaku do najbliższego schronienia. Dołącz do otwartej bety na iOS i Androida.">
   <meta name="theme-color" content="#F0EBE0">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -27,21 +27,24 @@
   <meta name="twitter:image" content="https://dinin92-del.github.io/hyc-landing-preview/assets/og-image.jpg?v=20260811">
 
   <link rel="preload" href="assets/fonts/Figtree-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" as="image" type="image/webp"
+        imagesrcset="assets/hero/hero-bg-1200.webp?v=8 1200w, assets/hero/hero-bg-1800.webp?v=8 1800w, assets/hero/hero-bg-2560.webp?v=8 2560w, assets/hero/hero-bg-3840.webp?v=8 3840w"
+        imagesizes="((max-width: 899px) or (max-aspect-ratio: 13/10)) 170vw, 100vw">
   <!-- ?v= na CSS i JS jest obowiązkowe — podbij przy każdym wydaniu. Strona
        stoi na GitHub Pages, które ignorują plik `_headers` (format Netlify/
        Cloudflare Pages) i serwują wszystko z Cache-Control: max-age=600. Bez
        wersji w URL-u przeglądarka po deployu potrafi skleić nowy index.html
        ze starym styles.css. Wersja w URL-u wymusza świeże pobranie, bo to
        inny zasób. -->
-  <link rel="stylesheet" href="styles.css?v=202609162bg">
+  <link rel="stylesheet" href="styles.css?v=2026100896">
 </head>
-<body>
+<body class="page-home">
   <!-- Górny pasek: strona ma sekcje pod hero (O aplikacji, FAQ, Kontakt)
        i potrzebuje stałej nawigacji do nich. Logo stoi tu, nie w hero. -->
   <header class="topbar">
     <div class="topbar-inner">
       <a href="#top" class="topbar-logo" aria-label="Hyc! — strona główna">
-        <img src="assets/logo.png?v=2" alt="Hyc!" width="105" height="48">
+        <img src="assets/logo-69.png?v=2" srcset="assets/logo-69.png?v=2 1x, assets/logo-138.png?v=2 2x, assets/logo-207.png?v=2 3x" alt="Hyc!" width="69" height="32">
       </a>
 
       <nav class="topbar-nav" aria-label="Główna nawigacja">
@@ -68,68 +71,81 @@
       <a href="o-aplikacji.html"><span>O aplikacji</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
       <a href="#faq"><span>FAQ</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
       <a href="kontakt.html"><span>Kontakt</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a href="pobierz.html"><span>Pobierz</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
     </nav>
   </header>
 
   <div class="wrap">
 
     <main>
-      <section class="hero" id="top">
-        <div class="hero-copy">
-          <h1><span class="accent">Hyc!</span> Wszystko czego&nbsp;potrzebujesz na szlaku</h1>
-          <p class="hero-tags">Jednym przyciskiem znajdź najbliższą wiatę, tani nocleg, miejsce na namiot, wodę, jedzenie lub apteczkę</p>
-
-          <div class="stores" id="stores">
-            <!-- iOS wymaga apki TestFlight, której większość testerów jeszcze
-                 nie ma — instalacja to więc DWA kliknięcia w ten sam przycisk
-                 (TestFlight, potem po powrocie z App Store, Hyc!). Baton
-                 wygląda jak zwykły „pobierz", modal niżej ustawia oczekiwania
-                 PRZED pierwszym kliknięciem — Apple samo tego nie tłumaczy. -->
-            <button class="store-btn store-btn--dark store-btn--compact" id="btn-ios-open" type="button">
-              <img src="assets/apple.svg" alt="">
-              <span class="label"><small>Pobierz na iPhone</small><strong>TestFlight</strong></span>
-            </button>
-
-            <!-- Android idzie przez zamknięty test Play (grupa Google jako lista
-                 testerów), więc instalacja ma dwa etapy: grupa → opt-in Play.
-                 Tej złożoności NIE pokazujemy na ekranie głównym — baton wygląda
-                 jak zwykły „pobierz", a cały proces prowadzi modal niżej. -->
-            <button class="store-btn store-btn--dark store-btn--compact" id="btn-android-open" type="button">
-              <img src="assets/google.svg" alt="">
-              <span class="label"><small>Pobierz na Androida</small><strong>Google Play</strong></span>
-            </button>
+      <!-- Hero: scena przypięta (sticky) na czas pierwszego scrolla. main.js liczy
+           postęp 0..1 i wpisuje go w --p na .hero; cała animacja (tekst i piny
+           odjeżdżają, tło blednie, telefon wjeżdża i rośnie) siedzi w CSS.
+           Bez JS albo przy „ogranicz ruch" zostaje statyczny układ: tło z
+           tekstem, telefon pod spodem.
+           Tło, piny i tekst to jedna kompozycja 16:9 skalowana jak `cover`
+           (patrz .hero-scene w styles.css), żeby piny zawsze stały nad swoimi
+           domkami niezależnie od proporcji okna. -->
+      <section class="hero" id="top" aria-label="Hyc!">
+        <div class="hero-stage">
+          <div class="hero-bg" aria-hidden="true">
+            <div class="hero-scene">
+              <img class="hero-img"
+                   src="assets/hero/hero-bg-1800.webp?v=8"
+                   srcset="assets/hero/hero-bg-1200.webp?v=8 1200w, assets/hero/hero-bg-1800.webp?v=8 1800w, assets/hero/hero-bg-2560.webp?v=8 2560w, assets/hero/hero-bg-3840.webp?v=8 3840w"
+                   sizes="((max-width: 899px) or (max-aspect-ratio: 13/10)) 170vw, 100vw"
+                   width="3840" height="2160" alt="" fetchpriority="high">
+              <!-- Pozycje i szerokości pinów w % kadru 1670x942 z makiety Figmy
+                   (x/1670, y/942, w/1670); --i to kolejność wejścia od lewej. -->
+              <div class="hero-pins">
+                <span class="pin" style="--x:10.12%;--y:55.52%;--w:3.71%;--i:0"><img src="assets/hero/pin-nocleg.webp?v=3" alt="" width="176" height="212"></span>
+                <span class="pin" style="--x:26.59%;--y:63.16%;--w:4.37%;--i:1"><img src="assets/hero/pin-wiata.webp?v=3" alt="" width="176" height="212"></span>
+                <span class="pin pin--woda" style="--x:62.81%;--y:66.99%;--w:2.4%;--i:2"><img src="assets/hero/pin-woda.webp?v=3" alt="" width="176" height="212"></span>
+                <span class="pin" style="--x:66.17%;--y:73.04%;--w:4.25%;--i:3"><img src="assets/hero/pin-jedzenie.webp?v=3" alt="" width="176" height="212"></span>
+                <span class="pin" style="--x:75.93%;--y:71.34%;--w:3.23%;--i:4"><img src="assets/hero/pin-apteczka.webp?v=3" alt="" width="176" height="212"></span>
+                <span class="pin" style="--x:87.37%;--y:65.71%;--w:3.59%;--i:5"><img src="assets/hero/pin-sklep.webp?v=3" alt="" width="176" height="212"></span>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div class="hero-art">
-          <!-- Render z Rotato: obracający się telefon z własną obudową wypaloną
-               w kadrze, więc nie opakowujemy go w ramkę rysowaną CSS-em (byłby
-               telefon w telefonie). Kadr jest kwadratowy (1:1) i ma oddech
-               dookoła telefonu wbudowany w materiał — skalujemy całość, nigdy
-               nie kadrujemy i nie dokładamy marginesu w CSS.
-               Podmiana nagrania = wymiana assets/demo.mp4 + postera i podbicie
-               ?v=, bez zmian tutaj — o ile nowy render zachowa kadr 1:1
-               i proporcje obudowy w klatce (0,66 wysokości / 0,31 szerokości;
-               z tego wynika `aspect-ratio` boxa w styles.css). -->
-          <!-- Brak `autoplay` jest celowy: start odpala main.js po 1 sekundzie,
-               żeby pierwsza klatka chwilę postała. Nie dopisuj tu `autoplay` —
-               nagranie ruszyłoby natychmiast i pauza przestałaby istnieć.
-               `preload="metadata"` zamiast `none`, żeby po tej sekundzie
-               materiał ruszył bez doczytywania. -->
-          <video
-            class="hero-video"
-            poster="assets/demo-poster.jpg?v=4"
-            muted loop playsinline
-            preload="metadata"
-            aria-label="Nagranie z aplikacji: nawigacja do najbliższego schronienia">
-            <!-- ?v= podbijasz przy każdej podmianie pliku. `_headers` daje
-                 /assets/* max-age=604800, ale działa tylko na Netlify/
-                 Cloudflare Pages — GitHub Pages, na którym stoi gethyc.com,
-                 ignoruje go i serwuje wszystko z max-age=600. Wersja w URL-u
-                 jest więc jedynym mechanizmem, który działa niezależnie od
-                 hostingu. -->
-            <source src="assets/demo.mp4?v=4" type="video/mp4">
-          </video>
+          <div class="hero-copy">
+            <h1><span class="accent">Hyc!</span> Wszystko czego <br class="hero-br">potrzebujesz na&nbsp;szlaku</h1>
+            <p class="hero-tags">Przeglądaj mapę z punktami lub jednym Hyc! znajdź na swojej trasie najbliższą wiatę, restaurację, apteczkę, wodę, nocleg, sklep</p>
+
+            <div class="stores" id="stores">
+              <!-- iOS wymaga apki TestFlight, której większość testerów jeszcze
+                   nie ma — instalacja to więc DWA kliknięcia w ten sam przycisk
+                   (TestFlight, potem po powrocie z App Store, Hyc!). Baton
+                   wygląda jak zwykły „pobierz", modal niżej ustawia oczekiwania
+                   PRZED pierwszym kliknięciem — Apple samo tego nie tłumaczy. -->
+              <button class="store-btn store-btn--dark store-btn--compact" id="btn-ios-open" type="button">
+                <img src="assets/apple.svg" alt="">
+                <span class="label"><small>Pobierz na iPhone</small><strong>TestFlight</strong></span>
+              </button>
+
+              <!-- Android idzie przez zamknięty test Play (grupa Google jako lista
+                   testerów), więc instalacja ma dwa etapy: grupa → opt-in Play.
+                   Tej złożoności NIE pokazujemy na ekranie głównym — baton wygląda
+                   jak zwykły „pobierz", a cały proces prowadzi modal niżej. -->
+              <button class="store-btn store-btn--dark store-btn--compact" id="btn-android-open" type="button">
+                <img src="assets/google.svg" alt="">
+                <span class="label"><small>Pobierz na Androida</small><strong>Google Play</strong></span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Telefon: ramka z CSS, ekran to <video> z posterem. Tymczasowo sam
+               poster (assets/hero/phone-screen.webp, zrzut ze starszego buildu);
+               nagranie dokładasz jednym <source src="assets/hero/demo.mp4"> w
+               środku <video> — main.js odpala je, gdy telefon jest cały widoczny
+               (przy scrollu: postęp >= 0.98) i pauzuje, gdy znika z ekranu.
+               Brak `autoplay` jest celowy, start należy do main.js. -->
+          <div class="hero-phone" role="img" aria-label="Ekran aplikacji Hyc!: trasa do najbliższej bacówki">
+            <div class="phone-screen">
+              <video class="phone-video" poster="assets/hero/phone-screen.webp?v=1" muted loop playsinline preload="metadata"></video>
+            </div>
+            <span class="phone-island" aria-hidden="true"></span>
+          </div>
         </div>
       </section>
 
@@ -157,7 +173,7 @@
               <span class="feature-tag feature-tag--noclegi"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M2 18V5H3.81818V13.6667H11.0909V6.73333H18.3636C19.3636 6.73333 20.2197 7.07278 20.9318 7.75167C21.6439 8.43056 22 9.24667 22 10.2V18H20.1818V15.4H3.81818V18H2ZM5.52273 12.0417C4.99242 11.5361 4.72727 10.9222 4.72727 10.2C4.72727 9.47778 4.99242 8.86389 5.52273 8.35833C6.05303 7.85278 6.69697 7.6 7.45455 7.6C8.21212 7.6 8.85606 7.85278 9.38636 8.35833C9.91667 8.86389 10.1818 9.47778 10.1818 10.2C10.1818 10.9222 9.91667 11.5361 9.38636 12.0417C8.85606 12.5472 8.21212 12.8 7.45455 12.8C6.69697 12.8 6.05303 12.5472 5.52273 12.0417Z"/></svg><span class="feature-tag-label">Noclegi</span></span>
             </div>
             <h3>Szukasz taniego noclegu na&nbsp;jedną noc?</h3>
-            <p>Tanie i&nbsp;polecane przez społeczność górską noclegi przy szlaku oraz w&nbsp;całej Polsce. M.in. zestawy na GSB, GSS, MSB, The Loop.</p>
+            <p>Tanie i&nbsp;polecane noclegi przy szlaku oraz w&nbsp;całej Polsce. M.in. zestawy na GSB, GSS, MSB, The Loop.</p>
           </div>
         </div>
 
@@ -194,6 +210,40 @@
             <h3>Potrzebujesz pomocy medycznej?</h3>
             <p>Znajdź najbliższą apteczkę na&nbsp;szlaku, placówkę ratownictwa lub aptekę</p>
           </div>
+        </div>
+      </section>
+
+      <!-- Sekcja ze szlakiem: tekst to prawdziwy HTML (czytnik ekranu, wyszukiwarka,
+           zaznaczanie), szlak to inline SVG pod nim. Całość to „artboard" o stałych
+           proporcjach, skalowany z szerokością (kontener `cqw`): desktop 1695x1025
+           jak w makiecie, mobile osobny pionowy układ 390x720 z własną ścieżką.
+           Szlak rysuje się raz, gdy sekcja wjeżdża w ekran (main.js): maska z
+           grubszą linią odsłania kreskowaną ścieżkę, więc rytm kresek 100/40 zostaje
+           nietknięty. Bez JS i przy „ogranicz ruch" szlak jest od razu cały. -->
+      <section class="trail" aria-labelledby="trail-title">
+        <div class="trail-stage trail-stage--wide">
+          <svg class="trail-svg" viewBox="0 0 1695 1025" fill="none" aria-hidden="true" focusable="false">
+            <defs>
+              <mask id="trail-reveal-wide" maskUnits="userSpaceOnUse" x="0" y="0" width="1695" height="1025">
+                <path class="trail-reveal" d="M170 220.403C277 36.3956 642.105 13.8584 661.5 236.903C683.5 489.903 154 373.895 222 720.405C281.291 1022.54 630 998.642 764 803.649C879.206 636.004 792.5 249.142 1077.5 297.142C1347.61 342.634 1077.5 834.117 1550.5 720.405" stroke="#fff" stroke-width="64" pathLength="1000"/>
+              </mask>
+            </defs>
+            <path d="M170 220.403C277 36.3956 642.105 13.8584 661.5 236.903C683.5 489.903 154 373.895 222 720.405C281.291 1022.54 630 998.642 764 803.649C879.206 636.004 792.5 249.142 1077.5 297.142C1347.61 342.634 1077.5 834.117 1550.5 720.405" stroke="#E8352B" stroke-width="32" stroke-dasharray="100 40" mask="url(#trail-reveal-wide)"/>
+          </svg>
+        </div>
+        <div class="trail-stage trail-stage--narrow">
+          <svg class="trail-svg" viewBox="0 0 390 590" fill="none" aria-hidden="true" focusable="false">
+            <defs>
+              <mask id="trail-reveal-narrow" maskUnits="userSpaceOnUse" x="0" y="0" width="390" height="590">
+                <path class="trail-reveal" d="M302.7 40.0C370.6 79.5 378.9 214.1 296.7 221.3C203.3 229.4 246.1 34.1 118.3 59.2C6.9 81.0 15.7 209.7 87.6 259.1C149.5 301.6 292.1 269.6 274.4 374.7C257.7 474.3 76.4 374.7 118.3 549.2" stroke="#fff" stroke-width="26.0" pathLength="1000"/>
+              </mask>
+            </defs>
+            <path d="M302.7 40.0C370.6 79.5 378.9 214.1 296.7 221.3C203.3 229.4 246.1 34.1 118.3 59.2C6.9 81.0 15.7 209.7 87.6 259.1C149.5 301.6 292.1 269.6 274.4 374.7C257.7 474.3 76.4 374.7 118.3 549.2" stroke="#E8352B" stroke-width="11.8" stroke-dasharray="36.9 14.8" mask="url(#trail-reveal-narrow)"/>
+          </svg>
+        </div>
+        <div class="trail-copy">
+          <h2 class="trail-title" id="trail-title">Planuj trasę z&nbsp;<span class="accent">Hyc!</span></h2>
+          <p class="trail-text">Sprawdź, jakie<br class="trail-br-m"> punkty masz<br class="trail-br"> po<br class="trail-br-m"> drodze i&nbsp;zapisuj,<br class="trail-br-m"> by&nbsp;mieć<br class="trail-br"> je<br class="trail-br-m"> zawsze pod&nbsp;ręką</p>
         </div>
       </section>
 
@@ -259,7 +309,7 @@
               <span>Jakie noclegi znajdę w&nbsp;aplikacji?</span>
               <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
             </summary>
-            <p class="faq-answer">Znajdziesz tu wybrane przez nas niedrogie noclegi oraz miejsca polecane przez społeczność górską, szczególnie te położone przy szlakach, a&nbsp;także ogólnodostępne chatki górskie, bacówki i&nbsp;inne miejsca, w&nbsp;których można przenocować za darmo.</p>
+            <p class="faq-answer">Znajdziesz tu wybrane przez nas niedrogie noclegi. Szczególnie te położone przy szlakach, a&nbsp;także ogólnodostępne chatki górskie, bacówki i&nbsp;inne miejsca, w&nbsp;których można przenocować za darmo.</p>
           </details>
 
           <details class="faq-item">
@@ -269,6 +319,14 @@
             </summary>
             <p class="faq-answer">Bazę budujemy na&nbsp;publicznie dostępnych źródłach, które łączymy i&nbsp;weryfikujemy. Dalej rozwija ją&nbsp;nasza społeczność. Nowe punkty mogą dodawać i&nbsp;aktualizować zarówno użytkownicy, jak i&nbsp;Skauci Hyc!, którzy od&nbsp;czasu do czasu biorą też udział w&nbsp;płatnych akcjach terenowych, sprawdzając miejsca na&nbsp;szlaku i&nbsp;dodając zdjęcia.</p>
             <p class="faq-answer">Chcesz zostać Skautem Hyc? Dołącz do społeczności <a href="https://www.facebook.com/groups/1094210523037520/" target="_blank" rel="noopener">tutaj</a>.</p>
+          </details>
+
+          <details class="faq-item">
+            <summary>
+              <span>Czy aplikacja działa offline?</span>
+              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <p class="faq-answer">Obecnie aplikacja wymaga połączenia z&nbsp;internetem. Tryb offline, pobieranie map i&nbsp;więcej nowych funkcji będą dostępne w&nbsp;okolicach stycznia 2027.</p>
           </details>
         </div>
       </section>
@@ -364,9 +422,9 @@
     </a>
   </dialog>
 
-  <script src="scroll-lock.js?v=1"></script>
+  <script src="scroll-lock.js?v=2"></script>
   <script src="config.js?v=20260812"></script>
-  <script src="nav.js?v=20260930a" defer></script>
-  <script src="main.js?v=202609162b"></script>
+  <script src="nav.js?v=20261008" defer></script>
+  <script src="main.js?v=2026100896"></script>
 </body>
 </html>

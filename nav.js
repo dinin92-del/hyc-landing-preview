@@ -12,15 +12,16 @@
   const backdrop = document.querySelector('.nav-backdrop');
   if (!burger || !panel || !backdrop) return;
 
-  // Ta sama blokada co modale instalacji w main.js — patrz scroll-lock.js.
-  const lockScroll = window.HycScrollLock.lock;
-  const unlockScroll = window.HycScrollLock.unlock;
-
+  // Bez blokady scrolla body (inaczej niż modale instalacji w main.js) —
+  // panel to dropdown pod pigułką, nie pełnoekranowy modal, a `position:
+  // fixed` na body (scroll-lock.js) kolidowało z dynamicznym paskiem
+  // adresu Safari na iOS i dawało przeskok treści w momencie otwarcia.
+  // Przyciemnienie (.nav-backdrop, fixed + pointer-events:auto gdy otwarte)
+  // wystarcza, żeby user nie wchodził w interakcję z treścią pod spodem.
   const close = () => {
     panel.classList.remove('is-open');
     backdrop.classList.remove('is-open');
     burger.setAttribute('aria-expanded', 'false');
-    unlockScroll();
     // hidden wraca dopiero po animacji (200ms w CSS) — w trakcie musi być
     // widoczny/focusowalny, inaczej transform/opacity nie mają czego pokazać.
     window.setTimeout(() => { panel.hidden = true; }, 200);
@@ -34,7 +35,6 @@
       backdrop.classList.add('is-open');
     });
     burger.setAttribute('aria-expanded', 'true');
-    lockScroll();
   };
 
   burger.addEventListener('click', () => {
