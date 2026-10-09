@@ -11,6 +11,13 @@
   // przed resztą, żeby stan wyjściowy był ustawiony przed pierwszym malowaniem.
   var heroIntro = document.querySelector(".hero");
   var heroPlayed = !!(window.sessionStorage && (function () { try { return sessionStorage.getItem("hyc_hero_played"); } catch (e) { return null; } }()));
+  // F5 reload: always show the animation (user explicitly refreshed, expects the full entrance).
+  // navigation.type === "reload" distinguishes F5 from logo-click navigation between sub-pages,
+  // which is the actual case where we want to suppress the re-animation.
+  if (heroPlayed && window.performance && performance.getEntriesByType) {
+    var navEntry = performance.getEntriesByType("navigation")[0];
+    if (navEntry && navEntry.type === "reload") { heroPlayed = false; }
+  }
   if (heroIntro &&
       !heroPlayed &&
       !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
