@@ -99,8 +99,15 @@
     else if (heroImg && !heroImg.complete) { heroImg.addEventListener("load", heroDone); heroImg.addEventListener("error", heroDone); }
     else { heroDone(); }
   } else if (heroIntro && heroPlayed) {
-    // Return visit in same session — skip animations, show hero immediately.
+    // Return visit in same session — show hero immediately, no animations.
+    // hero-ready must be added so mobile pins stay hidden (opacity:0 rule);
+    // suppress CSS animations first so nothing flashes/fades on return.
+    var heroImgEl = heroIntro.querySelector(".hero-img");
+    if (heroImgEl) { heroImgEl.style.animation = "none"; }
+    var pins = heroIntro.querySelectorAll(".pin");
+    for (var pi = 0; pi < pins.length; pi++) { pins[pi].style.animation = "none"; }
     heroIntro.classList.remove("hero-intro");
+    heroIntro.classList.add("hero-ready");
     var returnNav = document.querySelector(".topbar");
     if (returnNav) { returnNav.classList.remove("hero-intro"); }
   }
