@@ -493,9 +493,9 @@ body:not(.page-home) .wrap { padding-top: 88px; }
   position: absolute;
   left: 0;
   right: 0;
-  /* Tekst wyśrodkowany w niebie między pigułką a górami (pas grafiki 66,6vw
-     wysokości stoi przy dolnej krawędzi; ~360px to wysokość bloku tekstu). */
-  top: max(128px, calc(128px + (var(--vh) * var(--peek) + 24px - 52.6vw - 128px - 400px) / 2));
+  /* Tekst wyśrodkowany w górnej połowie obszaru nad telefonem (do 25% vh).
+     min(): nie pozwala tekstu nachodzić na telefon (zapas 360px na blok). */
+  top: max(128px, min(calc(var(--vh) * 0.25), calc(var(--vh) * var(--peek) - 360px)));
   z-index: 2;
   display: flex;
   flex-direction: column;
