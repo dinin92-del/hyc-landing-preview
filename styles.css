@@ -1735,9 +1735,9 @@ footer .spacer { flex: 1 1 auto; }
     animation-delay: calc(700ms + var(--i) * 190ms);
   }
 }
-/* Telefon (≤767px): piny ukryte po hero-ready (nie ma ich na mobile). */
+/* Telefon (≤767px): piny całkowicie ukryte i nieładowane (display:none blokuje fetch obrazków webp). */
 @media (max-width: 767px) {
-  .hero-ready .pin { opacity: 0; }
+  .hero-pins { display: none; }
 }
 @keyframes hero-bg-in { 0% { opacity: 0; } }
 @keyframes hero-text-in { 0% { opacity: 0; translate: 0 30px; } }
