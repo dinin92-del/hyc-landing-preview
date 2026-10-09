@@ -429,10 +429,9 @@ body:not(.page-home) .wrap { padding-top: 88px; }
   left: 50%;
   /* Pejzaż sięga do samego dołu ekranu (dół sceny = dół viewportu). */
   bottom: 0;
-  /* 208vw = okno 48% szerokości grafiki, wyśrodkowane (26-74%): pejzaż jest
-     wyższy (zajmuje więcej wysokości), a skrajne piny (nocleg, sklep,
-     apteczka) są przycięte; zostają wiata, woda i jedzenie. */
-  width: 208vw;
+  /* 280vw = kadr bliżej środka grafiki (mocniejszy zoom): pejzaż zajmuje
+     ~72% wysokości ekranu i wyraźniej wyrasta ponad makietę telefonu. */
+  width: 280vw;
   aspect-ratio: 2560 / 1440;
   transform: translateX(-50%);
 }
