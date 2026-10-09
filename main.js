@@ -106,7 +106,17 @@
       }
     };
     var heroTimer = window.setTimeout(heroGo, 2500);
-    var heroDone = function () { window.clearTimeout(heroTimer); heroGo(); };
+    var heroDone = function () {
+      window.clearTimeout(heroTimer);
+      // Double rAF ensures browser paints hero-intro hidden state at least once
+      // before hero-ready triggers animations. Needed for cached images where
+      // decode() resolves in ~0.4ms (before first paint).
+      if (window.requestAnimationFrame) {
+        window.requestAnimationFrame(function () { window.requestAnimationFrame(heroGo); });
+      } else {
+        heroGo();
+      }
+    };
     if (heroImg && heroImg.decode) { heroImg.decode().then(heroDone, heroDone); }
     else if (heroImg && !heroImg.complete) { heroImg.addEventListener("load", heroDone); heroImg.addEventListener("error", heroDone); }
     else { heroDone(); }
