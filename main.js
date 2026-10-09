@@ -73,7 +73,10 @@
       window.removeEventListener("touchmove", preventScrollEvt);
       window.removeEventListener("keydown", preventScrollKey);
     };
-    if (!skipNavIntro && window.scrollY <= 10) {
+    // Scroll lock only on desktop — on mobile all intro animations are instant
+    // (CSS cancels them), so locking touch for 5 s would freeze the page for no reason.
+    var isMobileView = !!(window.matchMedia && window.matchMedia("(max-width: 767px)").matches);
+    if (!skipNavIntro && !isMobileView && window.scrollY <= 10) {
       introLocked = true;
       window.addEventListener("wheel", preventScrollEvt, { passive: false });
       window.addEventListener("touchmove", preventScrollEvt, { passive: false });
@@ -99,13 +102,12 @@
     else if (heroImg && !heroImg.complete) { heroImg.addEventListener("load", heroDone); heroImg.addEventListener("error", heroDone); }
     else { heroDone(); }
   } else if (heroIntro && heroPlayed) {
-    // Return visit in same session — show hero immediately, no animations.
-    // hero-ready must be added so mobile pins stay hidden (opacity:0 rule);
-    // suppress CSS animations first so nothing flashes/fades on return.
-    var heroImgEl = heroIntro.querySelector(".hero-img");
-    if (heroImgEl) { heroImgEl.style.animation = "none"; }
-    var pins = heroIntro.querySelectorAll(".pin");
-    for (var pi = 0; pi < pins.length; pi++) { pins[pi].style.animation = "none"; }
+    // Return visit in same session — swap hero-intro for hero-ready so CSS
+    // animations play. Mobile: CSS delay-zero override (max-width:767px block)
+    // makes them instant. Desktop: full sequence plays with original delays.
+    // Topbar does NOT get hero-ready — topbar-inner appears immediately
+    // (no hiding rule applies once hero-intro is removed), which is correct
+    // for return visits where the user expects the menu to be visible right away.
     heroIntro.classList.remove("hero-intro");
     heroIntro.classList.add("hero-ready");
     var returnNav = document.querySelector(".topbar");

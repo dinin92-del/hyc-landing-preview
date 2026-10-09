@@ -427,11 +427,8 @@ body:not(.page-home) .wrap { padding-top: 88px; }
 .hero-scene {
   position: absolute;
   left: 50%;
-  /* Pejzaż sięga do samego dołu ekranu (dół sceny = dół viewportu). */
-  bottom: 0;
-  /* 280vw = kadr bliżej środka grafiki (mocniejszy zoom): pejzaż zajmuje
-     ~72% wysokości ekranu i wyraźniej wyrasta ponad makietę telefonu. */
-  width: 280vw;
+  bottom: calc(var(--vh) * (1 - var(--peek)) - 24px);
+  width: 208vw;
   aspect-ratio: 2560 / 1440;
   transform: translateX(-50%);
 }
@@ -441,9 +438,19 @@ body:not(.page-home) .wrap { padding-top: 88px; }
   width: 100%;
   height: 100%;
   display: block;
-  /* Miękki brzeg góry; dół sięga krawędzi ekranu, więc dolny fade zbędny. */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+}
+/* Telefon (≤767px): pejzaż bardziej przybliżony, sięga do samego dołu ekranu. */
+@media (max-width: 767px) {
+  .hero-scene {
+    bottom: 0;
+    width: 280vw;
+  }
+  .hero-img {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
+  }
 }
 .hero-pins {
   --pin-k: 0.88;
@@ -1691,8 +1698,6 @@ footer .spacer { flex: 1 1 auto; }
   .hero-intro:not(.hero-ready) .hero-copy > h1.is-split { opacity: 1; }
   .hero-intro:not(.hero-ready) .hw { opacity: 0; }
 
-  /* Piny ukryte na mobile nawet po hero-ready; desktop override poniżej. */
-  .hero-ready .pin { opacity: 0; }
   .hero-ready .hero-img { animation: hero-bg-in 1100ms ease-out backwards; }
   .hero-ready .hero-copy > * {
     animation: hero-text-in 1000ms cubic-bezier(0.25, 0.75, 0.25, 1) backwards;
@@ -1722,13 +1727,28 @@ footer .spacer { flex: 1 1 auto; }
     animation: hero-nav-in 1200ms cubic-bezier(0.25, 0.75, 0.25, 1) 3750ms backwards;
   }
 }
-/* Pin-drop tylko na desktopie (mobile: piny widoczne od razu po hero-ready). */
+/* Pin-drop tylko na desktopie. */
 @media (prefers-reduced-motion: no-preference) and (min-aspect-ratio: 13/10) and (min-width: 900px) {
   .hero-ready .pin {
     opacity: 1;
     animation: pin-drop 680ms cubic-bezier(0.3, 0.7, 0.4, 1) backwards;
     animation-delay: calc(700ms + var(--i) * 190ms);
   }
+}
+/* Telefon (≤767px): piny ukryte po hero-ready (nie ma ich na mobile). */
+@media (max-width: 767px) {
+  .hero-ready .pin { opacity: 0; }
+}
+/* Telefon (≤767px): zerujemy opóźnienia intro (backwards fill trzymało elementy
+   na opacity:0 przez 2100–3750ms). Animacje grają, ale od razu po hero-ready. */
+@media (prefers-reduced-motion: no-preference) and (max-width: 767px) {
+  .hero-ready .hero-copy > h1 { animation-delay: 0ms; }
+  .hero-ready .hero-copy > .hero-tags { animation-delay: 0ms; }
+  .hero-ready .hero-copy > .stores { animation-delay: 0ms; }
+  .hero-ready .hw { animation-delay: 0ms; }
+  .hero-ready .hw--lead { animation-delay: 0ms; }
+  .hero-ready .hero-phone { animation-delay: 0ms; }
+  .topbar.hero-ready .topbar-inner { animation-delay: 0ms; }
 }
 @keyframes hero-bg-in { 0% { opacity: 0; } }
 @keyframes hero-text-in { 0% { opacity: 0; translate: 0 30px; } }
