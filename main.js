@@ -10,7 +10,9 @@
   // Przy „ogranicz ruch" nic nie jest ukrywane. Pierwsza linia pliku celowo
   // przed resztą, żeby stan wyjściowy był ustawiony przed pierwszym malowaniem.
   var heroIntro = document.querySelector(".hero");
+  var heroPlayed = !!(window.sessionStorage && (function () { try { return sessionStorage.getItem("hyc_hero_played"); } catch (e) { return null; } }()));
   if (heroIntro &&
+      !heroPlayed &&
       !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
     // Nagłówek na słowa: „Hyc!" (.accent) jako pierwszy element (--wi 0), reszta
     // po kolei. Separatory (spacje, twarde spacje) zostają zwykłym tekstem, więc
@@ -79,6 +81,7 @@
     }
     var heroImg = heroIntro.querySelector(".hero-img");
     var heroGo = function () {
+      try { sessionStorage.setItem("hyc_hero_played", "1"); } catch (e) {}
       heroIntro.classList.add("hero-ready");
       // Bez .hero-intro na menu (patrz wyżej) nie dokładamy .hero-ready —
       // sama ta klasa też odpala `hero-nav-in` (selektor jej nie wymaga
@@ -95,6 +98,11 @@
     if (heroImg && heroImg.decode) { heroImg.decode().then(heroDone, heroDone); }
     else if (heroImg && !heroImg.complete) { heroImg.addEventListener("load", heroDone); heroImg.addEventListener("error", heroDone); }
     else { heroDone(); }
+  } else if (heroIntro && heroPlayed) {
+    // Return visit in same session — skip animations, show hero immediately.
+    heroIntro.classList.remove("hero-intro");
+    var returnNav = document.querySelector(".topbar");
+    if (returnNav) { returnNav.classList.remove("hero-intro"); }
   }
 
   var cfg = window.HYC_CONFIG || {};

@@ -427,10 +427,8 @@ body:not(.page-home) .wrap { padding-top: 88px; }
 .hero-scene {
   position: absolute;
   left: 50%;
-  /* Pejzaż stoi NAD telefonem: dół grafiki wypada 24px poniżej górnej krawędzi
-     telefonu (14,5% wysokości sceny od dołu), a nie za nim przy dolnej
-     krawędzi ekranu. */
-  bottom: calc(var(--vh) * (1 - var(--peek)) - 24px);
+  /* Pejzaż sięga do samego dołu ekranu (dół sceny = dół viewportu). */
+  bottom: 0;
   /* 208vw = okno 48% szerokości grafiki, wyśrodkowane (26-74%): pejzaż jest
      wyższy (zajmuje więcej wysokości), a skrajne piny (nocleg, sklep,
      apteczka) są przycięte; zostają wiata, woda i jedzenie. */
@@ -444,9 +442,9 @@ body:not(.page-home) .wrap { padding-top: 88px; }
   width: 100%;
   height: 100%;
   display: block;
-  /* Miękkie brzegi góra i dół (dół grafiki nie leży już na krawędzi ekranu). */
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 14%, #000 86%, transparent 100%);
+  /* Miękki brzeg góry; dół sięga krawędzi ekranu, więc dolny fade zbędny. */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 14%);
 }
 .hero-pins {
   --pin-k: 0.88;
@@ -1695,10 +1693,6 @@ footer .spacer { flex: 1 1 auto; }
   .hero-intro:not(.hero-ready) .hw { opacity: 0; }
 
   .hero-ready .hero-img { animation: hero-bg-in 1100ms ease-out backwards; }
-  .hero-ready .pin {
-    animation: pin-drop 680ms cubic-bezier(0.3, 0.7, 0.4, 1) backwards;
-    animation-delay: calc(700ms + var(--i) * 190ms);
-  }
   .hero-ready .hero-copy > * {
     animation: hero-text-in 1000ms cubic-bezier(0.25, 0.75, 0.25, 1) backwards;
   }
@@ -1725,6 +1719,13 @@ footer .spacer { flex: 1 1 auto; }
   .topbar.hero-intro:not(.hero-ready) .topbar-inner { opacity: 0; }
   .topbar.hero-ready .topbar-inner {
     animation: hero-nav-in 1200ms cubic-bezier(0.25, 0.75, 0.25, 1) 3750ms backwards;
+  }
+}
+/* Pin-drop tylko na desktopie (mobile: piny widoczne od razu po hero-ready). */
+@media (prefers-reduced-motion: no-preference) and (min-aspect-ratio: 13/10) and (min-width: 900px) {
+  .hero-ready .pin {
+    animation: pin-drop 680ms cubic-bezier(0.3, 0.7, 0.4, 1) backwards;
+    animation-delay: calc(700ms + var(--i) * 190ms);
   }
 }
 @keyframes hero-bg-in { 0% { opacity: 0; } }
