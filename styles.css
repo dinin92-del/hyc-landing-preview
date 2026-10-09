@@ -1692,6 +1692,8 @@ footer .spacer { flex: 1 1 auto; }
   .hero-intro:not(.hero-ready) .hero-copy > h1.is-split { opacity: 1; }
   .hero-intro:not(.hero-ready) .hw { opacity: 0; }
 
+  /* Piny ukryte na mobile nawet po hero-ready; desktop override poniżej. */
+  .hero-ready .pin { opacity: 0; }
   .hero-ready .hero-img { animation: hero-bg-in 1100ms ease-out backwards; }
   .hero-ready .hero-copy > * {
     animation: hero-text-in 1000ms cubic-bezier(0.25, 0.75, 0.25, 1) backwards;
@@ -1724,6 +1726,7 @@ footer .spacer { flex: 1 1 auto; }
 /* Pin-drop tylko na desktopie (mobile: piny widoczne od razu po hero-ready). */
 @media (prefers-reduced-motion: no-preference) and (min-aspect-ratio: 13/10) and (min-width: 900px) {
   .hero-ready .pin {
+    opacity: 1;
     animation: pin-drop 680ms cubic-bezier(0.3, 0.7, 0.4, 1) backwards;
     animation-delay: calc(700ms + var(--i) * 190ms);
   }
