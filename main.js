@@ -101,12 +101,12 @@
     else if (heroImg && !heroImg.complete) { heroImg.addEventListener("load", heroDone); heroImg.addEventListener("error", heroDone); }
     else { heroDone(); }
   } else if (heroIntro && heroPlayed) {
-    // Return visit in same session — swap hero-intro for hero-ready so CSS
-    // animations play. Topbar does NOT get hero-ready — topbar-inner appears
-    // immediately once hero-intro is removed, which is correct: return visit
-    // users expect the menu visible right away without the 3750ms wait.
+    // Return visit in same session — just remove hero-intro; do NOT add hero-ready.
+    // hero-ready triggers intro animations (hero-phone-in: 3750ms delay with
+    // backwards fill = phone invisible for 3.75s). Scrub animations don't need
+    // hero-ready — .hero.is-scrub .hero-phone already has its own scroll rule.
+    // Without hero-intro the elements are visible immediately, which is correct.
     heroIntro.classList.remove("hero-intro");
-    heroIntro.classList.add("hero-ready");
     var returnNav = document.querySelector(".topbar");
     if (returnNav) { returnNav.classList.remove("hero-intro"); }
   }
