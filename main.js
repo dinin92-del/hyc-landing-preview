@@ -51,7 +51,9 @@
     var heroNav = document.querySelector(".topbar");
     var skipNavIntro = !!window.location.hash && window.location.hash !== "#top";
     heroIntro.classList.add("hero-intro");
-    if (heroNav && !skipNavIntro) { heroNav.classList.add("hero-intro"); }
+    // topbar has hero-intro statically in HTML; remove it when skip applies
+    // (deep-link: menu must be visible immediately, not wait for intro).
+    if (heroNav && skipNavIntro) { heroNav.classList.remove("hero-intro"); }
     // Block scroll during intro so user watches animations play.
     // Use preventDefault on events (not HycScrollLock/position:fixed) to
     // avoid layout side-effects that would break `sync()` calculations.
@@ -73,10 +75,7 @@
       window.removeEventListener("touchmove", preventScrollEvt);
       window.removeEventListener("keydown", preventScrollKey);
     };
-    // Scroll lock only on desktop — on mobile all intro animations are instant
-    // (CSS cancels them), so locking touch for 5 s would freeze the page for no reason.
-    var isMobileView = !!(window.matchMedia && window.matchMedia("(max-width: 767px)").matches);
-    if (!skipNavIntro && !isMobileView && window.scrollY <= 10) {
+    if (!skipNavIntro && window.scrollY <= 10) {
       introLocked = true;
       window.addEventListener("wheel", preventScrollEvt, { passive: false });
       window.addEventListener("touchmove", preventScrollEvt, { passive: false });
@@ -103,11 +102,9 @@
     else { heroDone(); }
   } else if (heroIntro && heroPlayed) {
     // Return visit in same session — swap hero-intro for hero-ready so CSS
-    // animations play. Mobile: CSS delay-zero override (max-width:767px block)
-    // makes them instant. Desktop: full sequence plays with original delays.
-    // Topbar does NOT get hero-ready — topbar-inner appears immediately
-    // (no hiding rule applies once hero-intro is removed), which is correct
-    // for return visits where the user expects the menu to be visible right away.
+    // animations play. Topbar does NOT get hero-ready — topbar-inner appears
+    // immediately once hero-intro is removed, which is correct: return visit
+    // users expect the menu visible right away without the 3750ms wait.
     heroIntro.classList.remove("hero-intro");
     heroIntro.classList.add("hero-ready");
     var returnNav = document.querySelector(".topbar");

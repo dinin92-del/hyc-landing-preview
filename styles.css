@@ -1739,17 +1739,6 @@ footer .spacer { flex: 1 1 auto; }
 @media (max-width: 767px) {
   .hero-ready .pin { opacity: 0; }
 }
-/* Telefon (≤767px): zerujemy opóźnienia intro (backwards fill trzymało elementy
-   na opacity:0 przez 2100–3750ms). Animacje grają, ale od razu po hero-ready. */
-@media (prefers-reduced-motion: no-preference) and (max-width: 767px) {
-  .hero-ready .hero-copy > h1 { animation-delay: 0ms; }
-  .hero-ready .hero-copy > .hero-tags { animation-delay: 0ms; }
-  .hero-ready .hero-copy > .stores { animation-delay: 0ms; }
-  .hero-ready .hw { animation-delay: 0ms; }
-  .hero-ready .hw--lead { animation-delay: 0ms; }
-  .hero-ready .hero-phone { animation-delay: 0ms; }
-  .topbar.hero-ready .topbar-inner { animation-delay: 0ms; }
-}
 @keyframes hero-bg-in { 0% { opacity: 0; } }
 @keyframes hero-text-in { 0% { opacity: 0; translate: 0 30px; } }
 @keyframes hero-phone-in { 0% { opacity: 0; translate: 0 24vh; } }
