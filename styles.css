@@ -1689,7 +1689,8 @@ footer .spacer { flex: 1 1 auto; }
     gap: 56px;
     align-items: center;
   }
-  .faq { align-items: start; }
+  .faq,
+  .partnerships { align-items: start; }
   .partnerships-logo { justify-content: center; /* already set in base */ }
   .feature-copy { text-align: left; max-width: none; margin-left: 0; margin-right: 0; }
   /* Naprzemienny układ — co drugi bullet ma grafikę z prawej strony tekstu.
