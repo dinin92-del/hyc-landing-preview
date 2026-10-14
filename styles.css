@@ -1333,7 +1333,7 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
 /* ---- Partnerstwa ---- */
 .partnerships {
   margin-top: 160px;
-  margin-bottom: 96px;
+  margin-bottom: 0;
   display: grid;
   grid-template-columns: 1fr;
   gap: 40px;
@@ -1652,7 +1652,7 @@ footer .spacer { flex: 1 1 auto; }
        kontenerze (.wrap) dają start drugiej kolumny na identycznym punkcie
        co prawa kolumna FAQ, bez osobnego calc. */
     grid-template-columns: 1fr 1fr;
-    gap: 56px;
+    gap: 80px;
     align-items: center;
     /* Kafel całego bulletu jest WYŁĄCZNIE mobile (patrz baza wyżej) — od
        2 kolumn podkład wraca do samej grafiki (.feature-media niżej). */
@@ -1691,6 +1691,7 @@ footer .spacer { flex: 1 1 auto; }
   }
   .faq,
   .partnerships { align-items: start; }
+  .partnerships { margin-top: 220px; }
   .partnerships-logo { justify-content: center; /* already set in base */ }
   .feature-copy { text-align: left; max-width: none; margin-left: 0; margin-right: 0; }
   /* Naprzemienny układ — co drugi bullet ma grafikę z prawej strony tekstu.
@@ -1955,7 +1956,7 @@ footer .spacer { flex: 1 1 auto; }
        co w oryginale, i nie wystaje ponad tekst bardziej niż tam. */
     --trail-fs: min(4.551vw, 70px);
     --trail-w: calc(var(--trail-fs) * 18.4239);
-    margin-top: 96px;
+    margin-top: 40px;
     aspect-ratio: 1695 / 1025;
   }
   .trail-stage--wide { display: block; }
