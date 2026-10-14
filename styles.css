@@ -605,9 +605,9 @@ body:not(.page-home) .wrap { padding-top: 88px; }
      jak i regułę wyżej. */
   .hero.is-scrub.hero-ready .hero-phone {
     animation-name: hero-phone-in, hero-phone-scrub;
-    animation-duration: 1200ms, 1s;
+    animation-duration: 800ms, 1s;
     animation-timing-function: cubic-bezier(0.25, 0.75, 0.25, 1), linear;
-    animation-delay: 3750ms, 0s;
+    animation-delay: 3000ms, 0s;
     animation-fill-mode: backwards, forwards;
     animation-timeline: auto, --hero-tl;
     animation-range: normal, contain 0% contain 100%;
@@ -1749,13 +1749,13 @@ footer .spacer { flex: 1 1 auto; }
     transform-origin: 30% 85%;
   }
   .hero-ready .hero-phone {
-    animation: hero-phone-in 1200ms cubic-bezier(0.25, 0.75, 0.25, 1) 3750ms backwards;
+    animation: hero-phone-in 800ms cubic-bezier(0.25, 0.75, 0.25, 1) 3000ms backwards;
   }
   /* Menu wyjeżdża z góry w tej samej chwili, w której z dołu wjeżdża telefon
      (klasy dostaje .topbar od main.js, tylko na stronie głównej). */
   .topbar.hero-intro:not(.hero-ready) .topbar-inner { opacity: 0; }
   .topbar.hero-ready .topbar-inner {
-    animation: hero-nav-in 1200ms cubic-bezier(0.25, 0.75, 0.25, 1) 3750ms backwards;
+    animation: hero-nav-in 800ms cubic-bezier(0.25, 0.75, 0.25, 1) 3000ms backwards;
   }
 }
 /* Pin-drop tylko na desktopie. */
