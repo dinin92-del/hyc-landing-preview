@@ -552,7 +552,7 @@
     // FAQ: JEDEN wyzwalacz (cała sekcja), ale pozycje wylatują po kolei:
     // nagłówek od razu, pytania z odstępem 70ms. Cała kaskada rusza naraz,
     // gdy użytkownik dojedzie do FAQ, a nie osobno przy każdej pozycji.
-    var faqMembers = [{ el: document.querySelector(".faq-intro"), delay: 0 }];
+    var faqMembers = [{ el: document.querySelector(".faq .faq-intro"), delay: 0 }];
     var faqItems = document.querySelectorAll(".faq-item");
     for (var f = 0; f < faqItems.length; f++) { faqMembers.push({ el: faqItems[f], delay: 80 + f * 70 }); }
     addGroup(document.querySelector(".faq"), faqMembers);

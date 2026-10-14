@@ -1638,7 +1638,7 @@ footer .spacer { flex: 1 1 auto; }
      linii tekstu do baneru. */
   .scouts-cta { margin-top: 80px; }
   .scouts-cta-inner { padding: 140px 40px; }
-  .faq { margin-top: 160px; }
+  .faq { margin-top: 80px; }
 }
 
 /* ---- Dwie kolumny: feature bullets / FAQ / kontakt ----
@@ -1691,7 +1691,7 @@ footer .spacer { flex: 1 1 auto; }
   }
   .faq,
   .partnerships { align-items: start; }
-  .partnerships { margin-top: 220px; }
+  .partnerships { margin-top: 300px; }
   .partnerships-logo { justify-content: center; /* already set in base */ }
   .feature-copy { text-align: left; max-width: none; margin-left: 0; margin-right: 0; }
   /* Naprzemienny układ — co drugi bullet ma grafikę z prawej strony tekstu.
