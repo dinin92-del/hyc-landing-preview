@@ -1329,6 +1329,27 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
    Nagłówek w lewej kolumnie, accordion w prawej. Natywny <details>/<summary>
    zamiast JS-owego akordeonu — focus, klawiatura i stan otwarcia za darmo,
    ta sama filozofia co <dialog> w modalach wyżej. */
+
+/* ---- Partnerstwa ---- */
+.partnerships {
+  margin-top: 96px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+.partnerships-logo {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.partnerships-logo img {
+  width: 240px;
+  height: 240px;
+  object-fit: contain;
+  border-radius: 50%;
+}
+.partnerships-btn { margin-top: 28px; display: inline-flex; }
+
 .faq {
   margin-top: 96px;
   /* Sticky .topbar zasłaniał nagłówek po skoku z #faq w menu — kotwica bez
@@ -1658,13 +1679,15 @@ footer .spacer { flex: 1 1 auto; }
     object-fit: contain;
   }
   .feature-tags { justify-content: flex-start; }
-  /* FAQ w dwóch kolumnach dopiero od 1024px: przy 760–1023px równe kolumny
-     dawały liście pytań ~345px, czyli ok. 38 znaków w linii (poniżej 45). */
-  .faq {
+  /* FAQ i Partnerstwa w dwóch kolumnach dopiero od 1024px. */
+  .faq,
+  .partnerships {
     grid-template-columns: 1fr 1fr;
     gap: 56px;
-    align-items: start;
+    align-items: center;
   }
+  .faq { align-items: start; }
+  .partnerships-logo { justify-content: center; }
   .feature-copy { text-align: left; max-width: none; margin-left: 0; margin-right: 0; }
   /* Naprzemienny układ — co drugi bullet ma grafikę z prawej strony tekstu.
      Kolumny .feature-row są 1fr 1fr (równe), więc reverse dziedziczy ten sam
