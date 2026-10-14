@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polityka prywatności — Hyc!</title>
+<link rel="stylesheet" href="_style.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Polityka prywatności</h1>
+  <div class="meta">Hyc! · Wersja 1.4 · obowiązuje od <strong>2 września 2026 r.</strong></div>
+</header>
+
+<div class="nav"><a href="eula.html">→ Regulamin (EULA)</a> · <a href="warunki_bezpiecznego_korzystania.html">→ Warunki bezpiecznego korzystania</a></div>
+
+<h2>0. Czego dotyczy ta polityka</h2>
+<p>Polityka obejmuje <strong>aplikację mobilną Hyc!</strong> oraz <strong>stronę gethyc.com</strong> —
+dalej łącznie „Usługa". Tam, gdzie zasada dotyczy tylko jednego z nich, jest to wskazane wprost;
+bez takiego zastrzeżenia zapis dotyczy obu.</p>
+<p><strong>Sama strona gethyc.com nie zbiera danych osobowych.</strong> Nie ma na niej ciasteczek,
+narzędzi analitycznych, pikseli śledzących ani formularzy — to statyczna wizytówka z odnośnikami
+do sklepów i do niniejszych dokumentów. Jak każdy serwis WWW jest udostępniana przez hosting,
+który rejestruje standardowe <strong>logi techniczne żądań (adres IP, typ przeglądarki, czas)</strong>;
+służą one wyłącznie utrzymaniu i zabezpieczeniu serwisu i nie są przez nas łączone z Twoim kontem
+w Aplikacji.</p>
+<p>Wszystkie pozostałe punkty tej polityki opisują <strong>Aplikację</strong>.</p>
+
+<h2>1. Administrator danych</h2>
+<p>Administratorem danych osobowych jest <strong>Józef Kołaczyk, ul. Piątkowska 43/49, 60-645 Poznań</strong>,
+działający jako osoba fizyczna („Operator"). Kontakt w sprawach danych:
+<strong>hyc.kontakt@gmail.com</strong>.</p>
+
+<h2>2. Jakie dane przetwarzamy</h2>
+<h3>2.1. Dane konta</h3>
+<ul>
+  <li>adres e-mail oraz nazwa wyświetlana,</li>
+  <li>przy logowaniu Google/Apple — identyfikator dostawcy i adres e-mail udostępniony przez dostawcę,</li>
+  <li>identyfikator użytkownika nadany przez Firebase Authentication.</li>
+</ul>
+<p>Nie przechowujemy Twojego hasła do logowania Google/Apple — uwierzytelnienie odbywa się
+po stronie dostawcy, a Firebase Authentication przechowuje wyłącznie token sesji.</p>
+<h3>2.2. Treści użytkownika (UGC)</h3>
+<ul>
+  <li>opisy, komentarze, nazwy oraz punkty (w tym ich współrzędne) dodawane przez Ciebie,
+      wraz z datą i nazwą autora,</li>
+  <li>zdjęcia punktów dodawane przez Ciebie. Przed wysłaniem Aplikacja usuwa z pliku metadane
+      EXIF (w tym współrzędne GPS zapisane przez aparat) i zmniejsza zdjęcie; na serwer trafia
+      sam obraz wraz z datą i nazwą autora.</li>
+</ul>
+<p>Operator może wykorzystywać treści UGC oraz dane o punktach w formie
+<strong>zanonimizowanej i zagregowanej</strong> (bez powiązania z Twoją tożsamością) — do celów
+statystycznych, rozwoju Aplikacji oraz udostępniania lub licencjonowania osobom trzecim. Dane
+w tej formie nie stanowią danych osobowych w rozumieniu RODO. Zakres licencji na Treści określa
+Regulamin (EULA).</p>
+<h3>2.3. Lokalizacja</h3>
+<p>Pozycja GPS jest używana <strong>na urządzeniu</strong> do wyznaczenia najbliższego punktu
+i nawigacji. Aby obliczyć trasę po szlaku, Twoja aktualna pozycja (punkt startowy) oraz
+współrzędne celu są przesyłane do dostawcy routingu (<strong>Seznam.cz a.s. /
+mapy.cz</strong>) wyłącznie na czas obliczenia trasy. <strong>Nie przechowujemy Twojej bieżącej
+pozycji ani historii tras na naszych serwerach.</strong> Wyjątkiem jest sytuacja, gdy świadomie
+dodajesz punkt — wtedy zapisywane są współrzędne tego punktu (a nie Twojej trasy). Aplikacja nie
+korzysta z lokalizacji w tle.</p>
+<p>Do statystyk (pkt 4) <strong>nie trafiają Twoje współrzędne</strong>. Trafia natomiast — gdy
+akurat jesteś w parku narodowym albo w jego 5-kilometrowym buforze — <strong>nazwa tego
+parku</strong> wraz z informacją, czy chodzi o teren parku, czy o bufor. Przynależność do parku
+wylicza sama Aplikacja <strong>na Twoim urządzeniu</strong>, porównując pozycję z granicami
+zapisanymi w plikach Aplikacji; na zewnątrz wychodzi wyłącznie gotowa nazwa (np. „tatrzanski"),
+nigdy pozycja, z której powstała. To informacja o <strong>przybliżonym rejonie</strong> rzędu
+setek kilometrów kwadratowych, nie o Twoim miejscu pobytu.</p>
+<p>Osobno: <strong>kafle mapy pobieramy z naszego własnego serwera</strong>
+(<code>tiles.hycmap.com</code>, hosting Cloudflare R2). Serwer ten odbiera adres IP urządzenia
+oraz numery kafli, które oglądasz — a numer kafla wskazuje obszar mapy, więc
+<strong>z samego ruchu wynika przybliżony rejon, w którym korzystasz z Aplikacji</strong>.
+Nie łączymy tych żądań z Twoim kontem i nie budujemy z nich historii tras.</p>
+<h3>2.4. Dane techniczne i diagnostyczne</h3>
+<p>Korzystamy z narzędzi Google (Firebase Analytics oraz Firebase Crashlytics) do zbierania
+statystyk użycia i raportów o awariach (crash). Dane te służą poprawie stabilności Aplikacji.</p>
+<p>Zakres, uczciwie: <strong>raport o awarii zawiera model urządzenia, wersję systemu
+i identyfikator instalacji Aplikacji</strong>, a Analytics posługuje się identyfikatorem instancji
+Aplikacji na urządzeniu. Nie zawierają one Twojego imienia, adresu e-mail ani współrzędnych i nie
+używamy ich do profilowania — ale są to identyfikatory przypisane do instalacji, a nie dane w pełni
+anonimowe. Odinstalowanie Aplikacji kończy ich żywotność.</p>
+<p><strong>Weryfikacja autentyczności Aplikacji (App Check).</strong> Żeby chronić backend przed
+nadużyciami (boty, podrobione klienty), każde żądanie do naszych usług niesie token potwierdzający,
+że pochodzi z prawdziwej instalacji Aplikacji. Token wystawia <strong>Google Play Integrity</strong>
+(Android) lub <strong>Apple App Attest / DeviceCheck</strong> (iOS). Mechanizm sprawdza integralność
+aplikacji i urządzenia; nie przekazujemy przy tym Twojej tożsamości ani lokalizacji.</p>
+<p>Korzystanie z usług sieciowych (logowanie, moderacja, obliczanie tras) wiąże się z tym, że
+dostawcy wymienieni w pkt 5 odbierają dane techniczne niezbędne do realizacji żądania, w tym
+<strong>adres IP</strong> urządzenia i metadane połączenia.</p>
+<h2>3. Moderacja treści i sztuczna inteligencja (AI)</h2>
+<p>Aby chronić bazę przed spamem, dezinformacją i treściami niezgodnymi z prawem, Twoje opisy
+i komentarze są
+<strong>automatycznie analizowane</strong> przez model AI Gemini
+(Google) w celu oceny zgodności z Regulaminem:</p>
+<ul>
+  <li><strong>zdjęcia</strong> — <strong>nie</strong> są analizowane przez AI i podlegają wyłącznie moderacji reakcyjnej: widoczne od razu, chyba że towarzyszą nowo dodawanemu punktowi — wtedy publikują się razem z jego opisem, dopiero po rozstrzygnięciu jego weryfikacji przez AI. Widoczne zdjęcie usuwa autor albo moderator po zgłoszeniu.</li>
+<li><strong>opisy punktów</strong> — pre-moderacja: są ukryte do czasu wydania werdyktu przez AI
+      (zatwierdzone / odrzucone / do ręcznego przeglądu moderatora);</li>
+  <li><strong>komentarze</strong> — post-moderacja: widoczne od razu, ale AI ocenia je asynchronicznie;
+      treści naruszające Regulamin są ukrywane;</li>
+  <li><strong>zgłoszenia</strong> — treści zgłoszone przez innych użytkowników ocenia moderator
+      (o zgłoszeniach nie decyduje AI).</li>
+</ul>
+<p>Każda ocena AI i każda decyzja moderatora jest zapisywana w rejestrze moderacyjnym
+(append-only) — dla audytu i jakości usługi. Po usunięciu konta dane autora w rejestrze są
+anonimizowane, ale sama treść i werdykt pozostają.</p>
+<p><strong>Podstawa prawna:</strong> art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes —
+utrzymanie jakości i bezpieczeństwa usługi). Zapytania do Gemini są przetwarzane przez Google
+jako podmiot przetwarzający; transfer poza EOG zabezpieczają mechanizmy z pkt 5–6. Decyzje
+o zgłoszeniach podejmuje człowiek (moderator), a wobec automatycznej oceny AI masz prawo
+sprzeciwu i przeglądu przez moderatora (pkt 7).</p>
+
+<h2>4. Cele i podstawy prawne (RODO)</h2>
+<ul>
+  <li>prowadzenie konta i świadczenie funkcji społecznościowych — wykonanie umowy (art. 6 ust. 1 lit. b),</li>
+  <li>moderacja (w tym AI), bezpieczeństwo i obsługa zgłoszeń — prawnie uzasadniony interes (art. 6 ust. 1 lit. f),</li>
+  <li>statystyki i diagnostyka — prawnie uzasadniony interes (art. 6 ust. 1 lit. f); dane zagregowane, bez identyfikatorów reklamowych,</li>
+  <li>obliczenie trasy i wskazanie najbliższego punktu, w tym przekazanie współrzędnych startu i celu dostawcy routingu — wykonanie usługi na Twoje żądanie (art. 6 ust. 1 lit. b); dostęp Aplikacji do GPS wymaga zgody systemowej urządzenia, którą możesz cofnąć w ustawieniach telefonu,</li>
+  <li>wypełnienie obowiązków prawnych (np. podatkowych, jeśli wystąpią płatności) — art. 6 ust. 1 lit. c.</li>
+</ul>
+<p><strong>Nie sprzedajemy Twoich danych osobowych, nie profilujemy Cię ani nie udostępniamy ich
+reklamodawcom.</strong> Aplikacja <strong>nie zawiera żadnego modułu reklamowego</strong> — nie
+wyświetlamy reklam, nie korzystamy z identyfikatorów reklamowych i nie przekazujemy danych sieciom
+reklamowym. Ewentualne udostępnianie danych o punktach i treści dotyczy wyłącznie
+formy zanonimizowanej i zagregowanej (pkt 2.2).</p>
+
+<h3>4.1. Zakres statystyk (Analytics) — uczciwie</h3>
+<p>Aplikacja wysyła zdarzenia z następujących kategorii:</p>
+<ul>
+  <li><strong>wyszukanie punktu i dotarcie do niego</strong> — czy ludzie faktycznie docierają
+      tam, dokąd ich prowadzimy,</li>
+  <li><strong>przebieg nawigacji</strong> — jej rozpoczęcie, świadoma zmiana trybu wyszukiwania,
+      zakończenie wraz z powodem, użyte przybliżenie mapy, wyświetlenie samouczka,</li>
+  <li><strong>niepowodzenia i uproszczenia</strong> — nieudane wyznaczenie trasy wraz z etapem,
+      na którym się nie powiodło, oraz automatyczne uproszczenie zapytania o trasę przy słabym
+      łączu,</li>
+  <li><strong>interakcje z kartą punktu</strong> — zapisanie punktu, dodanie komentarza,
+      tapnięcie numeru telefonu (<strong>bez samego numeru</strong>),</li>
+  <li><strong>wejście do parku narodowego</strong> (zob. niżej),</li>
+  <li><strong>tapnięcie „Wesprzyj projekt"</strong>.</li>
+</ul>
+<p>Do zdarzeń dołączamy identyfikator punktu, tryb wyszukiwania, źródło punktu (nasza baza /
+dodany przez użytkowników) oraz proste etykiety i liczby techniczne (np. powód zakończenia nawigacji, dystans zaokrąglony do kilometra).
+<strong>Nie dołączamy Twojego identyfikatora użytkownika, adresu e-mail, nazwy wyświetlanej ani
+współrzędnych</strong> i nie łączymy tych zdarzeń z Twoim kontem. Analizujemy je wyłącznie
+zbiorczo — po to, żeby wiedzieć, które funkcje działają, a które zawodzą.</p>
+<p><strong>Park narodowy.</strong> Zdarzenia wyszukania, dotarcia i wejścia do parku niosą
+<strong>nazwę parku narodowego</strong> oraz informację, czy chodzi o teren parku, czy o jego
+5-kilometrowy bufor. Jest to dana o <strong>przybliżonym rejonie</strong> i mówimy o tym wprost.
+Klasyfikację wykonuje sama Aplikacja na urządzeniu (pkt 2.3) — porównuje pozycję z granicami
+parków zapisanymi w plikach Aplikacji, więc na zewnątrz wychodzi wyłącznie gotowa nazwa, nigdy
+współrzędne, z których powstała.</p>
+
+<h2>5. Odbiorcy danych (podmioty przetwarzające)</h2>
+<ul>
+  <li><strong>Google Firebase</strong> (Authentication, Cloud Firestore, Cloud Functions,
+      Analytics, Crashlytics, Remote Config, App Check) — hosting danych i logika backendu,</li>
+  <li><strong>Google AI (Gemini API)</strong> — automatyczna moderacja treści,</li>
+  <li><strong>Seznam.cz a.s. (mapy.cz)</strong> — obliczanie tras (routing); przetwarza przesłane
+      współrzędne (start i cel) wyłącznie na czas obliczenia trasy,</li>
+  <li><strong>Cloudflare, Inc.</strong> — hosting kafli mapy (<code>tiles.hycmap.com</code>) oraz
+      przechowywanie i udostępnianie zdjęć dodanych przez użytkowników
+      (<code>photos.hycmap.com</code>) — magazyn R2 i sieć CDN; odbiera adres IP i numery
+      pobieranych kafli,</li>
+  <li><strong>Resend (Resend, Inc.)</strong> — wysyłka wiadomości e-mail Aplikacji (powitanie,
+      weryfikacja adresu, reset hasła); otrzymuje Twój adres e-mail i treść wiadomości,</li>
+  <li><strong>Google</strong> (Play Integrity) oraz <strong>Apple</strong> (App Attest /
+      DeviceCheck) — weryfikacja autentyczności instalacji Aplikacji,</li>
+  <li><strong>Google</strong> oraz <strong>Apple</strong> — logowanie przez Google Sign-In / Sign in with Apple.</li>
+</ul>
+<p>Każdy z tych podmiotów przetwarza dane na podstawie umowy powierzenia zgodnej z RODO.
+Dane przesyłamy z szyfrowaniem w tranzycie (TLS), a dostęp do backendu ograniczają reguły
+bezpieczeństwa do niezbędnego zakresu. Logowanie Google/Apple wiąże się z przetwarzaniem przez
+odpowiednio Google i Apple zgodnie z ich politykami prywatności.</p>
+
+<h2>6. Przekazywanie poza EOG</h2>
+<p>Niektóre dane mogą być przekazywane do Stanów Zjednoczonych (Google Firebase, Google AI).
+Podstawą przekazania jest decyzja wykonawcza Komisji UE 2023/1795 (Data Privacy Framework —
+dla podmiotów certyfikowanych) oraz standardowe klauzule umowne (SCC) przyjęte przez Komisję UE.</p>
+
+<h2>7. Twoje prawa</h2>
+<p>Masz prawo do: dostępu do danych, sprostowania, usunięcia, ograniczenia przetwarzania,
+przenoszenia danych, sprzeciwu (w tym wobec moderacji AI oraz wobec statystyk i diagnostyki)
+oraz wycofania zgody.</p>
+<p>Sprzeciw wobec statystyk i diagnostyki zgłoś na adres podany w pkt 11 — Aplikacja nie ma dziś
+osobnego przełącznika tych funkcji, więc realizujemy takie żądania po zgłoszeniu. Zbieranie danych
+diagnostycznych kończy się z chwilą odinstalowania Aplikacji. Konto i powiązane dane usuniesz
+w Aplikacji (Profil → Usuń konto) — kasowanie następuje w ciągu 30 dni. Przysługuje Ci skarga do
+Prezesa Urzędu Ochrony Danych Osobowych (PUODO).</p>
+
+<h2>8. Okres przechowywania</h2>
+<ul>
+  <li>dane konta — do czasu usunięcia konta (kasowanie w ciągu 30 dni),</li>
+  <li>Treści UGC — do czasu ich usunięcia przez Ciebie lub moderację; publicznie udostępnione opisy
+      mogą pozostać jako element punktu w formie zanonimizowanej (zob. Regulamin),</li>
+  <li>zdjęcia — pozostają jako element punktu również po usunięciu konta, ale w formie
+      zanonimizowanej (usuwamy powiązanie z Twoim kontem i nazwą); usuwasz je sam albo
+      moderator na zgłoszenie,</li>
+  <li>rejestr moderacyjny — przez okres świadczenia usługi, dla celów audytu i bezpieczeństwa (dane autora anonimizowane po usunięciu konta),</li>
+  <li>dane analityczne — w formie zagregowanej, zgodnie z ustawieniami retencji narzędzia analitycznego (nie dłużej niż 14 miesięcy dla danych zdarzeń).</li>
+</ul>
+
+<h2>9. Dzieci</h2>
+<p>Z Aplikacji mogą korzystać osoby, które ukończyły 16 lat; osoby poniżej 16. roku życia mogą
+korzystać wyłącznie za zgodą i pod nadzorem opiekuna prawnego.</p>
+
+<h2>10. Zmiany polityki</h2>
+<p>O istotnych zmianach poinformujemy w Aplikacji. Aktualna wersja jest zawsze dostępna pod tym adresem.</p>
+
+<h2>11. Kontakt</h2>
+<p>W sprawach prywatności: <strong>hyc.kontakt@gmail.com</strong>.</p>
+
+<footer>
+  Hyc! · Polityka prywatności · wersja 1.4 ·
+  Zob. <a href="eula.html">Regulamin (EULA)</a> i <a href="warunki_bezpiecznego_korzystania.html">Warunki bezpiecznego korzystania</a>.
+</footer>
+</div>
+</body>
+</html>
