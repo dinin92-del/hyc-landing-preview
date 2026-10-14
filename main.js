@@ -547,10 +547,6 @@
       !(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches)) {
     var groups = [];
     var addGroup = function (trigger, members) { if (trigger) { groups.push({ trigger: trigger, members: members }); } };
-    var rows = document.querySelectorAll(".feature-row");
-    for (var r = 0; r < rows.length; r++) {
-      addGroup(rows[r], [{ el: rows[r], delay: 0 }]);
-    }
     var single = function (el, delay) { addGroup(el, [{ el: el, delay: delay }]); };
     single(document.querySelector(".scouts-cta"), 0);
     // FAQ: JEDEN wyzwalacz (cała sekcja), ale pozycje wylatują po kolei:

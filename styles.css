@@ -1193,7 +1193,7 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
 /* ---- "O aplikacji" (feature-list) ----
    Karta z grafiką + nagłówek/tekst obok, sześć niezależnych bloków, każdy
    z własną grafiką i własnym pytaniem/odpowiedzią. */
-.feature-list { margin-top: 80px; }
+.feature-list { margin-top: 100px; margin-bottom: 48px; }
 .feature-row {
   display: grid;
   grid-template-columns: 1fr;
@@ -1207,7 +1207,7 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
   border-radius: 20px;
   padding: 44px 24px;
 }
-.feature-row + .feature-row { margin-top: 28px; }
+.feature-row + .feature-row { margin-top: 64px; }
 .feature-media {
   display: block;
   width: 100%;
@@ -1606,13 +1606,14 @@ footer .spacer { flex: 1 1 auto; }
   /* Spójne z .contact-hero (patrz ta reguła niżej) — obie strony ten sam
      odstęp od paska na desktopie. */
   .about-hero { margin-top: 80px; }
-  .feature-list { margin-top: 88px; }
+  .feature-list { margin-top: 120px; margin-bottom: 80px; }
   .feature-row + .feature-row { margin-top: 104px; }
   footer { margin-top: 96px; }
   /* Szlak ma pod tekstem własną sporą pustkę (wysoki artboard), więc tu
      starczy mniej — 200px dawało odstęp >400px licząc od ostatniej widocznej
      linii tekstu do baneru. */
   .scouts-cta { margin-top: 80px; }
+  .scouts-cta-inner { padding: 140px 40px; }
   .faq { margin-top: 160px; }
 }
 
@@ -1828,7 +1829,7 @@ footer .spacer { flex: 1 1 auto; }
 .scouts-cta-inner {
   max-width: 640px;
   margin: 0 auto;
-  padding: 72px 24px;
+  padding: 96px 24px;
   text-align: center;
 }
 .scouts-cta h2 {
@@ -1846,6 +1847,9 @@ footer .spacer { flex: 1 1 auto; }
   font-size: 17px;
   line-height: 1.6;
   color: var(--bark);
+}
+@media (max-width: 759px) {
+  .scouts-cta h2 { font-size: 26px; text-wrap: balance; }
 }
 
 /* ---- Sekcja ze szlakiem ----
