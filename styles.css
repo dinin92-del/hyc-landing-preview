@@ -1332,7 +1332,8 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
 
 /* ---- Partnerstwa ---- */
 .partnerships {
-  margin-top: 96px;
+  margin-top: 160px;
+  margin-bottom: 96px;
   display: grid;
   grid-template-columns: 1fr;
   gap: 40px;
@@ -1340,15 +1341,17 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
 .partnerships-logo {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
+  background: #F6F2E9;
+  border-radius: 20px;
+  padding: 24px;
 }
 .partnerships-logo img {
   width: 240px;
   height: 240px;
   object-fit: contain;
-  border-radius: 50%;
 }
-.partnerships-btn { margin-top: 28px; display: inline-flex; }
+.partnerships-btn { margin-top: 28px; }
 
 .faq {
   margin-top: 96px;
@@ -1687,7 +1690,7 @@ footer .spacer { flex: 1 1 auto; }
     align-items: center;
   }
   .faq { align-items: start; }
-  .partnerships-logo { justify-content: center; }
+  .partnerships-logo { justify-content: center; /* already set in base */ }
   .feature-copy { text-align: left; max-width: none; margin-left: 0; margin-right: 0; }
   /* Naprzemienny układ — co drugi bullet ma grafikę z prawej strony tekstu.
      Kolumny .feature-row są 1fr 1fr (równe), więc reverse dziedziczy ten sam
