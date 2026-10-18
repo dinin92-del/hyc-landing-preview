@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Polityka prywatności — Hyc!</title>
+<link rel="stylesheet" href="_style.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Polityka prywatności</h1>
+  <div class="meta">Hyc! · Wersja 1.8 · obowiązuje od <strong>14 października 2026 r.</strong></div>
+</header>
+
+<div class="nav"><a href="eula.html">→ Regulamin</a> · <a href="warunki_bezpiecznego_korzystania.html">→ Warunki bezpiecznego korzystania</a></div>
+
+<h2>0. Czego dotyczy ta polityka</h2>
+<p>Polityka obejmuje <strong>aplikację mobilną Hyc!</strong> oraz <strong>stronę gethyc.com</strong>, dalej łącznie „Usługa”. Tam, gdzie zasada dotyczy tylko jednego z nich, jest to wskazane wprost; bez takiego zastrzeżenia zapis dotyczy obu.</p>
+<p><strong>Strona gethyc.com nie używa ciasteczek ani pamięci przeglądarki.</strong> Nie ma na niej formularzy. Mierzymy na niej tylko odsłony i kliknięcia w przyciski, bez profilowania osób (pkt 4.2). To statyczna wizytówka z odnośnikami do sklepów i do niniejszych dokumentów. Jak każdy serwis WWW jest udostępniana przez hosting (GitHub Pages, pkt 5), który rejestruje standardowe <strong>logi techniczne żądań (adres IP, typ przeglądarki, czas)</strong>. Służą one wyłącznie utrzymaniu i zabezpieczeniu serwisu i nie są przez nas łączone z Twoim kontem w Aplikacji.</p>
+<p>Wszystkie pozostałe punkty tej polityki opisują <strong>Aplikację</strong>.</p>
+<h2>1. Administrator danych</h2>
+<p>Administratorem danych osobowych jest <strong>Józef Kołaczyk, ul. Piątkowska 43/49, 60-645 Poznań</strong>, działający jako osoba fizyczna („Operator”). Kontakt w sprawach danych: <strong>hyc.kontakt@gmail.com</strong>.</p>
+<h2>2. Jakie dane przetwarzamy</h2>
+<h3>2.1. Dane konta</h3>
+<ul>
+  <li>adres e-mail oraz nazwa wyświetlana,</li>
+  <li>przy logowaniu Google/Apple: identyfikator dostawcy i adres e-mail udostępniony przez dostawcę,</li>
+  <li>identyfikator użytkownika nadany przez Firebase Authentication,</li>
+  <li>zapis zaakceptowanej wersji Regulaminu (numer wersji i data) oraz zapisane przez Ciebie punkty,</li>
+  <li>liczniki techniczne chroniące przed nadużyciami (m.in. liczba ostatnio dodanych komentarzy i liczba treści odrzuconych przez filtr), przypisane do konta.</li>
+</ul>
+<p>Nie przechowujemy Twojego hasła do logowania Google/Apple. Uwierzytelnienie odbywa się po stronie dostawcy, a Firebase Authentication przechowuje wyłącznie token sesji. Dla kont e-mail hasło jest przechowywane przez Firebase Authentication wyłącznie w postaci skrótu.</p>
+<h3>2.2. Treści użytkownika (UGC)</h3>
+<ul>
+  <li>opisy, komentarze, nazwy oraz punkty (w tym ich współrzędne) dodawane przez Ciebie, wraz z datą i nazwą autora (nazwa autora jest widoczna publicznie przy opisach i komentarzach),</li>
+  <li>zdjęcia punktów dodawane przez Ciebie. Przed wysłaniem Aplikacja usuwa z pliku metadane EXIF (w tym współrzędne GPS zapisane przez aparat) i zmniejsza zdjęcie; na serwer trafia sam obraz wraz z datą i nazwą autora.</li>
+</ul>
+<p>Operator może wykorzystywać treści UGC w formie <strong>zanonimizowanej i zagregowanej</strong> (bez powiązania z Twoją tożsamością) do celów statystycznych i rozwoju Aplikacji. Dane w tej formie nie stanowią danych osobowych w rozumieniu RODO.</p>
+<p>Dane faktograficzne o punktach (położenie, nazwa, rodzaj, numer telefonu), także o punktach dodanych lub poprawionych przez użytkowników, są częścią publicznej bazy punktów udostępnianej na licencji ODbL 1.0 (zob. Regulamin, rozdział „Dane o punktach i licencje”). Do tej bazy nie trafia nazwa autora ani identyfikator konta. Opisy, komentarze i zdjęcia nie są jej częścią; zakres licencji na Treści określa Regulamin. Osobom trzecim możemy udostępniać wyłącznie zestawienia zagregowane, z których nie da się zidentyfikować użytkownika.</p>
+<h3>2.3. Lokalizacja</h3>
+<p>Pozycja GPS jest używana <strong>na urządzeniu</strong> do wyznaczenia najbliższego punktu i nawigacji. Gdy masz nadaną zgodę systemową, Aplikacja odczytuje pozycję także przy starcie, żeby przygotować nawigację, i wczytuje z wyprzedzeniem kafle mapy w promieniu około 3 km. Pozycja pozostaje wtedy na urządzeniu. Aby obliczyć trasę po szlaku, Twoja aktualna pozycja (punkt startowy) oraz współrzędne celu są przesyłane do dostawcy routingu (<strong>Seznam.cz a.s. / mapy.cz</strong>) wyłącznie na czas obliczenia trasy. <strong>Nie przechowujemy Twojej bieżącej pozycji ani historii tras na naszych serwerach.</strong> Wyjątkiem jest sytuacja, gdy świadomie dodajesz punkt: wtedy zapisywane są współrzędne tego punktu (a nie Twojej trasy). Aplikacja nie korzysta z lokalizacji w tle.</p>
+<p>Do statystyk (pkt 4) <strong>nie trafiają Twoje współrzędne</strong>. Trafia natomiast, gdy akurat jesteś w parku narodowym albo w jego 5-kilometrowym buforze, <strong>nazwa tego parku</strong> wraz z informacją, czy chodzi o teren parku, czy o bufor. Przynależność do parku wylicza sama Aplikacja <strong>na Twoim urządzeniu</strong>, porównując pozycję z granicami zapisanymi w plikach Aplikacji; na zewnątrz wychodzi wyłącznie gotowa nazwa (np. „tatrzanski”), nigdy pozycja, z której powstała. To informacja o <strong>przybliżonym rejonie</strong> rzędu setek kilometrów kwadratowych, nie o Twoim miejscu pobytu.</p>
+<p><strong>Kafle mapy pobieramy z naszego własnego serwera</strong> (<code>tiles.hycmap.com</code>, hosting Cloudflare R2). Serwer ten odbiera adres IP urządzenia oraz numery kafli, które oglądasz, a numer kafla wskazuje obszar mapy, więc <strong>z samego ruchu wynika przybliżony rejon, w którym korzystasz z Aplikacji</strong>. Nie łączymy tych żądań z Twoim kontem i nie budujemy z nich historii tras.</p>
+<h3>2.4. Dane techniczne i diagnostyczne</h3>
+<p>Korzystamy z narzędzi Google (Firebase Analytics, Firebase Crashlytics, Firebase Remote Config i Firebase Installations) oraz z narzędzia analitycznego <strong>PostHog</strong> (chmura w Unii Europejskiej) do zbierania statystyk użycia i raportów o awariach. Dane te służą poprawie stabilności i funkcji Aplikacji.</p>
+<p>Konkretnie: narzędzia te zapisują na urządzeniu <strong>losowe identyfikatory instalacji</strong> (identyfikator instancji Aplikacji i identyfikator instalacji Firebase, identyfikator instalacji Crashlytics oraz identyfikator PostHog). Raport o awarii zawiera model urządzenia, wersję systemu i identyfikator instalacji. Analytics dodaje dane o urządzeniu i środowisku: model, wersję systemu i Aplikacji, język oraz kraj, region i miasto ustalane z adresu IP. Remote Config pobiera ustawienia Aplikacji (np. informację o wersji wydania) i przy tym wysyła identyfikator instalacji oraz podstawowe dane o urządzeniu. Na iOS PostHog może dodatkowo wysłać zdarzenie techniczne wielokrotnego dotknięcia tego samego miejsca ekranu (położenie dotyku na ekranie i nazwa ekranu). Nie zawierają one Twojego imienia, adresu e-mail ani współrzędnych i nie służą do reklam, ale są to identyfikatory przypisane do instalacji, a nie dane w pełni anonimowe. Odinstalowanie Aplikacji kończy ich żywotność.</p>
+<p>Statystyki i raporty o awariach są włączone od pierwszego uruchomienia Aplikacji. Zbieranie możesz wyłączyć przełącznikiem <strong>Anonimowe statystyki</strong> w Menu → O aplikacji (sekcja Statystyki, na dole ekranu). Możesz też zgłosić sprzeciw mailem na adres z pkt 11 (pkt 7).</p>
+<p><strong>Weryfikacja autentyczności Aplikacji (App Check).</strong> Żeby chronić backend przed nadużyciami (boty, podrobione klienty), każde żądanie do naszych usług niesie token potwierdzający, że pochodzi z prawdziwej instalacji Aplikacji. Token wystawia <strong>Google Play Integrity</strong> (Android) lub <strong>Apple App Attest / DeviceCheck</strong> (iOS). Mechanizm sprawdza integralność aplikacji i urządzenia; nie przekazujemy przy tym Twojej tożsamości ani lokalizacji.</p>
+<p>Korzystając z usług sieciowych (logowanie, moderacja, obliczanie tras), dostawcy wymienieni w pkt 5 odbierają dane techniczne niezbędne do realizacji żądania, w tym <strong>adres IP</strong> urządzenia i metadane połączenia.</p>
+<h2>3. Moderacja treści</h2>
+<p>Aby chronić bazę przed spamem i treściami niezgodnymi z prawem, korzystamy z <strong>automatycznego filtra słów i wzorców</strong> działającego w naszym backendzie. <strong>Nie przekazujemy Twoich treści żadnemu zewnętrznemu modelowi ani usłudze moderacyjnej.</strong> Moderacja wygląda tak:</p>
+<ul>
+  <li><strong>opisy i nazwy punktów:</strong> po dodaniu sprawdza je filtr (zwykle w kilka sekund). Treść wątpliwa (wulgaryzmy, groźby, linki, numer telefonu wpisany w treść opisu) trafia do ręcznego przeglądu moderatora i do jego decyzji jest ukryta, a obelgi na tle rasowym lub narodowym oraz treść wyglądająca na przypadkowy ciąg znaków są ukrywane automatycznie. Numer telefonu dodany przez użytkownika w osobnym polu formularza zawsze czeka na moderatora razem z opisem;</li>
+  <li><strong>komentarze:</strong> komentarz użytkownika, który ma już kilka zaakceptowanych komentarzy, jest widoczny od razu, a filtr sprawdza go po fakcie. Komentarze nowych użytkowników są ukryte do czasu sprawdzenia przez filtr (zwykle kilka sekund). Wulgaryzmy, obelgi na tle rasowym lub narodowym oraz treść wyglądająca na przypadkowy ciąg znaków są ukrywane automatycznie, podobnie nadmiar komentarzy dodanych w krótkim czasie (do przeglądu moderatora). Groźby, linki, reklamy, adresy e-mail i numery telefonów kierowane są do przeglądu moderatora, a komentarz kierowany do przeglądu bywa ukryty do jego decyzji;</li>
+  <li><strong>zdjęcia:</strong> nie są analizowane automatycznie i podlegają wyłącznie moderacji po zgłoszeniu. Są widoczne od razu, chyba że towarzyszą nowo dodawanemu opisowi; wtedy publikują się razem z rozstrzygnięciem tego opisu. Widoczne zdjęcie usuwa autor albo moderator po zgłoszeniu;</li>
+  <li><strong>zgłoszenia:</strong> treści zgłoszone przez innych użytkowników ocenia moderator (człowiek). Moderator może też zablokować konto naruszające Regulamin. Konto może zostać zablokowane również automatycznie, w razie seryjnego spamu (kilka treści odrzuconych przez filtr przy jednoczesnym przekroczeniu limitu komentarzy).</li>
+</ul>
+<p>Automatyczne ukrycie treści nie wywołuje skutków prawnych poza ukryciem tej treści. Jeśli uważasz, że ukryto ją niesłusznie albo zablokowano Twoje konto, napisz na adres z pkt 11, a rozpatrzy to człowiek. Powód ukrycia treści lub blokady podamy na Twoją prośbę.</p>
+<p>Każda decyzja filtra i każda decyzja moderatora jest zapisywana w rejestrze moderacyjnym (append-only) dla audytu i jakości usługi. Po usunięciu konta dane autora w rejestrze są anonimizowane, ale sama treść i decyzja pozostają.</p>
+<p><strong>Podstawa prawna:</strong> art. 6 ust. 1 lit. f RODO (prawnie uzasadniony interes: utrzymanie jakości i bezpieczeństwa usługi).</p>
+<h2>4. Cele i podstawy prawne (RODO)</h2>
+<ul>
+  <li>prowadzenie konta i świadczenie funkcji społecznościowych: wykonanie umowy (art. 6 ust. 1 lit. b),</li>
+  <li>moderacja, bezpieczeństwo i obsługa zgłoszeń: prawnie uzasadniony interes (art. 6 ust. 1 lit. f),</li>
+  <li>statystyki i diagnostyka: prawnie uzasadniony interes (art. 6 ust. 1 lit. f); dane nie są łączone z Twoim kontem, bez identyfikatorów reklamowych,</li>
+  <li>obliczenie trasy i wskazanie najbliższego punktu, w tym przekazanie współrzędnych startu i celu dostawcy routingu: wykonanie usługi na Twoje żądanie (art. 6 ust. 1 lit. b); dostęp Aplikacji do GPS wymaga zgody systemowej urządzenia, którą możesz cofnąć w ustawieniach telefonu,</li>
+  <li>utrzymanie i zabezpieczenie strony gethyc.com (logi hostingu) oraz udostępnianie bazy punktów na licencji ODbL zgodnie z jej warunkami: prawnie uzasadniony interes (art. 6 ust. 1 lit. f),</li>
+  <li>wypełnienie obowiązków prawnych (np. podatkowych, jeśli wystąpią płatności): art. 6 ust. 1 lit. c.</li>
+</ul>
+<p><strong>Nie sprzedajemy Twoich danych osobowych i nie udostępniamy ich reklamodawcom.</strong> Nie budujemy profili użytkowników. Poza automatycznym ukrywaniem treści i blokadą konta w razie seryjnego spamu (pkt 3) nie podejmujemy wobec Ciebie decyzji wyłącznie zautomatyzowanych; od tych decyzji możesz żądać rozpatrzenia przez człowieka (pkt 11). Aplikacja <strong>nie zawiera żadnego modułu reklamowego</strong>: nie wyświetlamy reklam, nie korzystamy z identyfikatorów reklamowych i nie przekazujemy danych sieciom reklamowym. Udostępnianie danych o punktach opisuje pkt 2.2.</p>
+<p><strong>Podanie danych jest dobrowolne.</strong> Bez adresu e-mail i nazwy wyświetlanej nie założysz konta; przeglądanie mapy i nawigacja działają bez konta. Bez zgody systemowej na lokalizację Aplikacja nie wskaże najbliższego punktu.</p>
+<h3>4.1. Zakres statystyk (Analytics)</h3>
+<p>Aplikacja wysyła zdarzenia z następujących kategorii:</p>
+<ul>
+  <li><strong>wyszukanie punktu i dotarcie do niego</strong>, czyli czy ludzie faktycznie docierają tam, dokąd ich prowadzimy,</li>
+  <li><strong>przebieg nawigacji:</strong> jej rozpoczęcie, świadoma zmiana trybu wyszukiwania i kategorii, zakończenie wraz z powodem, użyte przybliżenie mapy, wyświetlenie samouczka,</li>
+  <li><strong>trasa:</strong> wyznaczenie trasy (dystans, czas, przewyższenie), nieudane wyznaczenie wraz z etapem niepowodzenia oraz automatyczne uproszczenie zapytania o trasę przy słabym łączu,</li>
+  <li><strong>interakcje z kartą punktu:</strong> zapisanie punktu, dodanie komentarza, tapnięcie numeru telefonu (<strong>bez samego numeru</strong>), przeciągnięcie karty,</li>
+  <li><strong>dodawanie treści:</strong> dodanie punktu (jego rodzaj) i zdjęć (liczba, powodzenie wczytania),</li>
+  <li><strong>lokalizacja:</strong> nadanie lub odmowa zgody systemowej oraz wynik ustalenia pozycji (dokładność w metrach, powód niepowodzenia), <strong>bez współrzędnych</strong>,</li>
+  <li><strong>wejście do parku narodowego</strong> (zob. niżej),</li>
+  <li><strong>cykl życia Aplikacji:</strong> otwarcie, podpowiedź o aktualizacji, tapnięcie przycisku wsparcia projektu.</li>
+</ul>
+<p>Do zdarzeń dołączamy identyfikator punktu, tryb wyszukiwania, źródło punktu (baza punktów w Aplikacji / dodany przez użytkowników) oraz proste etykiety i liczby techniczne (np. powód zakończenia nawigacji, dystans w metrach lub kilometrach, czas w minutach). <strong>Nie dołączamy Twojego identyfikatora użytkownika, adresu e-mail, nazwy wyświetlanej ani współrzędnych</strong> i nie łączymy tych zdarzeń z Twoim kontem. Zdarzenia są jednak przypisane do instalacji (pkt 2.4), więc są to dane pseudonimowe, a nie w pełni anonimowe. Analizujemy je zbiorczo, po to, żeby wiedzieć, które funkcje działają, a które zawodzą. Firebase Analytics zbiera ponadto własne zdarzenia automatyczne (m.in. pierwsze otwarcie, początek sesji, wyświetlenia ekranów).</p>
+<p><strong>Park narodowy.</strong> Zdarzenia wyszukania, dotarcia i wejścia do parku niosą <strong>nazwę parku narodowego</strong> oraz informację, czy chodzi o teren parku, czy o jego 5-kilometrowy bufor. To dana o <strong>przybliżonym rejonie</strong>. Klasyfikację wykonuje sama Aplikacja na urządzeniu (pkt 2.3), więc na zewnątrz wychodzi wyłącznie gotowa nazwa, nigdy współrzędne, z których powstała.</p>
+<h3>4.2. Statystyki strony gethyc.com (GoatCounter)</h3>
+<p>Na stronie gethyc.com liczymy odsłony podstron oraz kliknięcia w przyciski pobrania Aplikacji i w linki do grupy na Facebooku. Cel: sprawdzenie, skąd przychodzą osoby zainteresowane Aplikacją i który sposób pobrania jest wybierany. Podstawa: art. 6 ust. 1 lit. f RODO, uzasadniony interes Operatora w statystyce własnej strony.</p>
+<p>Narzędzie: GoatCounter (operator z Irlandii). Dane są przechowywane na serwerach w Finlandii i w Niemczech i nie są przekazywane innym podmiotom. Nie używamy ciasteczek ani pamięci przeglądarki. Gdy przeglądarka nie może wysłać zliczenia w tle, używamy obrazka 1x1 piksel wysyłanego do tego samego serwera. Zliczamy: adres podstrony, tytuł strony, adres strony, z której przyszedłeś, szerokość ekranu oraz nazwę klikniętego przycisku. Adres IP i dane przeglądarki służą tylko do zliczenia i są trzymane w pamięci maksymalnie 8 godzin, bez zapisu na dysku. Nie zapisujemy wizyt poszczególnych osób, widzimy wyłącznie zbiorcze liczby.</p>
+<p>Ponieważ dane są zbiorcze i nie pozwalają wskazać konkretnej osoby, prawa dostępu i usunięcia mogą nie mieć zastosowania (art. 11 RODO). Sprzeciw wobec statystyk możesz zgłosić mailem z pkt 11, a rozpatrzymy go w ciągu miesiąca.</p>
+<h2>5. Odbiorcy danych</h2>
+<ul>
+  <li><strong>Google Firebase</strong> (Authentication, Cloud Firestore, Cloud Functions, Analytics, Crashlytics, Remote Config, Installations, App Check): hosting danych i logika backendu,</li>
+  <li><strong>PostHog</strong> (PostHog, Inc., chmura w Unii Europejskiej): statystyki użycia opisane w pkt 4.1,</li>
+  <li><strong>Seznam.cz a.s. (mapy.cz):</strong> obliczanie tras (routing); otrzymuje przesłane współrzędne (start i cel) oraz adres IP urządzenia na czas obliczenia trasy i przetwarza je na warunkach swoich usług,</li>
+  <li><strong>Cloudflare, Inc.:</strong> hosting kafli mapy (<code>tiles.hycmap.com</code>) oraz przechowywanie i udostępnianie zdjęć dodanych przez użytkowników (<code>photos.hycmap.com</code>), czyli magazyn R2 i sieć CDN; odbiera adres IP i numery pobieranych kafli,</li>
+  <li><strong>GitHub, Inc. (GitHub Pages):</strong> hosting strony gethyc.com; odbiera adres IP i nagłówki żądań,</li>
+  <li><strong>GoatCounter</strong> (operator z Irlandii, serwery w Finlandii i Niemczech): zliczanie odsłon i kliknięć na stronie gethyc.com, pkt 4.2,</li>
+  <li><strong>Resend (Resend, Inc.):</strong> wysyłka wiadomości e-mail Aplikacji (powitanie, weryfikacja adresu, reset hasła); otrzymuje Twój adres e-mail i treść wiadomości,</li>
+  <li><strong>Google</strong> (Play Integrity) oraz <strong>Apple</strong> (App Attest / DeviceCheck): weryfikacja autentyczności instalacji Aplikacji,</li>
+  <li><strong>Google</strong> oraz <strong>Apple:</strong> logowanie przez Google Sign-In / Sign in with Apple.</li>
+</ul>
+<p>Firebase, PostHog, Cloudflare i Resend przetwarzają dane jako podmioty przetwarzające na podstawie umów powierzenia (DPA) zgodnych z RODO. Dane przesyłamy z szyfrowaniem w tranzycie (TLS), a dostęp do backendu ograniczają reguły bezpieczeństwa. Logowanie Google/Apple wiąże się z przetwarzaniem przez odpowiednio Google i Apple zgodnie z ich politykami prywatności.</p>
+<h2>6. Przekazywanie poza EOG</h2>
+<p>Niektóre dane mogą być przekazywane do Stanów Zjednoczonych (Google Firebase, a w zakresie infrastruktury także podmioty amerykańskie, jak PostHog, Inc., Cloudflare, Inc., Resend, Inc. i GitHub, Inc.). Podstawą przekazania jest decyzja wykonawcza Komisji UE 2023/1795 (Data Privacy Framework, dla podmiotów certyfikowanych) oraz standardowe klauzule umowne (SCC) przyjęte przez Komisję UE. Kopię zabezpieczeń możesz uzyskać pod adresem z pkt 11.</p>
+<h2>7. Twoje prawa</h2>
+<p>Masz prawo do: dostępu do danych, sprostowania, usunięcia, ograniczenia przetwarzania, przenoszenia danych, sprzeciwu (w tym wobec statystyk i diagnostyki) oraz wycofania zgody, jeśli przetwarzanie opiera się na zgodzie.</p>
+<p>Zbieranie statystyk możesz wyłączyć samodzielnie przełącznikiem <strong>Anonimowe statystyki</strong> w Menu → O aplikacji (sekcja Statystyki, na dole ekranu). Skutek jest natychmiastowy. Sprzeciw lub inne żądanie dotyczące statystyk i diagnostyki możesz też zgłosić mailem na adres z pkt 11. Dane statystyczne nie są powiązane z Twoim kontem ani adresem e-mail. Żeby mimo to odnaleźć dane Twojej instalacji w Firebase Analytics, podaj w zgłoszeniu identyfikator instalacji widoczny w Aplikacji (Menu → O aplikacji). Zgłoszony sprzeciw rozpatrzymy w ciągu jednego miesiąca od otrzymania (art. 12 RODO) i wyłączymy zbieranie dla wskazanej instalacji w Firebase Analytics. Dane w PostHog nie są dziś powiązane z tym identyfikatorem i pozostają poza zasięgiem takiego żądania. Zbieranie kończy się też z chwilą odinstalowania Aplikacji.</p>
+<p>Konto i powiązane dane usuniesz w Aplikacji (Profil, Usuń konto); kasowanie następuje w ciągu 30 dni. Wobec automatycznego ukrycia treści (pkt 3) możesz żądać rozpatrzenia przez człowieka. Przysługuje Ci skarga do Prezesa Urzędu Ochrony Danych Osobowych (PUODO).</p>
+<h2>8. Okres przechowywania</h2>
+<ul>
+  <li>dane konta: do czasu usunięcia konta (kasowanie w ciągu 30 dni; kopie zapasowe do 7 dni dłużej),</li>
+  <li>Treści UGC: do czasu ich usunięcia przez Ciebie lub moderację; publicznie udostępnione opisy mogą pozostać jako element punktu w formie zanonimizowanej (zob. Regulamin),</li>
+  <li>zdjęcia: pozostają jako element punktu również po usunięciu konta, ale w formie zanonimizowanej (usuwamy powiązanie z Twoim kontem i nazwą); usuwasz je sam albo moderator na zgłoszenie,</li>
+  <li>rejestr moderacyjny: przez okres świadczenia usługi, dla celów audytu i bezpieczeństwa (dane autora anonimizowane po usunięciu konta),</li>
+  <li>dane analityczne: Firebase Analytics według ustawień retencji narzędzia, nie dłużej niż 14 miesięcy; PostHog do 12 miesięcy; raporty awarii Crashlytics 90 dni;</li>
+  <li>statystyki strony gethyc.com (GoatCounter): wyłącznie zbiorcze liczby, bez danych o pojedynczych wizytach; [okres do potwierdzenia w ustawieniach GoatCounter przed wdrożeniem].</li>
+</ul>
+<h2>9. Dzieci</h2>
+<p>Konto w Aplikacji mogą założyć wyłącznie osoby, które ukończyły 16 lat. Aplikacja nie jest skierowana do dzieci. Przeglądanie mapy i nawigacja nie wymagają konta ani podawania danych osobowych.</p>
+<h2>10. Zmiany polityki</h2>
+<p>O istotnych zmianach poinformujemy w Aplikacji. Aktualna wersja jest zawsze dostępna pod tym adresem.</p>
+<h2>11. Kontakt</h2>
+<p>W sprawach prywatności: <strong>hyc.kontakt@gmail.com</strong>.</p>
+
+<footer>
+  Hyc! · Polityka prywatności · wersja 1.9 ·
+  Zob. <a href="eula.html">Regulamin</a> i <a href="warunki_bezpiecznego_korzystania.html">Warunki bezpiecznego korzystania</a>.
+</footer>
+</div>
+</body>
+</html>

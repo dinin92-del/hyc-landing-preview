@@ -1,0 +1,10 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Znak kregow z HycButtona — sygnet naglowka landingu. Do 0731 sluzyl tez za
+       favicon; ikona karty przegladarki jest teraz ikona apki (favicon.svg), a ten
+       plik zostaje przy naglowku, bo tam obok stoi juz slowo „Hyc!" i wordmark
+       w sygnecie czytalby sie jako powtorzenie. -->
+  <rect width="64" height="64" rx="14" fill="#F0EBE0"/>
+  <circle cx="32" cy="32" r="22" fill="#4A7C2F" opacity="0.20"/>
+  <circle cx="32" cy="32" r="15" fill="#4A7C2F" opacity="0.35"/>
+  <circle cx="32" cy="32" r="8.5" fill="#2D5016"/>
+</svg>
