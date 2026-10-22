@@ -150,7 +150,7 @@
   var current = 1;
 
   // Blokada przewijania tła pod otwartym modalem (dowolnym z dwóch) — patrz
-  // scroll-lock.js. Ten sam zamek dzieli panel hamburgera w nav.js.
+  // scroll-lock.js.
   var lockScroll = window.HycScrollLock.lock;
   var unlockScroll = window.HycScrollLock.unlock;
 

@@ -1,6 +1,5 @@
 /*
- * Hyc! — body scroll lock, dzielony przez nav.js (panel hamburgera) i main.js
- * (modale instalacji). Samo overflow:hidden na body nie wystarcza na Safari
+ * Hyc! — body scroll lock dla modali instalacji w main.js (nav.js go nie używa). Samo overflow:hidden na body nie wystarcza na Safari
  * iOS — dokument i tak przewija się (rubber-band) pod spodem. Zamrożenie
  * body na position:fixed w zapamiętanym scrollY jest jedyną niezawodną
  * techniką — tej samej używa każda poważna biblioteka modali.
