@@ -1492,10 +1492,8 @@ body.page-pobierz .wrap > main { justify-content: center; }
   color: var(--bark);
 }
 .about-body p:last-child { margin-bottom: 0; }
-/* Akapity O aplikacji: 700 jak wyróżnienie partnera. Imiona/nazwiska w
-   .about-team-text zostają na 600. */
-.about-body strong { font-weight: 700; }
-.about-team-text strong { font-weight: 600; }
+.about-body strong,
+.about-team-text strong { font-weight: 700; }
 
 .about-team,
 .about-contact {
