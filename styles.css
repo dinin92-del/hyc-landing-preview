@@ -1503,7 +1503,7 @@ body.page-pobierz .wrap > main { justify-content: center; }
 }
 .about-team h2,
 .about-contact h2 {
-  margin: 0 0 24px;
+  margin: 0 0 12px;
   font-size: 22px;
   font-weight: 700;
   color: var(--espresso);
