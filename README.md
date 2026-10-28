@@ -126,6 +126,25 @@ Bez `SITE_DOMAIN` skrypt publikuje po staremu pod `dinin92-del.github.io/hyc-lan
   za ikonę na ekranie głównym własny zrzut strony. Regeneracja: przeskalowanie mastera
   `1080x1080new.png` (LANCZOS), ten sam plik co ikona apki.
 
+## Wideo telefonu w hero (`assets/hero/phone.*`)
+Telefon w hero to render z Rotato (ramka i ekran) z przezroczystym tłem, kadr
+416x840 (stąd `--pw = --ph * 0.4952` w `styles.css`), 30 fps, 63 s w pętli.
+- `phone.mov`: HEVC z alfą, dla Safari/iOS. Typ `video/quicktime; codecs="hvc1"`
+  omija Chrome, który odtworzyłby go bez przezroczystości. Plik musi mieć `moov`
+  na początku (`shouldOptimizeForNetworkUse`), inaczej start jest wolny.
+- `phone.webm`: VP9 z alfą, dla reszty. Z ProRes 4444 z Rotato:
+  `ffmpeg -i rotato.mov -vf "crop=416:840:512:120,format=yuva420p" -c:v libvpx-vp9
+  -pix_fmt yuva420p -b:v 0 -crf 33 -auto-alt-ref 0 -row-mt 1 -an phone.webm`,
+  potem `ffmpeg -i phone.webm -c copy -cues_to_front 1 out.webm`.
+- `phone-poster.webp`: klatka z alfą (z 2 s), pokazywana do startu wideo.
+- ⛔ `ffmpeg` nie koduje HEVC z alfą na macOS (`hevc_videotoolbox` pada), a
+  `AVAssetExportSession` z `videoComposition` spłaszcza alfę do czerni. Kadrowanie
+  trzeba robić klatka po klatce przez `AVAssetReader`/`AVAssetWriter`
+  (`hevcWithAlpha`), albo wyeksportować z Rotato od razu ciasny kadr pionowy.
+  Sprawdzaj po kodowaniu, czy róg klatki ma alfę 0 (sama flaga
+  `containsAlphaChannel` nie wystarcza).
+- Cień pod telefonem to `.hero-phone::before`, nie część wideo.
+
 ## TODO (opcjonalne)
 - [x] ~~kupić `gethyc.com` i wpiąć wg §3a~~ — zrobione 2026-07-29
 - [x] ~~`assets/demo.mp4` stoi placeholderem z pustym ekranem~~ — podmienione

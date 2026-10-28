@@ -36,7 +36,7 @@
        wersji w URL-u przeglądarka po deployu potrafi skleić nowy index.html
        ze starym styles.css. Wersja w URL-u wymusza świeże pobranie, bo to
        inny zasób. -->
-  <link rel="stylesheet" href="styles.css?v=2026101418">
+  <link rel="stylesheet" href="styles.css?v=2026102900">
 </head>
 <body class="page-home">
   <!-- Górny pasek: strona ma sekcje pod hero (O aplikacji, FAQ, Kontakt)
@@ -134,17 +134,18 @@
             </div>
           </div>
 
-          <!-- Telefon: ramka z CSS, ekran to <video> z posterem. Tymczasowo sam
-               poster (assets/hero/phone-screen.webp, zrzut ze starszego buildu);
-               nagranie dokładasz jednym <source src="assets/hero/demo.mp4"> w
-               środku <video> — main.js odpala je, gdy telefon jest cały widoczny
-               (przy scrollu: postęp >= 0.98) i pauzuje, gdy znika z ekranu.
-               Brak `autoplay` jest celowy, start należy do main.js. -->
+          <!-- Telefon: render z Rotato (ramka + ekran) jako wideo z przezroczystym
+               tłem. Safari/iOS bierze HEVC z alfą (.mov), reszta przeglądarek
+               WebM VP9 z alfą; typ „video/quicktime" omija Chrome, który HEVC
+               odtworzyłby bez przezroczystości. main.js odpala wideo, gdy
+               telefon jest cały widoczny (przy scrollu: postęp >= 0.98) i
+               pauzuje, gdy znika z ekranu. Brak `autoplay` jest celowy, start
+               należy do main.js. -->
           <div class="hero-phone" role="img" aria-label="Ekran aplikacji Hyc!: trasa do najbliższej bacówki">
-            <div class="phone-screen">
-              <video class="phone-video" poster="assets/hero/phone-screen.webp?v=1" muted loop playsinline preload="metadata"></video>
-            </div>
-            <span class="phone-island" aria-hidden="true"></span>
+            <video class="phone-video" poster="assets/hero/phone-poster.webp?v=1" muted loop playsinline preload="metadata">
+              <source src="assets/hero/phone.mov?v=1" type='video/quicktime; codecs="hvc1"'>
+              <source src="assets/hero/phone.webm?v=1" type="video/webm">
+            </video>
           </div>
         </div>
       </section>
