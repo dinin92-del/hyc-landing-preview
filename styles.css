@@ -523,7 +523,10 @@ body:not(.page-home) .wrap { padding-top: 88px; }
    telefonu, dwie warstwy jak w iOS (ciasny kontakt + szeroka, miękka poświata
    z przesunięciem w dół). Inset chowa krawędź warstwy pod nieprzezroczystym
    obrysem telefonu: box-shadow nie maluje się wewnątrz własnej ramki, więc
-   bez niego między ramką a krawędzią telefonu został jasny pasek tła. */
+   bez niego między ramką a krawędzią telefonu został jasny pasek tła.
+   Zasięg w dół (offset + rozmycie) musi mieścić się w odstępie pod telefonem
+   w .hero-stage (overflow: clip), inaczej cień ucina twarda krawędź, gdy
+   scena odjeżdża. */
 .hero-phone::before {
   content: "";
   position: absolute;
@@ -531,8 +534,8 @@ body:not(.page-home) .wrap { padding-top: 88px; }
   z-index: -1;
   border-radius: calc(var(--pw) * 0.18);
   box-shadow:
-    0 calc(var(--pw) * 0.03) calc(var(--pw) * 0.07) rgba(44, 38, 32, 0.16),
-    0 calc(var(--pw) * 0.12) calc(var(--pw) * 0.26) rgba(44, 38, 32, 0.24);
+    0 calc(var(--pw) * 0.02) calc(var(--pw) * 0.05) rgba(44, 38, 32, 0.16),
+    0 calc(var(--pw) * 0.07) calc(var(--pw) * 0.16) rgba(44, 38, 32, 0.22);
 }
 .phone-video {
   display: block;
