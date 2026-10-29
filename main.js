@@ -64,32 +64,48 @@
     // topbar has hero-intro statically in HTML; remove it when skip applies
     // (deep-link: menu must be visible immediately, not wait for intro).
     if (heroNav && skipNavIntro) { heroNav.classList.remove("hero-intro"); }
-    // Block scroll during intro so user watches animations play.
-    // Use preventDefault on events (not HycScrollLock/position:fixed) to
-    // avoid layout side-effects that would break `sync()` calculations.
-    // Unlock after hero-phone-in finishes: delay 3750ms + duration 1200ms = 4950ms
-    // from hero-ready. No lock when: deep-link hash, already scrolled, reduced-motion.
+    // Intro "lock": until the intro ends (hero-phone-in: 3750ms delay + 1200ms
+    // duration = 4950ms from hero-ready) the first scroll attempt fast-forwards
+    // the intro instead of being swallowed (skipIntro below). No lock when:
+    // deep-link hash, already scrolled, reduced-motion.
     var introLocked = false;
     var introUnlockTimer = null;
-    var preventScrollEvt = function (e) { e.preventDefault(); };
-    var preventScrollKey = function (e) {
+    // Próba scrolla w trakcie intro nie jest połykana: przewijamy intro do
+    // końca i oddajemy scroll od razu. Kto tylko patrzy, widzi całą
+    // sekwencję; kto chce zjechać, nie stoi do ~7,5 s na stronie, która
+    // wygląda na zawieszoną. finish() tylko na animacjach z osi czasu
+    // dokumentu (scrollowe zostają), try/catch na nieskończone.
+    var skipIntro = function () {
+      if (!introLocked) { return; }
+      unlockIntroScroll();
+      heroGo();
+      [heroIntro, heroNav].forEach(function (el) {
+        if (!el || !el.getAnimations) { return; }
+        el.getAnimations({ subtree: true }).forEach(function (a) {
+          if (a.timeline !== document.timeline) { return; }
+          try { a.finish(); } catch (e) {}
+        });
+      });
+    };
+    var introScrollAttempt = function () { skipIntro(); };
+    var introKeyAttempt = function (e) {
       if (e.key === "ArrowDown" || e.key === "ArrowUp" ||
           e.key === "PageDown"  || e.key === "PageUp"  ||
-          e.key === "End"       || e.key === " ") { e.preventDefault(); }
+          e.key === "End"       || e.key === " ") { skipIntro(); }
     };
     var unlockIntroScroll = function () {
       if (!introLocked) { return; }
       introLocked = false;
       if (introUnlockTimer) { window.clearTimeout(introUnlockTimer); introUnlockTimer = null; }
-      window.removeEventListener("wheel", preventScrollEvt);
-      window.removeEventListener("touchmove", preventScrollEvt);
-      window.removeEventListener("keydown", preventScrollKey);
+      window.removeEventListener("wheel", introScrollAttempt);
+      window.removeEventListener("touchmove", introScrollAttempt);
+      window.removeEventListener("keydown", introKeyAttempt);
     };
     if (!skipNavIntro && window.scrollY <= 10) {
       introLocked = true;
-      window.addEventListener("wheel", preventScrollEvt, { passive: false });
-      window.addEventListener("touchmove", preventScrollEvt, { passive: false });
-      window.addEventListener("keydown", preventScrollKey);
+      window.addEventListener("wheel", introScrollAttempt, { passive: true });
+      window.addEventListener("touchmove", introScrollAttempt, { passive: true });
+      window.addEventListener("keydown", introKeyAttempt);
     }
     var heroImg = heroIntro.querySelector(".hero-img");
     var heroGo = function () {
@@ -389,6 +405,26 @@
     var rewindToSplash = function () {
       if (phoneVideo && phoneVideo.currentTime > 0) { phoneVideo.currentTime = 0; }
     };
+    // Pętla ręcznie, nie atrybutem `loop`: splash (klatka 0) jest tylko na
+    // pierwsze wejście, kolejne okrążenia startują od ekranu głównego apki
+    // (LOOP_FROM, koniec przejścia splash -> ekran główny w nagraniu), bez
+    // skoku do logo co 63 s. Przy nowym nagraniu sprawdź ten czas.
+    var LOOP_FROM = 1.5;
+    if (phoneVideo) {
+      phoneVideo.addEventListener("ended", function () {
+        phoneVideo.currentTime = LOOP_FROM;
+        applyVideo();
+      });
+    }
+    // „Ogranicz ruch": wideo nie gra, więc zamiast splasha z samym logo
+    // poster pokazuje ekran apki (trasa do schronienia).
+    var splashPoster = phoneVideo ? phoneVideo.getAttribute("poster") : "";
+    var APP_POSTER = "assets/hero/phone-poster-app.webp?v=1";
+    var syncPoster = function () {
+      if (!phoneVideo) { return; }
+      var want = reduceMq && reduceMq.matches ? APP_POSTER : splashPoster;
+      if (phoneVideo.getAttribute("poster") !== want) { phoneVideo.setAttribute("poster", want); }
+    };
     ["visibilitychange", "touchend", "pointerup", "click"].forEach(function (ev) {
       document.addEventListener(ev, function () { if (videoWanted) { applyVideo(); } }, { passive: true });
     });
@@ -416,19 +452,21 @@
       }
       if (videoWanted) { applyVideo(); }
     };
-    // Przyciąganie do przypięcia: gdy scroll w DÓŁ ustanie gdziekolwiek we
-    // wjeździe od SETTLE_FROM, płynnie dojeżdżamy do przypięcia, więc mały
-    // ruch w dół wystarcza, żeby scena „przyczepiła się" z telefonem na
-    // środku (decyzja usera 1029: mocne przyciąganie). Próg chroni tylko
-    // przed przypadkowym drgnięciem przy samej górze. Tylko po zatrzymaniu
-    // (scrollend albo 150 ms ciszy) i tylko w kierunku, w którym user już
-    // jechał; scroll w górę nic nie wymusza. Bez scroll-snap: WebKit ma z nim
-    // znane błędy przy elementach sticky i przy window.scrollTo.
-    // Dojazd to własna animacja z wygaszeniem (easeOutCubic, czas rośnie z
-    // odległością), nie `behavior: "smooth"`: płynny scroll przeglądarki ma
-    // stały, twardy profil i na ~1000 px wyglądał jak szarpnięcie. Każdy
-    // gest usera (kółko, dotyk, klawisz, klik) przerywa dojazd.
+    // Przyciąganie (decyzja usera 1029: mocne): wjazd ma dwa stany
+    // spoczynkowe, góra strony i przypięcie z telefonem na środku. Gdy scroll
+    // ustanie pomiędzy nimi, płynnie dojeżdżamy do tego, w którego stronę
+    // user jechał: w dół od SETTLE_FROM do przypięcia, w górę poniżej
+    // RETURN_BELOW na górę. Progi chronią przed przypadkowym drgnięciem
+    // przy górze i przed cofaniem sceny, która już stoi na miejscu. Tylko
+    // po zatrzymaniu (scrollend albo 200 ms ciszy). Bez scroll-snap: WebKit
+    // ma z nim znane błędy przy elementach sticky i przy window.scrollTo.
+    // Dojazd to własna animacja easeInOutCubic (start i koniec z zerową
+    // prędkością, bo rusza z miejsca, w którym scroll stanął; czas rośnie z
+    // odległością), nie `behavior: "smooth"`, którego profil na ~1000 px
+    // wyglądał jak szarpnięcie. Każdy gest usera (kółko, dotyk, klawisz,
+    // klik) przerywa dojazd.
     var SETTLE_FROM = 0.08;
+    var RETURN_BELOW = 0.92;
     var lastY = window.scrollY;
     var lastDir = 0;
     var settleTimer = null;
@@ -436,21 +474,40 @@
     var cancelSettle = function () {
       if (settleFrame) { window.cancelAnimationFrame(settleFrame); settleFrame = 0; }
     };
-    ["wheel", "touchstart", "keydown", "pointerdown"].forEach(function (ev) {
+    ["wheel", "touchstart", "touchmove", "keydown", "pointerdown"].forEach(function (ev) {
       window.addEventListener(ev, cancelSettle, { passive: true });
     });
+    // Palec na ekranie = user prowadzi scroll sam; przytrzymanie palca w
+    // miejscu nie może odpalić dojazdu (cisza 200 ms bez ruchu to wtedy nie
+    // koniec scrolla). Po puszczeniu decyduje scrollend albo cisza.
+    var touching = false;
+    window.addEventListener("touchstart", function () { touching = true; }, { passive: true });
+    ["touchend", "touchcancel"].forEach(function (ev) {
+      window.addEventListener(ev, function () {
+        touching = false;
+        if (settleTimer) { window.clearTimeout(settleTimer); }
+        settleTimer = window.setTimeout(settle, 200);
+      }, { passive: true });
+    });
     var settle = function () {
-      if (settleFrame || !scrubbing || move <= 0 || lastDir <= 0) { return; }
+      if (settleFrame || touching || !scrubbing || move <= 0 || !lastDir) { return; }
       var from = window.scrollY;
-      var target = Math.ceil(heroTop + move);
-      if ((from - heroTop) / move < SETTLE_FROM || from >= target) { return; }
+      var p = (from - heroTop) / move;
+      var target;
+      if (lastDir > 0 && p >= SETTLE_FROM && p < 1) {
+        target = Math.ceil(heroTop + move);
+      } else if (lastDir < 0 && p > 0 && p < RETURN_BELOW) {
+        target = heroTop;
+      } else {
+        return;
+      }
       var dist = target - from;
-      var dur = Math.min(900, Math.max(450, dist * 0.7));
+      var dur = Math.min(1000, Math.max(500, Math.abs(dist) * 0.8));
       var start = 0;
       var step = function (now) {
         if (!start) { start = now; }
         var k = Math.min(1, (now - start) / dur);
-        var e = 1 - Math.pow(1 - k, 3);
+        var e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
         // "auto", nie "instant": starsze WebKity rzucają TypeError na
         // nieznaną wartość, a bez CSS scroll-behavior "auto" to skok.
         window.scrollTo({ top: from + dist * e, behavior: "auto" });
@@ -462,10 +519,11 @@
       var y = window.scrollY;
       if (y !== lastY) { lastDir = y > lastY ? 1 : -1; lastY = y; }
       if (!scrubbing) { return; }
-      if (!("onscrollend" in window)) {
-        if (settleTimer) { window.clearTimeout(settleTimer); }
-        settleTimer = window.setTimeout(settle, 150);
-      }
+      // Cisza 200 ms też odpala settle, nie tylko scrollend: bez scrollend
+      // (Safari < 26.2) to jedyny sygnał, a z nim zapas, bo Safari 26 raz
+      // zgubił scrollend po programowym skoku. settle jest idempotentny.
+      if (settleTimer) { window.clearTimeout(settleTimer); }
+      settleTimer = window.setTimeout(settle, 200);
       if (framePending) { return; }
       framePending = true;
       window.requestAnimationFrame(update);
@@ -475,6 +533,7 @@
       // Tylko przy prawdziwej zmianie szerokości (obrót/desktop resize) —
       // toolbar iOS zmienia wyłącznie height, width zostaje stały.
       if (window.innerWidth !== lastSyncWidth) { syncVh(); }
+      syncPoster();
       var want = !(reduceMq && reduceMq.matches) && window.innerHeight >= 560;
       if (want !== scrubbing) {
         scrubbing = want;
