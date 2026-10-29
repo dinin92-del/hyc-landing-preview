@@ -478,8 +478,16 @@
     // służy do wykrycia końca gestu. preventDefault zostaje dla Safari i
     // dotyku. Nasłuch nie-pasywny tylko na czas hamowania, bo nie-pasywny
     // wheel na window spowalnia scroll całej strony.
+    // Kotwica: hamulec trzyma stronę w punkcie brakeY (w połowie
+    // przytrzymania) i cofa każde przesunięcie dalej (window.scrollTo).
+    // Programowe przewinięcie przerywa rozpęd palca na iOS niezależnie od
+    // overflow: hidden, które przeglądarka w aplikacji Facebooka (user 1029)
+    // przy mocniejszym machnięciu najwyraźniej ignoruje. Każda taka próba
+    // przedłuża hamowanie jak kolejny impuls gestu.
     var BRAKE_GAP = 150;
     var BRAKE_MAX = 2500;
+    var brakeY = 0;
+    var holdPx = 0;
     var brakeOn = false;
     var brakeStart = 0;
     var lastBrakeWheel = 0;
@@ -515,6 +523,8 @@
       document.documentElement.classList.add("hero-brake");
       brakeStart = Date.now();
       lastBrakeWheel = brakeStart;
+      brakeY = Math.min(window.scrollY, heroTop + Math.max(PIN_AT + 1, Math.round(holdPx * 0.5)));
+      if (window.scrollY > brakeY) { window.scrollTo(0, brakeY); }
       window.addEventListener("wheel", brakeWheel, { passive: false });
       window.addEventListener("touchmove", brakeTouch, { passive: false });
       brakeTimer = window.setTimeout(checkBrake, PHONE_MS);
@@ -566,6 +576,11 @@
     };
     var onScroll = function () {
       if (!scrubbing || modalOpen()) { return; }
+      if (brakeOn && window.scrollY > brakeY + 1) {
+        lastBrakeWheel = Date.now();
+        window.scrollTo(0, brakeY);
+        return;
+      }
       // Przypięcie (i hamulec) od razu w zdarzeniu scrolla, nie klatkę
       // później w rAF: przy szybkim machnięciu każda klatka to kilkadziesiąt
       // px, o które strona odjeżdżała za telefon.
@@ -603,6 +618,7 @@
       }
       if (scrubbing) {
         heroTop = hero.getBoundingClientRect().top + window.scrollY;
+        holdPx = hero.offsetHeight - hero.querySelector(".hero-stage").offsetHeight;
         update();
       }
     };
@@ -618,6 +634,18 @@
     window.addEventListener("resize", onResize);
     if (reduceMq && reduceMq.addEventListener) { reduceMq.addEventListener("change", sync); }
     sync();
+
+    // Diagnostyka na żywym urządzeniu (np. przeglądarka w aplikacji
+    // Facebooka, której nie da się odtworzyć lokalnie): ?herodebug pokazuje
+    // stan hero na ekranie. Bez parametru nic się nie ładuje.
+    if (/[?&]herodebug\b/.test(window.location.search)) {
+      window.HycHeroDebug = function () {
+        return { pinned: pinned, brakeOn: brakeOn, brakeY: brakeY, holdPx: holdPx, heroTop: heroTop, scrubbing: scrubbing };
+      };
+      var dbg = document.createElement("script");
+      dbg.src = "hero-debug.js?v=1";
+      document.body.appendChild(dbg);
+    }
 
     // Widoczność telefonu: w trybie scrub decyduje update() (przypięcie,
     // dojazd i widoczność), w statycznym wprost.

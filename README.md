@@ -150,7 +150,11 @@ kadr `crop=824:1672:1508:244`. Narzędzie do HEVC z alfą: AVAssetReader/Writer,
   `html.hero-brake` (overflow: hidden) przez czas wjazdu i do końca bieżącego
   gestu (bezwładność gładzika); na iOS zatrzymuje też rozpęd palca
   (symulator iOS 27: najostrzejsze machnięcie staje na ~340 px, w
-  przytrzymaniu 357 px).
+  przytrzymaniu 357 px). Do tego kotwica: w czasie hamowania każde
+  przesunięcie za `brakeY` jest cofane `scrollTo` (przerywa rozpęd palca także
+  w przeglądarce w aplikacji Facebooka, która ignorowała overflow: hidden).
+- Diagnostyka na urządzeniu: `?herodebug` w adresie ładuje `hero-debug.js`
+  (nakładka: scroll, hamulec, kotwica, wideo, user agent).
 - Wideo: rusza w trakcie wjazdu, gdy telefon jest widoczny w 70%
   (`SHOWN_RATIO`), pauzuje poniżej, wraca do splasha po odpięciu. Pierwsze
   dotknięcie / kółko / klawisz „rozgrzewa" wideo (play + pauza na splashu),
