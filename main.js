@@ -416,24 +416,47 @@
       }
       if (videoWanted) { applyVideo(); }
     };
-    // Domknięcie wjazdu: gdy scroll w DÓŁ ustanie w końcówce wjazdu (od
-    // SETTLE_FROM do punktu przypięcia), płynnie dojeżdżamy do przypięcia,
-    // żeby scena nie zostawała „prawie na miejscu". Tylko po zatrzymaniu
-    // (scrollend albo 150 ms ciszy), tylko w tej końcówce i tylko w kierunku,
-    // w którym user już jechał. Każdy ruch usera przerywa płynny scroll
-    // przeglądarki sam z siebie. Bez scroll-snap: WebKit ma z nim znane błędy
-    // przy elementach sticky i przy window.scrollTo.
-    var SETTLE_FROM = 0.7;
+    // Przyciąganie do przypięcia: gdy scroll w DÓŁ ustanie gdziekolwiek we
+    // wjeździe od SETTLE_FROM, płynnie dojeżdżamy do przypięcia, więc mały
+    // ruch w dół wystarcza, żeby scena „przyczepiła się" z telefonem na
+    // środku (decyzja usera 1029: mocne przyciąganie). Próg chroni tylko
+    // przed przypadkowym drgnięciem przy samej górze. Tylko po zatrzymaniu
+    // (scrollend albo 150 ms ciszy) i tylko w kierunku, w którym user już
+    // jechał; scroll w górę nic nie wymusza. Bez scroll-snap: WebKit ma z nim
+    // znane błędy przy elementach sticky i przy window.scrollTo.
+    // Dojazd to własna animacja z wygaszeniem (easeOutCubic, czas rośnie z
+    // odległością), nie `behavior: "smooth"`: płynny scroll przeglądarki ma
+    // stały, twardy profil i na ~1000 px wyglądał jak szarpnięcie. Każdy
+    // gest usera (kółko, dotyk, klawisz, klik) przerywa dojazd.
+    var SETTLE_FROM = 0.08;
     var lastY = window.scrollY;
     var lastDir = 0;
     var settleTimer = null;
+    var settleFrame = 0;
+    var cancelSettle = function () {
+      if (settleFrame) { window.cancelAnimationFrame(settleFrame); settleFrame = 0; }
+    };
+    ["wheel", "touchstart", "keydown", "pointerdown"].forEach(function (ev) {
+      window.addEventListener(ev, cancelSettle, { passive: true });
+    });
     var settle = function () {
-      if (!scrubbing || move <= 0 || lastDir <= 0) { return; }
+      if (settleFrame || !scrubbing || move <= 0 || lastDir <= 0) { return; }
+      var from = window.scrollY;
       var target = Math.ceil(heroTop + move);
-      var p = (window.scrollY - heroTop) / move;
-      if (p >= SETTLE_FROM && window.scrollY < target) {
-        window.scrollTo({ top: target, behavior: "smooth" });
-      }
+      if ((from - heroTop) / move < SETTLE_FROM || from >= target) { return; }
+      var dist = target - from;
+      var dur = Math.min(900, Math.max(450, dist * 0.7));
+      var start = 0;
+      var step = function (now) {
+        if (!start) { start = now; }
+        var k = Math.min(1, (now - start) / dur);
+        var e = 1 - Math.pow(1 - k, 3);
+        // "auto", nie "instant": starsze WebKity rzucają TypeError na
+        // nieznaną wartość, a bez CSS scroll-behavior "auto" to skok.
+        window.scrollTo({ top: from + dist * e, behavior: "auto" });
+        settleFrame = k < 1 ? window.requestAnimationFrame(step) : 0;
+      };
+      settleFrame = window.requestAnimationFrame(step);
     };
     var onScroll = function () {
       var y = window.scrollY;
