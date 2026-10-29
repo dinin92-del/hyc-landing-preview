@@ -419,7 +419,7 @@
     // „Ogranicz ruch": wideo nie gra, więc zamiast splasha z samym logo
     // poster pokazuje ekran apki (trasa do schronienia).
     var splashPoster = phoneVideo ? phoneVideo.getAttribute("poster") : "";
-    var APP_POSTER = "assets/hero/phone-poster-app.webp?v=1";
+    var APP_POSTER = "assets/hero/phone-poster-app.webp?v=2";
     var syncPoster = function () {
       if (!phoneVideo) { return; }
       var want = reduceMq && reduceMq.matches ? APP_POSTER : splashPoster;

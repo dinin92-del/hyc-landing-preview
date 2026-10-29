@@ -128,13 +128,15 @@ Bez `SITE_DOMAIN` skrypt publikuje po staremu pod `dinin92-del.github.io/hyc-lan
 
 ## Wideo telefonu w hero (`assets/hero/phone.*`)
 Telefon w hero to render z Rotato (ramka i ekran) z przezroczystym tłem, kadr
-416x840 (stąd `--pw = --ph * 0.4952` w `styles.css`), 30 fps, 63 s w pętli.
+824x1672 (stąd `--pw = --ph * 0.4928` w `styles.css`), 30 fps, 60,7 s w pętli.
+Źródło: eksport z Rotato 4K (ProRes 4444) na X10, `/Volumes/X10/dev/landing-video/v22.mov`,
+kadr `crop=824:1672:1508:244`. Narzędzie do HEVC z alfą: AVAssetReader/Writer, 2,5 Mb/s.
 - `phone.mov`: HEVC z alfą, dla Safari/iOS. Typ `video/quicktime; codecs="hvc1"`
   omija Chrome, który odtworzyłby go bez przezroczystości. Plik musi mieć `moov`
   na początku (`shouldOptimizeForNetworkUse`), inaczej start jest wolny.
 - `phone.webm`: VP9 z alfą, dla reszty. Z ProRes 4444 z Rotato:
-  `ffmpeg -i rotato.mov -vf "crop=416:840:512:120,format=yuva420p" -c:v libvpx-vp9
-  -pix_fmt yuva420p -b:v 0 -crf 33 -auto-alt-ref 0 -row-mt 1 -an phone.webm`,
+  `ffmpeg -i rotato.mov -vf "crop=824:1672:1508:244,format=yuva420p" -c:v libvpx-vp9
+  -pix_fmt yuva420p -b:v 0 -crf 32 -deadline good -cpu-used 3 -auto-alt-ref 0 -row-mt 1 -an phone.webm`,
   potem `ffmpeg -i phone.webm -c copy -cues_to_front 1 out.webm`.
 - `phone-poster.webp`: pierwsza klatka (splash) z alfą. Musi być równa klatce 0,
   bo main.js trzyma wideo na pauzie w klatce 0, dopóki telefon nie osiądzie

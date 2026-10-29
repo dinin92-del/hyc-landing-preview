@@ -373,9 +373,9 @@ body:not(.page-home) .wrap { padding-top: 88px; }
      desktopie ledwie wyziera (patrz blok desktopowy niżej). */
   --peek: 0.76;
   /* Telefon: wysokość z okna (sufit 800px), szerokość z proporcji wideo
-     (assets/hero/phone.webm: 416x840 = 0,4952). */
+     (assets/hero/phone.webm: 824x1672 = 0,4928). */
   --ph: min(calc(var(--vh) * 0.74), 800px);
-  --pw: calc(var(--ph) * 0.4952);
+  --pw: calc(var(--ph) * 0.4928);
   /* Tor scrolla ma dwa odcinki: ruch (tekst i piny odjeżdżają, telefon
      wjeżdża na środek) i przytrzymanie (scena stoi przypięta, telefon na
      środku, wideo gra). --p i wszystkie keyframes opisują tylko ruch; main.js
@@ -540,8 +540,9 @@ body:not(.page-home) .wrap { padding-top: 88px; }
   z-index: -1;
   border-radius: calc(var(--pw) * 0.18);
   box-shadow:
-    0 calc(var(--pw) * 0.02) calc(var(--pw) * 0.05) rgba(44, 38, 32, 0.16),
-    0 calc(var(--pw) * 0.07) calc(var(--pw) * 0.16) rgba(44, 38, 32, 0.22);
+    0 calc(var(--pw) * 0.015) calc(var(--pw) * 0.04) rgba(44, 38, 32, 0.3),
+    0 calc(var(--pw) * 0.05) calc(var(--pw) * 0.12) rgba(44, 38, 32, 0.3),
+    0 calc(var(--pw) * 0.08) calc(var(--pw) * 0.15) rgba(44, 38, 32, 0.18);
 }
 .phone-video {
   display: block;
