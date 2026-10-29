@@ -1126,6 +1126,11 @@ body.has-modal {
    Kolejność Wstecz → Dalej (lewo→prawo), „Wstecz" wyłączony na pierwszym kroku. */
 .modal-nav {
   display: flex;
+  /* Dwie właściwości, które pasek dostawał od ogólnej reguły `footer`,
+     dopóki był elementem <footer> (teraz <div>, bo <footer> w <dialog>
+     liczył się jako druga stopka strony dla czytnika ekranu). */
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
   gap: 10px;
   margin-top: 24px;
@@ -1766,8 +1771,7 @@ footer .spacer { flex: 1 1 auto; }
    dostałby stronę, na której animacja jest wyłączona, a treść zostaje
    NIEWIDOCZNA — animacja jest jedyną rzeczą, która by ją odsłoniła. */
 @media (prefers-reduced-motion: no-preference) {
-  /* `> footer` celowo — samo `footer` łapie też stopkę nawigacyjną modala
-     (też jest elementem <footer>), a ta ma własne wejście razem z oknem. */
+  /* `> footer` celowo: tylko stopka strony, nie inne elementy <footer>. */
   .wrap > footer {
     animation: rise 620ms var(--ease-out) backwards;
   }
