@@ -1712,33 +1712,41 @@ footer .spacer { flex: 1 1 auto; }
   .hero-ready .hero-copy > * {
     animation: hero-text-in 1000ms cubic-bezier(0.25, 0.75, 0.25, 1) backwards;
   }
-  .hero-ready .hero-copy > h1 { animation-delay: 2100ms; }
+  /* Bez pinów (wszystko poza układem desktopowym) nic nie wypełnia luki
+     między tłem a napisem, więc cały ciąg rusza 1,4 s wcześniej (user 1029:
+     „długo widać samo tło”). Desktop zeruje przesunięcie niżej. */
+  :root { --intro-t0: -1400ms; }
+  .hero-ready .hero-copy > h1 { animation-delay: calc(2100ms + var(--intro-t0)); }
   .hero-ready .hero-copy > h1.is-split { animation: none; }
-  .hero-ready .hero-copy > .hero-tags { animation-delay: 3150ms; }
-  .hero-ready .hero-copy > .stores { animation-delay: 3400ms; }
+  .hero-ready .hero-copy > .hero-tags { animation-delay: calc(3150ms + var(--intro-t0)); }
+  .hero-ready .hero-copy > .stores { animation-delay: calc(3400ms + var(--intro-t0)); }
   /* „Hyc!" wyskakuje pierwsze (pop z przestrzałem, lekki obrót i rozmycie,
      jak piny), potem pozostałe słowa wchodzą po kolei: rozjaśnienie, 0,45em
      w górę i zdejmowane rozmycie, co 95ms. */
   .hero-ready .hw {
     animation: hero-word-in 750ms cubic-bezier(0.25, 0.75, 0.25, 1) backwards;
-    animation-delay: calc(2700ms + (var(--wi, 1) - 1) * 95ms);
+    animation-delay: calc(2700ms + var(--intro-t0) + (var(--wi, 1) - 1) * 95ms);
   }
   .hero-ready .hw--lead {
-    animation: hero-lead-pop 950ms cubic-bezier(0.3, 0.7, 0.4, 1) 2100ms backwards;
+    animation: hero-lead-pop 950ms cubic-bezier(0.3, 0.7, 0.4, 1) backwards;
+    animation-delay: calc(2100ms + var(--intro-t0));
     transform-origin: 30% 85%;
   }
   .hero-ready .hero-phone {
-    animation: hero-phone-in 800ms cubic-bezier(0.25, 0.75, 0.25, 1) 3500ms backwards;
+    animation: hero-phone-in 800ms cubic-bezier(0.25, 0.75, 0.25, 1) backwards;
+    animation-delay: calc(3500ms + var(--intro-t0));
   }
   /* Menu wyjeżdża z góry w tej samej chwili, w której z dołu wjeżdża telefon
      (klasy dostaje .topbar od main.js, tylko na stronie głównej). */
   .topbar.hero-intro:not(.hero-ready) .topbar-inner { opacity: 0; }
   .topbar.hero-ready .topbar-inner {
-    animation: hero-nav-in 800ms cubic-bezier(0.25, 0.75, 0.25, 1) 3500ms backwards;
+    animation: hero-nav-in 800ms cubic-bezier(0.25, 0.75, 0.25, 1) backwards;
+    animation-delay: calc(3500ms + var(--intro-t0));
   }
 }
 /* Pin-drop tylko na desktopie. */
 @media (prefers-reduced-motion: no-preference) and (min-aspect-ratio: 13/10) and (min-width: 900px) {
+  :root { --intro-t0: 0ms; }
   .hero-ready .pin {
     opacity: 1;
     animation: pin-drop 680ms cubic-bezier(0.3, 0.7, 0.4, 1) backwards;
