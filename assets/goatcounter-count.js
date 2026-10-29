@@ -80,7 +80,8 @@
 			if (a.hostname.replace(/^www\./, '') === location.hostname.replace(/^www\./, ''))
 				loc = a
 		}
-		return (loc.pathname + loc.search) || '/'
+		// Bez loc.search: parametry (fbclid, utm) to identyfikatory kliknięć, nie podstrona.
+		return loc.pathname || '/'
 	}
 
 	// Run function after DOM is loaded.
