@@ -388,6 +388,22 @@ body:not(.page-home) .wrap { padding-top: 88px; }
   margin-left: calc(50% - 50vw);
 }
 .hero.is-scrub { height: calc(var(--vh) + var(--hero-move) + var(--hero-hold)); }
+/* Przyciąganie hero: dwa punkty, góra strony i przypięcie (koniec ruchu).
+   main.js włącza html.hero-snap tylko w trybie scrub i ustawia pozycję oraz
+   wysokość .hero-snap-rest (od przypięcia do końca dokumentu, więc dalej
+   scroll jest swobodny). snap-paused wyłącza je na czas modala. */
+html.hero-snap:not(.snap-paused) { scroll-snap-type: y mandatory; }
+.hero-snap-top,
+.hero-snap-rest {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 0;
+  pointer-events: none;
+  scroll-snap-align: start;
+}
+.hero-snap-top { height: 1px; }
 /* Safari na iOS repaintuje te warstwy od zera przy KAŻDEJ zmianie --p (co
    klatkę scrolla), zamiast je skomponować raz i tylko przesuwać/przenikać —
    stąd cięcia przy scrollu zgłoszone z telefonu, których nie było widać w

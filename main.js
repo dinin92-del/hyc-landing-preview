@@ -167,8 +167,16 @@
 
   // Blokada przewijania tła pod otwartym modalem (dowolnym z dwóch) — patrz
   // scroll-lock.js.
-  var lockScroll = window.HycScrollLock.lock;
-  var unlockScroll = window.HycScrollLock.unlock;
+  // Na czas modala przyciąganie stoi: scroll-lock.js przywraca pozycję przez
+  // window.scrollTo, a iOS 26 pod scroll snap potrafi z niej odbić.
+  var lockScroll = function () {
+    document.documentElement.classList.add("snap-paused");
+    window.HycScrollLock.lock();
+  };
+  var unlockScroll = function () {
+    window.HycScrollLock.unlock();
+    window.requestAnimationFrame(function () { document.documentElement.classList.remove("snap-paused"); });
+  };
 
   // Podłącz przycisk sklepu do linku, albo zablokuj jako "Wkrótce" gdy pusty.
   function wire(btn, url) {
@@ -367,20 +375,18 @@
       move = vh * MOVE_VH;
     };
 
-    // Wideo: dopóki telefon nie jest cały w oknie, stoi na pierwszej klatce,
-    // czyli splashu (ten sam obraz co poster). PLAY_AT to moment, w którym
-    // telefon mieści się już w oknie (policzone z --peek/--ph/--t1: ok. 0,82
-    // na 1280x900 i 375x812, ok. 0,75 na wysokich oknach), a nie koniec jego
-    // ruchu (0,92), bo inaczej zostawał pas scrolla, w którym widać cały
-    // telefon ze stojącym splashem. Gra przez przytrzymanie i dopóki scena
-    // jest w oknie, pauzuje, gdy znika. Powrót scrollem poniżej STOP_BELOW
-    // pauzuje i cofa do splasha. Między progami stan się nie zmienia: drganie
-    // palca na granicy nie przełącza play/pauza. Odrzucone play() (Low Power
-    // Mode na iOS, in-app WebView) ponawiamy przy gestach i kolejnych
-    // klatkach scrolla, dopóki wideo ma grać, bo bez autoplay przeglądarka
-    // nie wznowi sama.
-    var PLAY_AT = 0.8;
-    var STOP_BELOW = 0.72;
+    // Wideo: do końca wjazdu stoi na pierwszej klatce, czyli splashu (ten
+    // sam obraz co poster). Startuje, gdy scena dojedzie do przypięcia
+    // (PLAY_AT), nie w trakcie dojazdu: start dekodowania 824x1672 z alfą w
+    // połowie ruchu gubił klatki. Martwej strefy (cały telefon w oknie, a
+    // wideo stoi) już nie ma, bo przyciąganie nie pozwala zatrzymać się
+    // między górą a przypięciem. Gra przez przytrzymanie i dopóki scena jest
+    // w oknie, pauzuje, gdy znika. Powrót poniżej STOP_BELOW pauzuje i cofa
+    // do splasha. Odrzucone play() (Low Power Mode na iOS, in-app WebView)
+    // ponawiamy przy gestach i kolejnych klatkach scrolla, dopóki wideo ma
+    // grać, bo bez autoplay przeglądarka nie wznowi sama.
+    var PLAY_AT = 0.98;
+    var STOP_BELOW = 0.5;
     var warmed = false;
     // Ostatni stan z IntersectionObservera (układ statyczny), żeby przejście
     // scrub -> statyczny (obrót, „ogranicz ruch") nie zostawiło grającego
@@ -440,10 +446,10 @@
       framePending = false;
       var p = move > 0 ? Math.min(1, Math.max(0, (window.scrollY - heroTop) / move)) : 0;
       if (!nativeScrollTimeline) { hero.style.setProperty("--p", p.toFixed(4)); }
-      // Telefon w drugiej połowie wjazdu: dociągamy wideo, żeby przy osiadaniu
-      // ruszyło od razu. Nie wcześniej, bo to kilka MB na komórkowym łączu
-      // (iOS i tak ignoruje "auto" i ładuje dopiero przy play()).
-      if (!warmed && p > 0.6 && phoneVideo) { warmed = true; phoneVideo.preload = "auto"; }
+      // Pierwszy ruch w dół: dociągamy wideo, żeby ruszyło od razu po
+      // przypięciu. Przyciąganie i tak dowiezie usera do przypięcia, więc to
+      // nie jest pobieranie na zapas (iOS ignoruje "auto" i ładuje przy play()).
+      if (!warmed && p > 0.02 && phoneVideo) { warmed = true; phoneVideo.preload = "auto"; }
       if (p >= PLAY_AT) {
         setVideoWanted(heroTop + heroHeight - window.scrollY > 0);
       } else if (p < STOP_BELOW) {
@@ -452,83 +458,33 @@
       }
       if (videoWanted) { applyVideo(); }
     };
-    // Przyciąganie (decyzja usera 1029: mocne): wjazd ma dwa stany
-    // spoczynkowe, góra strony i przypięcie z telefonem na środku. Gdy scroll
-    // ustanie pomiędzy nimi, płynnie dojeżdżamy do tego, w którego stronę
-    // user jechał: w dół od SETTLE_FROM do przypięcia, w górę poniżej
-    // RETURN_BELOW na górę. Progi chronią przed przypadkowym drgnięciem
-    // przy górze i przed cofaniem sceny, która już stoi na miejscu. Tylko
-    // po zatrzymaniu (scrollend albo 200 ms ciszy). Bez scroll-snap: WebKit
-    // ma z nim znane błędy przy elementach sticky i przy window.scrollTo.
-    // Dojazd to własna animacja easeInOutCubic (start i koniec z zerową
-    // prędkością, bo rusza z miejsca, w którym scroll stanął; czas rośnie z
-    // odległością), nie `behavior: "smooth"`, którego profil na ~1000 px
-    // wyglądał jak szarpnięcie. Każdy gest usera (kółko, dotyk, klawisz,
-    // klik) przerywa dojazd.
-    var SETTLE_FROM = 0.08;
-    var RETURN_BELOW = 0.92;
-    var lastY = window.scrollY;
-    var lastDir = 0;
-    var settleTimer = null;
-    var settleFrame = 0;
-    var cancelSettle = function () {
-      if (settleFrame) { window.cancelAnimationFrame(settleFrame); settleFrame = 0; }
+    // Przyciąganie natywne, CSS scroll snap (html.hero-snap, tylko w trybie
+    // scrub): wjazd ma dwa stany spoczynkowe, góra strony (.hero-snap-top) i
+    // przypięcie (.hero-snap-rest zaczyna się w heroTop + move). Przeglądarka
+    // wybiera cel w trakcie gestu, razem z bezwładnością, na wątku
+    // kompozytora. Dojazd w JS po scrollend (do 1029) z natury dawał
+    // „stanął i szarpnął". .hero-snap-rest sięga do końca dokumentu, a obszar
+    // przyciągania wyższy niż okno pozwala na swobodny scroll w całym swoim
+    // zakresie (CSS Scroll Snap: snap area larger than snapport), więc reszta
+    // strony przewija się normalnie (sprawdzone w Safari 26). Musi pokrywać
+    // dokument do samego końca, inaczej dół strony odbijałby do jego krawędzi,
+    // stąd ResizeObserver na body (FAQ, obrazki zmieniają wysokość).
+    var snapRest = document.querySelector(".hero-snap-rest");
+    var sizeSnap = function () {
+      if (!snapRest || !scrubbing) { return; }
+      var top = Math.ceil(heroTop + move);
+      var body = document.body;
+      var docBottom = body.getBoundingClientRect().bottom + window.scrollY +
+        (parseFloat(window.getComputedStyle(body).marginBottom) || 0);
+      snapRest.style.top = top + "px";
+      snapRest.style.height = Math.max(0, Math.ceil(docBottom) - top) + "px";
     };
-    ["wheel", "touchstart", "touchmove", "keydown", "pointerdown"].forEach(function (ev) {
-      window.addEventListener(ev, cancelSettle, { passive: true });
-    });
-    // Palec na ekranie = user prowadzi scroll sam; przytrzymanie palca w
-    // miejscu nie może odpalić dojazdu (cisza 200 ms bez ruchu to wtedy nie
-    // koniec scrolla). Po puszczeniu decyduje scrollend albo cisza.
-    var touching = false;
-    window.addEventListener("touchstart", function () { touching = true; }, { passive: true });
-    ["touchend", "touchcancel"].forEach(function (ev) {
-      window.addEventListener(ev, function () {
-        touching = false;
-        if (settleTimer) { window.clearTimeout(settleTimer); }
-        settleTimer = window.setTimeout(settle, 200);
-      }, { passive: true });
-    });
-    var settle = function () {
-      if (settleFrame || touching || !scrubbing || move <= 0 || !lastDir) { return; }
-      var from = window.scrollY;
-      var p = (from - heroTop) / move;
-      var target;
-      if (lastDir > 0 && p >= SETTLE_FROM && p < 1) {
-        target = Math.ceil(heroTop + move);
-      } else if (lastDir < 0 && p > 0 && p < RETURN_BELOW) {
-        target = heroTop;
-      } else {
-        return;
-      }
-      var dist = target - from;
-      var dur = Math.min(1000, Math.max(500, Math.abs(dist) * 0.8));
-      var start = 0;
-      var step = function (now) {
-        if (!start) { start = now; }
-        var k = Math.min(1, (now - start) / dur);
-        var e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-        // "auto", nie "instant": starsze WebKity rzucają TypeError na
-        // nieznaną wartość, a bez CSS scroll-behavior "auto" to skok.
-        window.scrollTo({ top: from + dist * e, behavior: "auto" });
-        settleFrame = k < 1 ? window.requestAnimationFrame(step) : 0;
-      };
-      settleFrame = window.requestAnimationFrame(step);
-    };
+    if (window.ResizeObserver) { new ResizeObserver(function () { sizeSnap(); }).observe(document.body); }
     var onScroll = function () {
-      var y = window.scrollY;
-      if (y !== lastY) { lastDir = y > lastY ? 1 : -1; lastY = y; }
-      if (!scrubbing) { return; }
-      // Cisza 200 ms też odpala settle, nie tylko scrollend: bez scrollend
-      // (Safari < 26.2) to jedyny sygnał, a z nim zapas, bo Safari 26 raz
-      // zgubił scrollend po programowym skoku. settle jest idempotentny.
-      if (settleTimer) { window.clearTimeout(settleTimer); }
-      settleTimer = window.setTimeout(settle, 200);
-      if (framePending) { return; }
+      if (!scrubbing || framePending) { return; }
       framePending = true;
       window.requestAnimationFrame(update);
     };
-    if ("onscrollend" in window) { document.addEventListener("scrollend", settle); }
     var sync = function () {
       // Tylko przy prawdziwej zmianie szerokości (obrót/desktop resize) —
       // toolbar iOS zmienia wyłącznie height, width zostaje stały.
@@ -538,6 +494,7 @@
       if (want !== scrubbing) {
         scrubbing = want;
         hero.classList.toggle("is-scrub", want);
+        document.documentElement.classList.toggle("hero-snap", want);
         if (!want) {
           hero.style.removeProperty("--p");
           setVideoWanted(ioVisible && !(reduceMq && reduceMq.matches));
@@ -547,6 +504,7 @@
         heroTop = hero.getBoundingClientRect().top + window.scrollY;
         heroHeight = hero.offsetHeight;
         track = heroHeight - stage.offsetHeight;
+        sizeSnap();
         update();
       }
     };

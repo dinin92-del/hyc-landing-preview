@@ -144,11 +144,14 @@ kadr `crop=824:1672:1508:244`. Narzędzie do HEVC z alfą: AVAssetReader/Writer,
 - Tor hero: ruch (`--hero-move`, 1,2 wysokości okna) i przytrzymanie
   (`--hero-hold`, 1 wysokość okna). Wideo startuje na końcu ruchu i gra przez
   przytrzymanie. `MOVE_VH` w main.js musi się zgadzać z `--hero-move`.
-  Wideo startuje od 80% wjazdu (telefon już cały w oknie), cofa do splasha
-  poniżej 72%. Zatrzymanie scrolla w dół od 8% wjazdu płynnie dojeżdża do
-  przypięcia (`settle` w main.js, na `scrollend`). Zmiana `--peek`, `--ph`
-  albo `--t1` przesuwa moment, w którym telefon mieści się w oknie, więc
-  wtedy przelicz `PLAY_AT`.
+  Przyciąganie to natywny CSS scroll snap (`html.hero-snap`, mandatory) z
+  dwoma punktami: `.hero-snap-top` (góra) i `.hero-snap-rest` (od przypięcia
+  do końca dokumentu; obszar wyższy niż okno = swobodny scroll w nim). Między
+  nimi nie da się zatrzymać. Wideo startuje po dojeździe (98% ruchu), cofa
+  do splasha poniżej 50%. ⛔ Nie wracać do dojazdu w JS po `scrollend`
+  (usunięty 1029): startował dopiero po zatrzymaniu, „stanął i szarpnął",
+  i blokował pierwszy scroll z przypięcia. Krótszy dystans przyciągania =
+  krótszy `--hero-move` razem z `MOVE_VH`.
 - ⛔ `ffmpeg` nie koduje HEVC z alfą na macOS (`hevc_videotoolbox` pada), a
   `AVAssetExportSession` z `videoComposition` spłaszcza alfę do czerni. Kadrowanie
   trzeba robić klatka po klatce przez `AVAssetReader`/`AVAssetWriter`
