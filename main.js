@@ -351,17 +351,20 @@
       move = vh * MOVE_VH;
     };
 
-    // Wideo: dopóki telefon nie osiądzie na środku (koniec ruchu, 92% jak w
-    // hero-phone-scrub), stoi na pierwszej klatce, czyli splashu (ten sam
-    // obraz co poster). Gra przez przytrzymanie i dopóki scena jest w oknie,
-    // pauzuje, gdy znika. Powrót scrollem poniżej STOP_BELOW pauzuje i cofa
-    // do splasha. Między progami stan się nie zmienia: drganie palca na
-    // granicy nie przełącza play/pauza. Odrzucone play() (Low Power Mode na
-    // iOS, in-app WebView) ponawiamy przy gestach i kolejnych klatkach
-    // scrolla, dopóki wideo ma grać, bo bez autoplay przeglądarka nie wznowi
-    // sama.
-    var PLAY_AT = 0.92;
-    var STOP_BELOW = 0.88;
+    // Wideo: dopóki telefon nie jest cały w oknie, stoi na pierwszej klatce,
+    // czyli splashu (ten sam obraz co poster). PLAY_AT to moment, w którym
+    // telefon mieści się już w oknie (policzone z --peek/--ph/--t1: ok. 0,82
+    // na 1280x900 i 375x812, ok. 0,75 na wysokich oknach), a nie koniec jego
+    // ruchu (0,92), bo inaczej zostawał pas scrolla, w którym widać cały
+    // telefon ze stojącym splashem. Gra przez przytrzymanie i dopóki scena
+    // jest w oknie, pauzuje, gdy znika. Powrót scrollem poniżej STOP_BELOW
+    // pauzuje i cofa do splasha. Między progami stan się nie zmienia: drganie
+    // palca na granicy nie przełącza play/pauza. Odrzucone play() (Low Power
+    // Mode na iOS, in-app WebView) ponawiamy przy gestach i kolejnych
+    // klatkach scrolla, dopóki wideo ma grać, bo bez autoplay przeglądarka
+    // nie wznowi sama.
+    var PLAY_AT = 0.8;
+    var STOP_BELOW = 0.72;
     var warmed = false;
     // Ostatni stan z IntersectionObservera (układ statyczny), żeby przejście
     // scrub -> statyczny (obrót, „ogranicz ruch") nie zostawiło grającego
@@ -413,11 +416,38 @@
       }
       if (videoWanted) { applyVideo(); }
     };
+    // Domknięcie wjazdu: gdy scroll w DÓŁ ustanie w końcówce wjazdu (od
+    // SETTLE_FROM do punktu przypięcia), płynnie dojeżdżamy do przypięcia,
+    // żeby scena nie zostawała „prawie na miejscu". Tylko po zatrzymaniu
+    // (scrollend albo 150 ms ciszy), tylko w tej końcówce i tylko w kierunku,
+    // w którym user już jechał. Każdy ruch usera przerywa płynny scroll
+    // przeglądarki sam z siebie. Bez scroll-snap: WebKit ma z nim znane błędy
+    // przy elementach sticky i przy window.scrollTo.
+    var SETTLE_FROM = 0.7;
+    var lastY = window.scrollY;
+    var lastDir = 0;
+    var settleTimer = null;
+    var settle = function () {
+      if (!scrubbing || move <= 0 || lastDir <= 0) { return; }
+      var target = Math.ceil(heroTop + move);
+      var p = (window.scrollY - heroTop) / move;
+      if (p >= SETTLE_FROM && window.scrollY < target) {
+        window.scrollTo({ top: target, behavior: "smooth" });
+      }
+    };
     var onScroll = function () {
-      if (!scrubbing || framePending) { return; }
+      var y = window.scrollY;
+      if (y !== lastY) { lastDir = y > lastY ? 1 : -1; lastY = y; }
+      if (!scrubbing) { return; }
+      if (!("onscrollend" in window)) {
+        if (settleTimer) { window.clearTimeout(settleTimer); }
+        settleTimer = window.setTimeout(settle, 150);
+      }
+      if (framePending) { return; }
       framePending = true;
       window.requestAnimationFrame(update);
     };
+    if ("onscrollend" in window) { document.addEventListener("scrollend", settle); }
     var sync = function () {
       // Tylko przy prawdziwej zmianie szerokości (obrót/desktop resize) —
       // toolbar iOS zmienia wyłącznie height, width zostaje stały.

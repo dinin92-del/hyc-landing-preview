@@ -142,6 +142,11 @@ Telefon w hero to render z Rotato (ramka i ekran) z przezroczystym tłem, kadr
 - Tor hero: ruch (`--hero-move`, 1,2 wysokości okna) i przytrzymanie
   (`--hero-hold`, 1 wysokość okna). Wideo startuje na końcu ruchu i gra przez
   przytrzymanie. `MOVE_VH` w main.js musi się zgadzać z `--hero-move`.
+  Wideo startuje od 80% wjazdu (telefon już cały w oknie), cofa do splasha
+  poniżej 72%. Zatrzymanie scrolla w dół od 70% wjazdu płynnie dojeżdża do
+  przypięcia (`settle` w main.js, na `scrollend`). Zmiana `--peek`, `--ph`
+  albo `--t1` przesuwa moment, w którym telefon mieści się w oknie, więc
+  wtedy przelicz `PLAY_AT`.
 - ⛔ `ffmpeg` nie koduje HEVC z alfą na macOS (`hevc_videotoolbox` pada), a
   `AVAssetExportSession` z `videoComposition` spłaszcza alfę do czerni. Kadrowanie
   trzeba robić klatka po klatce przez `AVAssetReader`/`AVAssetWriter`
