@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Hyc!</title>
-  <meta name="description" content="Hyc! to aplikacja turystyczna z ponad 27 tys. punktów: schronienia, woda, jedzenie i noclegi w Polsce offline. Dołącz do otwartej bety na iOS i Androida.">
+  <meta name="tdm-reservation" content="1">
+  <title>Hyc! Wszystko czego potrzebujesz na szlaku</title>
+  <meta name="description" content="Hyc! to aplikacja na szlak. Jednym przyciskiem znajdziesz najbliższą wiatę, wodę, nocleg, sklep, restaurację albo apteczkę. Dołącz do testów na iOS i Androidzie.">
   <meta name="theme-color" content="#F0EBE0">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <!-- apple-touch-icon MUSI byc PNG — iOS nie czyta SVG i przy braku rastra
@@ -13,18 +14,17 @@
 
   <!-- Open Graph / social preview (podgląd linku na sociale) -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://dinin92-del.github.io/hyc-landing-preview/">
   <meta property="og:site_name" content="Hyc!">
   <meta property="og:title" content="Hyc! Wszystko czego potrzebujesz na szlaku">
-  <meta property="og:description" content="Schronienia, woda, jedzenie i nocleg. Ponad 27 tys. punktów w Polsce, offline.">
-  <meta property="og:image" content="assets/og-image.jpg?v=20261008">
+  <meta property="og:description" content="Najbliższa wiata, woda, nocleg, sklep, restauracja i apteczka na Twojej trasie. Dołącz do testów Hyc! na iOS i Androidzie.">
+  <meta property="og:image" content="assets/og-image.jpg?v=20261029">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:locale" content="pl_PL">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Hyc! Wszystko czego potrzebujesz na szlaku">
-  <meta name="twitter:description" content="Schronienia, woda, jedzenie i nocleg. Ponad 27 tys. punktów w Polsce, offline.">
-  <meta name="twitter:image" content="assets/og-image.jpg?v=20261008">
+  <meta name="twitter:description" content="Najbliższa wiata, woda, nocleg, sklep, restauracja i apteczka na Twojej trasie. Dołącz do testów Hyc! na iOS i Androidzie.">
+  <meta name="twitter:image" content="assets/og-image.jpg?v=20261029">
 
   <link rel="preload" href="assets/fonts/Figtree-Variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" as="image" type="image/webp"
@@ -36,7 +36,7 @@
        wersji w URL-u przeglądarka po deployu potrafi skleić nowy index.html
        ze starym styles.css. Wersja w URL-u wymusza świeże pobranie, bo to
        inny zasób. -->
-  <link rel="stylesheet" href="styles.css?v=2026102911">
+  <link rel="stylesheet" href="styles.css?v=2026102912">
 </head>
 <body class="page-home">
   <!-- Górny pasek: strona ma sekcje pod hero (O aplikacji, FAQ, Kontakt)
@@ -64,14 +64,14 @@
       <!-- Link na osobną stronę, nie modal TestFlight jak baton na hero — tu
            dopiero trafią docelowe linki do sklepów, gdy apka będzie tam
            publicznie dostępna. -->
-      <a class="store-btn store-btn--primary store-btn--nav" href="pobierz.html">Pobierz</a>
+      <a class="store-btn store-btn--primary store-btn--nav" href="pobierz.html" data-goatcounter-click="index-menu-pobierz">Pobierz</a>
     </div>
     <div class="nav-backdrop" aria-hidden="true"></div>
     <nav class="topbar-nav-mobile" id="mobile-nav" aria-label="Główna nawigacja (mobile)" hidden>
       <a href="o-aplikacji.html"><span>O aplikacji</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
       <a href="#faq"><span>FAQ</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
       <a href="kontakt.html"><span>Kontakt</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
-      <a href="pobierz.html"><span>Pobierz</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      <a href="pobierz.html" data-goatcounter-click="index-menu-pobierz"><span>Pobierz</span><svg class="nav-arrow" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
     </nav>
   </header>
 
@@ -119,7 +119,7 @@
                    (TestFlight, potem po powrocie z App Store, Hyc!). Baton
                    wygląda jak zwykły „pobierz", modal niżej ustawia oczekiwania
                    PRZED pierwszym kliknięciem — Apple samo tego nie tłumaczy. -->
-              <button class="store-btn store-btn--dark store-btn--compact" id="btn-ios-open" type="button">
+              <button class="store-btn store-btn--dark store-btn--compact" id="btn-ios-open" type="button" data-goatcounter-click="index-ios-otworz">
                 <img src="assets/apple.svg" alt="">
                 <span class="label"><small>Pobierz na iPhone</small><strong>TestFlight</strong></span>
               </button>
@@ -128,7 +128,7 @@
                    testerów), więc instalacja ma dwa etapy: grupa → opt-in Play.
                    Tej złożoności NIE pokazujemy na ekranie głównym — baton wygląda
                    jak zwykły „pobierz", a cały proces prowadzi modal niżej. -->
-              <button class="store-btn store-btn--dark store-btn--compact" id="btn-android-open" type="button">
+              <button class="store-btn store-btn--dark store-btn--compact" id="btn-android-open" type="button" data-goatcounter-click="index-android-otworz">
                 <img src="assets/google.svg" alt="">
                 <span class="label"><small>Pobierz na Androida</small><strong>Google Play</strong></span>
               </button>
@@ -152,7 +152,8 @@
       </section>
 
       <!-- Grafika w karcie + nagłówek/bullety obok, kolory/fonty własne. -->
-      <section class="feature-list" id="about" aria-label="O aplikacji">
+      <section class="feature-list" id="about" aria-labelledby="about-title">
+        <h2 class="visually-hidden" id="about-title">O aplikacji</h2>
         <!-- 6 bulletów, każdy z własną grafiką (assets/feature/feature-1..6.png,
              kolejność 1:1 z
              kolejnością bulletów góra-dół) i własnym tekstem (pytanie +
@@ -258,7 +259,7 @@
         <div class="scouts-cta-inner">
           <h2>Dołącz do Skautów Hyc!</h2>
           <p>Skauci Hyc! to osoby, które podczas wędrówek sprawdzają, uzupełniają i&nbsp;dodają punkty na szlaku. Dzięki temu pomagają kolejnym wędrowcom łatwiej i&nbsp;bezpieczniej przejść trasę.</p>
-          <a class="store-btn store-btn--primary store-btn--nav" href="https://www.facebook.com/groups/1094210523037520/" target="_blank" rel="noopener">Dołącz do Skautów</a>
+          <a class="store-btn store-btn--primary store-btn--nav" href="https://www.facebook.com/groups/1094210523037520/" target="_blank" rel="noopener" data-goatcounter-click="index-fb-grupa">Dołącz do Skautów</a>
         </div>
       </section>
 
@@ -287,7 +288,7 @@
           <details class="faq-item">
             <summary>
               <span>Czym jest Hyc?</span>
-              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
             </summary>
             <p class="faq-answer">Hyc! to aplikacja, która bez&nbsp;zatrzymywania się podczas marszu, jedną ręką pomaga znaleźć wszystko, czego potrzebujesz na&nbsp;szlaku. Prowadzi do&nbsp;najbliższego celu przed&nbsp;Tobą lub dookoła. Znajdziesz w&nbsp;niej między innymi schronienia, noclegi, miejsca na namiot, źródła wody, apteczki, restauracje i&nbsp;sklepy.</p>
             <p class="faq-answer">Możesz też swobodnie przeglądać mapę, wyszukiwać interesujące Cię miejsca i&nbsp;zapisywać je na później.</p>
@@ -296,7 +297,7 @@
           <details class="faq-item">
             <summary>
               <span>Dla kogo jest Hyc?</span>
-              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
             </summary>
             <p class="faq-answer">Hyc! jest dla każdego wędrowca, niezależnie od doświadczenia i długości trasy. Dla rodziców z dziećmi, którzy chcą czuć się pewniej na szlaku i wiedzieć, gdzie po drodze będą mogli schować się przed ulewą albo znaleźć środki do odkażenia rany. Dla doświadczonych wędrowców, którzy ruszają na długie szlaki i chcą lepiej przygotować się do drogi. Dla każdego, kto chce mieć pod ręką informacje o tym, co czeka go na szlaku.</p>
           </details>
@@ -304,7 +305,7 @@
           <details class="faq-item">
             <summary>
               <span>Czy aplikacja jest darmowa?</span>
-              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
             </summary>
             <p class="faq-answer">Tak. Wszystkie obecne funkcje Hyc! są i&nbsp;zawsze będą darmowe. W&nbsp;przyszłości planujemy rozbudowywać aplikację i&nbsp;mogą pojawić się dodatkowe, płatne funkcje.</p>
           </details>
@@ -312,7 +313,7 @@
           <details class="faq-item">
             <summary>
               <span>Jaki obszar obejmuje Hyc?</span>
-              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
             </summary>
             <p class="faq-answer">Na razie Hyc! obejmuje całą Polskę oraz obszar do 50 km od&nbsp;polskiej granicy na terenie Czech i&nbsp;Słowacji. To dopiero początek. Z&nbsp;czasem będziemy rozszerzać mapę o&nbsp;kolejne państwa.</p>
           </details>
@@ -320,7 +321,7 @@
           <details class="faq-item">
             <summary>
               <span>Jakie noclegi znajdę w&nbsp;aplikacji?</span>
-              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
             </summary>
             <p class="faq-answer">Znajdziesz tu wybrane przez nas niedrogie noclegi. Szczególnie te położone przy szlakach, a&nbsp;także ogólnodostępne chatki górskie, bacówki, schrony.</p>
           </details>
@@ -328,16 +329,16 @@
           <details class="faq-item">
             <summary>
               <span>Skąd bierzemy informacje o&nbsp;miejscach?</span>
-              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
             </summary>
             <p class="faq-answer">Bazę budujemy na&nbsp;publicznie dostępnych źródłach, które łączymy i&nbsp;weryfikujemy. Dalej rozwija ją&nbsp;nasza społeczność. Nowe punkty mogą dodawać i&nbsp;aktualizować zarówno użytkownicy, jak i&nbsp;Skauci Hyc!, którzy od&nbsp;czasu do czasu biorą też udział w&nbsp;płatnych akcjach terenowych, sprawdzając miejsca na&nbsp;szlaku i&nbsp;dodając zdjęcia.</p>
-            <p class="faq-answer">Chcesz zostać Skautem Hyc? Dołącz do społeczności <a href="https://www.facebook.com/groups/1094210523037520/" target="_blank" rel="noopener">tutaj</a>.</p>
+            <p class="faq-answer">Chcesz zostać Skautem Hyc? Dołącz do społeczności <a href="https://www.facebook.com/groups/1094210523037520/" target="_blank" rel="noopener" data-goatcounter-click="index-fb-grupa">tutaj</a>.</p>
           </details>
 
           <details class="faq-item">
             <summary>
               <span>Czy aplikacja działa offline?</span>
-              <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+              <svg class="faq-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
             </summary>
             <p class="faq-answer">Obecnie aplikacja wymaga połączenia z&nbsp;internetem. Tryb offline, pobieranie map i&nbsp;więcej nowych funkcji będą dostępne w&nbsp;okolicach stycznia 2027.</p>
           </details>
@@ -388,7 +389,7 @@
           <img class="modal-note-shot" src="assets/google-groups-join.png" alt="Strona grupy Google po zalogowaniu, z linkiem „dołącz do grupy”">
         </div>
 
-        <a class="store-btn store-btn--dark" id="btn-group" href="#" rel="noopener">
+        <a class="store-btn store-btn--dark" id="btn-group" href="#" rel="noopener" data-goatcounter-click="index-android-grupa">
           <img src="assets/google.svg" alt="">
           <span class="label"><small>Otworzy się w nowej karcie</small><strong>Przejdź do grupy</strong></span>
         </a>
@@ -398,7 +399,7 @@
         <p class="modal-eyebrow">Krok 2 z 2</p>
         <h2 class="modal-title">Aktywuj dostęp w Google Play</h2>
         <p class="modal-lead">Teraz potwierdzasz udział w testach po stronie Sklepu Play. Użyj <strong>tego samego konta Google</strong>, co przy dołączaniu do grupy. Na otwartej stronie kliknij <strong>„Become a tester”</strong>.</p>
-        <a class="store-btn store-btn--dark" id="btn-android" href="#" rel="noopener">
+        <a class="store-btn store-btn--dark" id="btn-android" href="#" rel="noopener" data-goatcounter-click="index-android-play">
           <img src="assets/google.svg" alt="">
           <span class="label"><small>Otworzy się w nowej karcie</small><strong>Aktywuj dostęp</strong></span>
         </a>
@@ -407,10 +408,10 @@
 
     </div>
 
-    <footer class="modal-nav">
+    <div class="modal-nav">
       <button class="nav-btn" id="nav-back" type="button" disabled>Wstecz</button>
       <button class="nav-btn is-next" id="nav-next" type="button">Dalej</button>
-    </footer>
+    </div>
   </dialog>
 
   <!-- Instalacja na iOS — jedna zewnętrzna akcja (link TestFlight), nie
@@ -429,7 +430,7 @@
     <h2 class="modal-title" id="ios-modal-title" tabindex="-1" autofocus>Zainstaluj Hyc! przez TestFlight</h2>
     <p class="modal-lead">TestFlight to aplikacja Apple do testów beta. Hyc! działa tylko przez nią. Otworzymy stronę Apple, gdzie zainstalujesz najpierw TestFlight, a&nbsp;potem Hyc!</p>
 
-    <a class="store-btn store-btn--dark" id="btn-ios" href="#" rel="noopener">
+    <a class="store-btn store-btn--dark" id="btn-ios" href="#" rel="noopener" data-goatcounter-click="index-ios-testflight">
       <img src="assets/apple.svg" alt="">
       <span class="label"><small>Otworzy TestFlight</small><strong>Kontynuuj</strong></span>
     </a>
@@ -438,6 +439,7 @@
   <script src="scroll-lock.js?v=2"></script>
   <script src="config.js?v=20260812"></script>
   <script src="nav.js?v=20261008" defer></script>
-  <script src="main.js?v=2026102921"></script>
+  <script data-goatcounter="https://dinin92.goatcounter.com/count" async src="assets/goatcounter-count.js?v=1"></script>
+  <script src="main.js?v=2026102922"></script>
 </body>
 </html>

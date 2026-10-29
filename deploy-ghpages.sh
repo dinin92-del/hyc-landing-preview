@@ -43,16 +43,23 @@ cd "$WORK/site"
 rm -f _headers                 # GH Pages ignores _headers (CSP only on Cloudflare/Netlify)
 touch .nojekyll                # serve files verbatim, don't skip _-prefixed
 if [[ -n "$SITE_DOMAIN" ]]; then printf '%s\n' "$SITE_DOMAIN" > CNAME; fi
-# OG needs absolute URLs (scrapers don't resolve relative)
-sed -i '' "s#content=\"assets/og-image.jpg?v=20261008\"#content=\"$BASE/assets/og-image.jpg?v=20261008\"#g" index.html
-sed -i '' "s#<meta property=\"og:type\" content=\"website\">#<meta property=\"og:type\" content=\"website\">\n  <meta property=\"og:url\" content=\"$BASE/\">#" index.html
-# Oba podstawienia dopasowują DOKŁADNY string z index.html — zmiana formatowania
-# tamtych metatagów sprawiłaby, że sed po cichu nic nie robi i podgląd linku na
-# socialach traci obrazek/URL. Dlatego sprawdzamy wynik, zamiast ufać sed-owi.
-grep -q "content=\"$BASE/assets/og-image.jpg?v=20261008\"" index.html \
-  || { echo "BŁĄD: og:image nie został przepisany na absolutny URL — sprawdź metatagi w index.html" >&2; exit 1; }
-grep -q "og:url" index.html \
-  || { echo "BŁĄD: nie wstrzyknięto og:url — sprawdź metatag og:type w index.html" >&2; exit 1; }
+# OG needs absolute URLs (scrapers don't resolve relative). Każda strona
+# główna ma własne og:url i canonical (index.html = katalog główny);
+# pobierz.html ma noindex, więc canonical tam nie trafia.
+OG_IMG="assets/og-image.jpg?v=20261029"
+for PAGE in index.html o-aplikacji.html kontakt.html pobierz.html; do
+  URL="$BASE/$PAGE"; [[ "$PAGE" == index.html ]] && URL="$BASE/"
+  sed -i '' "s#content=\"$OG_IMG\"#content=\"$BASE/$OG_IMG\"#g" "$PAGE"
+  sed -i '' "s#<meta property=\"og:type\" content=\"website\">#<meta property=\"og:type\" content=\"website\">\n  <meta property=\"og:url\" content=\"$URL\">#" "$PAGE"
+  [[ "$PAGE" == pobierz.html ]] || sed -i '' "s#<meta name=\"description\"#<link rel=\"canonical\" href=\"$URL\">\n  <meta name=\"description\"#" "$PAGE"
+  # Podstawienia dopasowują DOKŁADNE stringi z HTML-a; zmiana formatowania
+  # metatagów sprawiłaby, że sed po cichu nic nie robi i podgląd linku na
+  # socialach traci obrazek/URL. Dlatego sprawdzamy wynik.
+  grep -q "content=\"$BASE/$OG_IMG\"" "$PAGE" \
+    || { echo "BŁĄD: og:image w $PAGE nie został przepisany na absolutny URL" >&2; exit 1; }
+  [[ $(grep -c 'property="og:url"' "$PAGE") == 1 ]] \
+    || { echo "BŁĄD: $PAGE nie ma dokładnie jednego og:url" >&2; exit 1; }
+done
 
 # 3) Push to the Pages repo (force — the repo mirrors dist, no history to keep)
 git init -q -b main

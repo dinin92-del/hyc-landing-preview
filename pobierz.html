@@ -3,15 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="tdm-reservation" content="1">
   <title>Pobierz Hyc!</title>
-  <meta name="description" content="Pobierz Hyc! na iOS i Androida.">
+  <meta name="description" content="Pobierz Hyc! na iPhone’a przez TestFlight i na Androida przez Google Play. Instrukcja dołączenia do testów krok po kroku.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Hyc!">
+  <meta property="og:title" content="Pobierz Hyc!">
+  <meta property="og:description" content="Pobierz Hyc! na iPhone’a przez TestFlight i na Androida przez Google Play. Instrukcja dołączenia do testów krok po kroku.">
+  <meta property="og:image" content="assets/og-image.jpg?v=20261029">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="pl_PL">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="theme-color" content="#F0EBE0">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
   <meta name="robots" content="noindex">
 
   <link rel="preload" href="assets/fonts/Figtree-Variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="styles.css?v=2026102911">
+  <link rel="stylesheet" href="styles.css?v=2026102912">
 </head>
 <body class="page-pobierz">
   <header class="topbar">
@@ -65,12 +75,12 @@
         <p class="hero-tags">Jednym przyciskiem poprowadzimy Cię do&nbsp;najbliższego miejsca, które potrzebujesz na&nbsp;szlaku.</p>
 
         <div class="stores" id="stores">
-          <button class="store-btn store-btn--dark store-btn--compact" id="btn-ios-open" type="button">
+          <button class="store-btn store-btn--dark store-btn--compact" id="btn-ios-open" type="button" data-goatcounter-click="pobierz-ios-otworz">
             <img src="assets/apple.svg" alt="">
             <span class="label"><small>Pobierz na iPhone</small><strong>TestFlight</strong></span>
           </button>
 
-          <button class="store-btn store-btn--dark store-btn--compact" id="btn-android-open" type="button">
+          <button class="store-btn store-btn--dark store-btn--compact" id="btn-android-open" type="button" data-goatcounter-click="pobierz-android-otworz">
             <img src="assets/google.svg" alt="">
             <span class="label"><small>Pobierz na Androida</small><strong>Google Play</strong></span>
           </button>
@@ -115,7 +125,7 @@
           <img class="modal-note-shot" src="assets/google-groups-join.png" alt="Strona grupy Google po zalogowaniu, z linkiem „dołącz do grupy”">
         </div>
 
-        <a class="store-btn store-btn--dark" id="btn-group" href="#" rel="noopener">
+        <a class="store-btn store-btn--dark" id="btn-group" href="#" rel="noopener" data-goatcounter-click="pobierz-android-grupa">
           <img src="assets/google.svg" alt="">
           <span class="label"><small>Otworzy się w nowej karcie</small><strong>Przejdź do grupy</strong></span>
         </a>
@@ -125,7 +135,7 @@
         <p class="modal-eyebrow">Krok 2 z 2</p>
         <h2 class="modal-title">Aktywuj dostęp w Google Play</h2>
         <p class="modal-lead">Teraz potwierdzasz udział w testach po stronie Sklepu Play. Użyj <strong>tego samego konta Google</strong>, co przy dołączaniu do grupy. Na otwartej stronie kliknij <strong>„Become a tester”</strong>.</p>
-        <a class="store-btn store-btn--dark" id="btn-android" href="#" rel="noopener">
+        <a class="store-btn store-btn--dark" id="btn-android" href="#" rel="noopener" data-goatcounter-click="pobierz-android-play">
           <img src="assets/google.svg" alt="">
           <span class="label"><small>Otworzy się w nowej karcie</small><strong>Aktywuj dostęp</strong></span>
         </a>
@@ -133,17 +143,17 @@
 
     </div>
 
-    <footer class="modal-nav">
+    <div class="modal-nav">
       <button class="nav-btn" id="nav-back" type="button" disabled>Wstecz</button>
       <button class="nav-btn is-next" id="nav-next" type="button">Dalej</button>
-    </footer>
+    </div>
   </dialog>
 
   <dialog class="flow-modal" id="ios-modal" aria-labelledby="ios-modal-title">
     <h2 class="modal-title" id="ios-modal-title" tabindex="-1" autofocus>Zainstaluj Hyc! przez TestFlight</h2>
     <p class="modal-lead">TestFlight to aplikacja Apple do testów beta. Hyc! działa tylko przez nią. Otworzymy stronę Apple, gdzie zainstalujesz najpierw TestFlight, a&nbsp;potem Hyc!</p>
 
-    <a class="store-btn store-btn--dark" id="btn-ios" href="#" rel="noopener">
+    <a class="store-btn store-btn--dark" id="btn-ios" href="#" rel="noopener" data-goatcounter-click="pobierz-ios-testflight">
       <img src="assets/apple.svg" alt="">
       <span class="label"><small>Otworzy TestFlight</small><strong>Kontynuuj</strong></span>
     </a>
@@ -152,6 +162,7 @@
   <script src="scroll-lock.js?v=2"></script>
   <script src="config.js?v=20260812"></script>
   <script src="nav.js?v=20261008" defer></script>
-  <script src="main.js?v=2026102921"></script>
+  <script data-goatcounter="https://dinin92.goatcounter.com/count" async src="assets/goatcounter-count.js?v=1"></script>
+  <script src="main.js?v=2026102922"></script>
 </body>
 </html>

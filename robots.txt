@@ -1,5 +1,19 @@
+# Zastrzeżenie eksploracji tekstu i danych (art. 26³ ust. 2 pr. aut., art. 8a ubd).
+# Wyszukiwarki wolno, trenowanie AI i zasilanie modeli nie. Zob. Regulamin pkt 6.
 User-agent: *
+Content-Signal: search=yes, ai-input=no, ai-train=no
 Allow: /
+
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: anthropic-ai
+User-agent: CCBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bytespider
+User-agent: PerplexityBot
+User-agent: meta-externalagent
+Disallow: /
 
 # Jedna podstrona + pliki prawne — sitemap nic tu nie wnosi.
 # Gdy landing urośnie o realne podstrony: Sitemap: https://gethyc.com/sitemap.xml

@@ -14,6 +14,10 @@ cp index.html o-aplikacji.html kontakt.html pobierz.html \
    styles.css scroll-lock.js nav.js main.js config.js \
    favicon.svg robots.txt "$DIST/"
 
+# TDM reservation (machine-readable opt-out, art. 26³ ust. 2 pr. aut.)
+mkdir -p "$DIST/.well-known"
+cp .well-known/tdmrep.json "$DIST/.well-known/"
+
 # Static assets (fonts, hero, og-image, store logos, licenses)
 cp -R assets "$DIST/assets"
 

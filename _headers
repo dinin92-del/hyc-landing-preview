@@ -1,8 +1,9 @@
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Content-Security-Policy: default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'self'; connect-src 'self' https:; form-action 'self' https:; base-uri 'self'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; img-src 'self' https://dinin92.goatcounter.com; style-src 'self'; script-src 'self'; font-src 'self'; media-src 'self'; connect-src 'self' https:; form-action 'self' https:; base-uri 'self'; frame-ancestors 'none'
   Permissions-Policy: geolocation=(), camera=(), microphone=()
+  tdm-reservation: 1
 
 /assets/fonts/*
   Cache-Control: public, max-age=31536000, immutable

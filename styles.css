@@ -65,6 +65,19 @@
 
 * { box-sizing: border-box; }
 
+/* Tekst tylko dla czytnika ekranu (np. nagłówek sekcji kafli: kolejność h1, h2, h3). */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Ta sama para deklaracji co niżej na <body> — i musi tu być osobno. Na
    mobile to <html> (documentElement), nie <body>, jest faktycznym
    kontenerem przewijania wiewportu: `overflow-x: clip` na samym <body> nie
@@ -378,7 +391,7 @@ body:not(.page-home) .wrap { padding-top: 88px; }
   /* Gdzie zaczyna się górna krawędź telefonu (ułamek wysokości sceny od góry):
      na wąskim ekranie telefon wystaje wyżej (więcej widać od dołu), na
      desktopie ledwie wyziera (patrz blok desktopowy niżej). */
-  --peek: 0.76;
+  --peek: 0.82;
   /* Telefon: wysokość z okna (sufit 800px), szerokość z proporcji wideo
      (assets/hero/phone.webm: 824x1672 = 0,4928). */
   --ph: min(calc(var(--vh) * 0.74), 800px);
@@ -669,7 +682,7 @@ h1 {
    interlinia 1,5, kolor --bark, na każdej szerokości. Większy odstęp pod nim
    do przycisków sklepów. */
 .hero .hero-tags {
-  margin-bottom: 38px;
+  margin-bottom: 26px;
   font-size: 17px;
   color: var(--bark);
   max-width: 40ch;
@@ -1167,7 +1180,7 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
   border-radius: 20px;
   padding: 44px 24px;
 }
-.feature-row + .feature-row { margin-top: 16px; }
+.feature-row + .feature-row { margin-top: 32px; }
 .feature-media {
   display: block;
   width: 100%;
@@ -1591,8 +1604,8 @@ footer .spacer { flex: 1 1 auto; }
      odstęp od paska na desktopie. */
   .about-hero { margin-top: 80px; }
   .feature-list { margin-top: 120px; margin-bottom: 80px; }
-  /* Kafle wciąż jeden pod drugim (do 1023px): ciasno jak na mobile. */
-  .feature-row + .feature-row { margin-top: 24px; }
+  /* Kafle wciąż jeden pod drugim (do 1023px): odstęp niewiele większy niż na mobile. */
+  .feature-row + .feature-row { margin-top: 40px; }
   footer { margin-top: 96px; }
   /* Szlak ma pod tekstem własną sporą pustkę (wysoki artboard), więc tu
      starczy mniej — 200px dawało odstęp >400px licząc od ostatniej widocznej
@@ -1621,7 +1634,7 @@ footer .spacer { flex: 1 1 auto; }
     border-radius: 0;
     padding: 0;
   }
-  /* Ciasny odstęp (16/24px) jest sprawą sztaplowanych kafli na mobile —
+  /* Ciasny odstęp (32/40px) jest sprawą sztaplowanych kafli na mobile —
      w dwóch kolumnach wraca pełny oddech między rzędami. */
   .feature-row + .feature-row { margin-top: 110px; }
   /* Reset centrowania z mobile — w 2 kolumnach grafika/pigułka/tekst wracają
