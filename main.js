@@ -669,7 +669,7 @@
         return { pinned: pinned, brakeOn: brakeOn, brakeY: brakeY, holdPx: holdPx, heroTop: heroTop, scrubbing: scrubbing };
       };
       var dbg = document.createElement("script");
-      dbg.src = "hero-debug.js?v=1";
+      dbg.src = "hero-debug.js?v=2";
       document.body.appendChild(dbg);
     }
 
