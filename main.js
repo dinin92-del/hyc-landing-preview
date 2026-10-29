@@ -408,6 +408,62 @@
       document.addEventListener(ev, function () { if (videoWanted) { applyVideo(); } }, { passive: true });
     });
 
+    // Hamulec (user 1029: „ma się zatrzymać na telefonie, a nie przez niego
+    // przejeżdżać"): od przypięcia ruch w dół kółkiem/gładzikiem i palcem
+    // jest ignorowany przez wjazd telefonu (PHONE_MS) i dalej, dopóki trwa
+    // ten sam gest (impulsy kółka co < BRAKE_GAP ms, czyli też bezwładność
+    // gładzika), maksymalnie BRAKE_MAX. Następny, nowy gest jedzie normalnie.
+    // Bez scroll snap: mandatory blokował kółko w dół, a proximity ściągał
+    // z powrotem każdy mały ruch obok punktu stopu (oba sprawdzone 1029).
+    // Samo preventDefault nie wystarcza: Chrome pozwala zablokować tylko
+    // pierwsze zdarzenie kółka w geście, bezwładność gładzika idzie dalej
+    // jako nieblokowalna. Dlatego na czas hamowania html.hero-brake
+    // (overflow: hidden) zatrzymuje przewijanie dokumentu, a nasłuch kółka
+    // służy do wykrycia końca gestu. preventDefault zostaje dla Safari i
+    // dotyku. Nasłuch nie-pasywny tylko na czas hamowania, bo nie-pasywny
+    // wheel na window spowalnia scroll całej strony.
+    var BRAKE_GAP = 150;
+    var BRAKE_MAX = 2500;
+    var brakeOn = false;
+    var brakeStart = 0;
+    var lastBrakeWheel = 0;
+    var brakeTimer = null;
+    var brakeWheel = function (e) {
+      if (e.deltaY <= 0) { return; }
+      lastBrakeWheel = Date.now();
+      if (e.cancelable) { e.preventDefault(); }
+    };
+    var brakeTouch = function (e) {
+      if (Date.now() - brakeStart < PHONE_MS && e.cancelable) { e.preventDefault(); }
+    };
+    var releaseBrake = function () {
+      if (!brakeOn) { return; }
+      brakeOn = false;
+      document.documentElement.classList.remove("hero-brake");
+      if (brakeTimer) { window.clearTimeout(brakeTimer); brakeTimer = null; }
+      window.removeEventListener("wheel", brakeWheel, { passive: false });
+      window.removeEventListener("touchmove", brakeTouch, { passive: false });
+    };
+    var checkBrake = function () {
+      var now = Date.now();
+      var gestureGoing = now - lastBrakeWheel < BRAKE_GAP;
+      if (now - brakeStart >= BRAKE_MAX || (now - brakeStart >= PHONE_MS && !gestureGoing)) {
+        releaseBrake();
+      } else {
+        brakeTimer = window.setTimeout(checkBrake, 50);
+      }
+    };
+    var brake = function () {
+      releaseBrake();
+      brakeOn = true;
+      document.documentElement.classList.add("hero-brake");
+      brakeStart = Date.now();
+      lastBrakeWheel = brakeStart;
+      window.addEventListener("wheel", brakeWheel, { passive: false });
+      window.addEventListener("touchmove", brakeTouch, { passive: false });
+      brakeTimer = window.setTimeout(checkBrake, PHONE_MS);
+    };
+
     var setPinned = function (on) {
       if (on === pinned) { return; }
       pinned = on;
@@ -415,6 +471,9 @@
       settled = false;
       if (settledTimer) { window.clearTimeout(settledTimer); settledTimer = null; }
       if (on) {
+        // Tylko gdy przypięcie wyzwolił scroll z samej góry (nie wejście na
+        // stronę już przewiniętą, np. powrót z podstrony albo #faq).
+        if (window.scrollY - heroTop < heroHeight) { brake(); }
         // Dociągamy wideo od razu: przypięcie oznacza, że za chwilę zagra
         // (iOS ignoruje "auto" i ładuje dopiero przy play()).
         if (!warmed && phoneVideo) { warmed = true; phoneVideo.preload = "auto"; }
@@ -424,6 +483,7 @@
           update();
         }, PHONE_MS);
       } else {
+        releaseBrake();
         setVideoWanted(false);
         rewindToSplash();
       }

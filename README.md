@@ -141,14 +141,17 @@ kadr `crop=824:1672:1508:244`. Narzędzie do HEVC z alfą: AVAssetReader/Writer,
 - `phone-poster.webp`: pierwsza klatka (splash) z alfą. Musi być równa klatce 0,
   bo main.js trzyma wideo na pauzie w klatce 0, dopóki telefon nie osiądzie
   na środku, a iOS bez autoplay nie pokazuje klatki wideo, tylko poster.
-- Hero: scena przypięta (sticky) na `--hero-hold` (0,4 wysokości okna).
+- Hero: scena przypięta (sticky) na `--hero-hold` (0,3 wysokości okna).
   Pierwszy ruch w dół (24 px) dokłada `.is-pinned`, a wjazd telefonu, gaśnięcie
   tekstu, pinów i tła to przejścia czasowe CSS (telefon 850 ms = `PHONE_MS`
   w main.js). Powrót na samą górę cofa przejście. Wideo startuje po wjeździe,
   cofa do splasha po odpięciu. Scroll zawsze zostaje zwykłym scrollem.
   ⛔ Nie wracać (1029): scrub sterowany pozycją scrolla (scena „w połowie"),
   dojazd w JS po `scrollend` („stanął i szarpnął", blokował scroll), CSS
-  scroll snap mandatory (kółko w dół nie wychodziło z przypięcia).
+  scroll snap mandatory (kółko w dół nie wychodziło z przypięcia) i proximity
+  (ściągał z powrotem mały ruch obok punktu stopu). Zatrzymanie na telefonie
+  robi hamulec w main.js: od przypięcia `html.hero-brake` (overflow: hidden)
+  przez czas wjazdu i do końca bieżącego gestu (bezwładność gładzika).
 - ⛔ `ffmpeg` nie koduje HEVC z alfą na macOS (`hevc_videotoolbox` pada), a
   `AVAssetExportSession` z `videoComposition` spłaszcza alfę do czerni. Kadrowanie
   trzeba robić klatka po klatce przez `AVAssetReader`/`AVAssetWriter`

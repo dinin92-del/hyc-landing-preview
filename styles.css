@@ -74,7 +74,14 @@ html {
   -webkit-text-size-adjust: 100%;
   overflow-x: hidden;
   overflow-x: clip;
+  /* Miejsce na pasek przewijania zawsze zarezerwowane: hamulec hero
+     (html.hero-brake, overflow: hidden) nie przesuwa wtedy strony w bok na
+     systemach z klasycznym paskiem (Windows). */
+  scrollbar-gutter: stable;
 }
+/* Hamulec hero na czas wjazdu telefonu (main.js): zatrzymuje też bezwładność
+   gładzika, której w Chrome nie da się zablokować preventDefault. */
+html.hero-brake { overflow: hidden; }
 
 body {
   margin: 0;
@@ -378,8 +385,9 @@ body:not(.page-home) .wrap { padding-top: 88px; }
   --pw: calc(var(--ph) * 0.4928);
   /* Przytrzymanie: ile scrolla scena stoi przypięta po wjeździe telefonu.
      Krótko, bo w tym czasie strona się nie przesuwa; cały ekran (1029)
-     wyglądał jak zablokowany scroll. */
-  --hero-hold: calc(var(--vh) * 0.4);
+     wyglądał jak zablokowany scroll. Zatrzymanie na telefonie robi hamulec
+     w main.js (pochłania rozpęd gestu na czas wjazdu), nie scroll snap. */
+  --hero-hold: calc(var(--vh) * 0.3);
   position: relative;
   /* Wyjście poza kolumnę .wrap do pełnej szerokości okna. */
   width: 100vw;
