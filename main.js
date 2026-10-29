@@ -361,10 +361,13 @@
     // Mode na iOS, in-app WebView) ponawiamy przy gestach i kolejnych
     // klatkach scrolla, dopóki wideo ma grać, bo bez autoplay przeglądarka
     // nie wznowi sama.
-    // Ostatni stan z IntersectionObservera (układ statyczny), żeby przejście
-    // scrub -> statyczny (obrót, „ogranicz ruch") nie zostawiło grającego
-    // wideo poza ekranem ani zatrzymanego na ekranie.
-    var ioVisible = false;
+    // Czy telefon jest w oknie co najmniej w SHOWN_RATIO (IntersectionObserver,
+    // liczy też transform sceny). Wideo gra tylko wtedy: gdy user zjedzie
+    // dalej i ekran telefonu zacznie znikać, pauza; powrót wznawia od tego
+    // samego miejsca (user 1029). Ten sam stan służy układowi statycznemu i
+    // przejściu scrub -> statyczny.
+    var SHOWN_RATIO = 0.7;
+    var phoneShown = false;
     var applyVideo = function () {
       if (!phoneVideo || !phoneVideo.currentSrc) { return; }
       if (videoWanted && !document.hidden) {
@@ -506,7 +509,7 @@
       var y = window.scrollY - heroTop;
       if (!pinned && y > PIN_AT) { setPinned(true); }
       else if (pinned && y < UNPIN_AT) { setPinned(false); }
-      if (pinned) { setVideoWanted(settled && heroTop + heroHeight - window.scrollY > 0); }
+      if (pinned) { setVideoWanted(settled && phoneShown); }
       if (videoWanted) { applyVideo(); }
     };
     var onScroll = function () {
@@ -523,7 +526,7 @@
         hero.classList.toggle("is-scrub", want);
         if (!want) {
           setPinned(false);
-          setVideoWanted(ioVisible && !(reduceMq && reduceMq.matches));
+          setVideoWanted(phoneShown && !(reduceMq && reduceMq.matches));
         }
       }
       if (scrubbing) {
@@ -545,13 +548,14 @@
     if (reduceMq && reduceMq.addEventListener) { reduceMq.addEventListener("change", sync); }
     sync();
 
-    // Statyczny układ: nagranie gra, gdy telefon jest w oknie.
+    // Widoczność telefonu: w trybie scrub decyduje update() (przypięcie,
+    // dojazd i widoczność), w statycznym wprost.
     if (window.IntersectionObserver && phoneVideo) {
       new IntersectionObserver(function (entries) {
-        ioVisible = entries[0].isIntersecting;
-        if (scrubbing) { return; }
-        setVideoWanted(ioVisible && !(reduceMq && reduceMq.matches));
-      }, { threshold: 0.6 }).observe(phoneVideo);
+        phoneShown = entries[0].intersectionRatio >= SHOWN_RATIO;
+        if (scrubbing) { update(); return; }
+        setVideoWanted(phoneShown && !(reduceMq && reduceMq.matches));
+      }, { threshold: [0, SHOWN_RATIO, 1] }).observe(phoneVideo);
     }
   }
   // ---- Sekcja ze szlakiem: rysuje się raz, gdy użytkownik jest głębiej ----
