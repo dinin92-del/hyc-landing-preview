@@ -376,12 +376,18 @@ body:not(.page-home) .wrap { padding-top: 88px; }
      (assets/hero/phone.webm: 416x840 = 0,4952). */
   --ph: min(calc(var(--vh) * 0.74), 800px);
   --pw: calc(var(--ph) * 0.4952);
+  /* Tor scrolla ma dwa odcinki: ruch (tekst i piny odjeżdżają, telefon
+     wjeżdża na środek) i przytrzymanie (scena stoi przypięta, telefon na
+     środku, wideo gra). --p i wszystkie keyframes opisują tylko ruch; main.js
+     liczy ten sam odcinek (MOVE_VH musi się zgadzać z mnożnikiem --hero-move). */
+  --hero-move: calc(var(--vh) * 1.2);
+  --hero-hold: calc(var(--vh) * 1);
   position: relative;
   /* Wyjście poza kolumnę .wrap do pełnej szerokości okna. */
   width: 100vw;
   margin-left: calc(50% - 50vw);
 }
-.hero.is-scrub { height: calc(var(--vh) * 2.2); }
+.hero.is-scrub { height: calc(var(--vh) + var(--hero-move) + var(--hero-hold)); }
 /* Safari na iOS repaintuje te warstwy od zera przy KAŻDEJ zmianie --p (co
    klatkę scrolla), zamiast je skomponować raz i tylko przesuwać/przenikać —
    stąd cięcia przy scrollu zgłoszone z telefonu, których nie było widać w
@@ -561,11 +567,12 @@ body:not(.page-home) .wrap { padding-top: 88px; }
    zastępuje JS pisanie --p co klatkę scrolla (main.js sprawdza ten SAM
    warunek i wtedy nie pisze --p wcale). Silnik liczy postęp i animuje
    opacity/transform na wątku kompozytora — zero recalc stylu na głównym
-   wątku. Zakres "contain 0%..100%" to dokładnie odcinek scrolla, w którym
-   .hero (wyższe niż okno) W CAŁOŚCI je zakrywa — czyli ten sam przedział,
-   co stary heroTop..heroTop+track liczony w JS. Wartości w @keyframes to
+   wątku. Zakres zaczyna się w "contain 0%" (.hero W CAŁOŚCI zakrywa okno,
+   scena właśnie się przypięła) i kończy po odcinku ruchu --hero-move, czyli
+   ten sam przedział, co heroTop..heroTop+move liczony w JS. Dalej, przez
+   przytrzymanie, `forwards` trzyma końcowy stan. Wartości w @keyframes to
    przepisane na sztywno granice starych clamp()/calc(var(--p)) z JS. */
-@supports (animation-timeline: view()) {
+@supports (animation-timeline: view()) and (animation-range: contain 0% contain 1px) {
   .hero.is-scrub {
     view-timeline-name: --hero-tl;
     view-timeline-axis: block;
@@ -573,22 +580,22 @@ body:not(.page-home) .wrap { padding-top: 88px; }
   .hero.is-scrub .hero-bg {
     animation: hero-bg-scrub 1s linear forwards;
     animation-timeline: --hero-tl;
-    animation-range: contain 0% contain 100%;
+    animation-range: contain 0% contain var(--hero-move);
   }
   .hero.is-scrub .hero-pins {
     animation: hero-pins-scrub 1s linear forwards;
     animation-timeline: --hero-tl;
-    animation-range: contain 0% contain 100%;
+    animation-range: contain 0% contain var(--hero-move);
   }
   .hero.is-scrub .hero-copy {
     animation: hero-copy-scrub 1s linear forwards;
     animation-timeline: --hero-tl;
-    animation-range: contain 0% contain 100%;
+    animation-range: contain 0% contain var(--hero-move);
   }
   .hero.is-scrub .hero-phone {
     animation: hero-phone-scrub 1s linear forwards;
     animation-timeline: --hero-tl;
-    animation-range: contain 0% contain 100%;
+    animation-range: contain 0% contain var(--hero-move);
   }
   /* `animation` to JEDNA właściwość — gdyby ta reguła i wjazd intro
      (.hero-ready .hero-phone niżej w pliku, hero-phone-in na opacity+
@@ -605,7 +612,7 @@ body:not(.page-home) .wrap { padding-top: 88px; }
     animation-delay: 3500ms, 0s;
     animation-fill-mode: backwards, forwards;
     animation-timeline: auto, --hero-tl;
-    animation-range: normal, contain 0% contain 100%;
+    animation-range: normal, contain 0% contain var(--hero-move);
   }
 }
 @keyframes hero-bg-scrub {

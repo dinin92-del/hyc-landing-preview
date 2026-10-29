@@ -315,9 +315,14 @@
     // --hero-bg/--hero-pins/--hero-copy/--hero-phone (styles.css) BEZ JS,
     // skomponowane przez silnik, nie główny wątek — JS już nie pisze --p,
     // więc nie wywołuje ani jednego recalc stylu na klatkę scrolla. To samo
-    // sprawdzenie musi być w CSS (@supports) pod tym samym warunkiem.
+    // sprawdzenie musi być w CSS (@supports) pod tym samym warunkiem. Drugi
+    // warunek: zakres kończy się na długości (--hero-move), nie na procencie;
+    // silnik bez tego zgubiłby zakres, a JS nie pisałby --p, więc hero by stał.
     var nativeScrollTimeline = !!(window.CSS && CSS.supports && (function () {
-      try { return CSS.supports("animation-timeline: view()"); } catch (e) { return false; }
+      try {
+        return CSS.supports("animation-timeline: view()") &&
+          CSS.supports("animation-range: contain 0% contain 1px");
+      } catch (e) { return false; }
     })());
 
     // `--vh` liczony RAZ w JS (load + debounced resize), nie jako żywy
@@ -335,16 +340,33 @@
     // blokuje fałszywy layout shift `--vh` podczas scrolla. Rzeczywisty resize
     // (obrót, zmiana okna na desktop) zawsze zmienia szerokość i przechodzi.
     var lastSyncWidth = -1;
+    // Odcinek ruchu toru w wysokościach okna, ten sam mnożnik co --hero-move
+    // w styles.css. Po nim scena stoi przypięta przez --hero-hold.
+    var MOVE_VH = 1.2;
+    var move = 0;
     var syncVh = function () {
       lastSyncWidth = window.innerWidth;
-      hero.style.setProperty("--vh", Math.max(window.innerHeight, 620) + "px");
+      var vh = Math.max(window.innerHeight, 620);
+      hero.style.setProperty("--vh", vh + "px");
+      move = vh * MOVE_VH;
     };
 
-    // Wideo startuje dopiero, gdy telefon jest cały widoczny (przy scrollu:
-    // postęp >= 0,98), i pauzuje, gdy znika z ekranu. Pusty <video> (jeszcze
-    // bez <source>) po prostu zostaje na posterze. Odrzucone play() (Low Power
-    // Mode na iOS, in-app WebView) ponawiamy przy gestach, dopóki wideo ma
-    // grać, bo bez autoplay przeglądarka nie wznowi sama.
+    // Wideo: dopóki telefon nie osiądzie na środku (koniec ruchu, 92% jak w
+    // hero-phone-scrub), stoi na pierwszej klatce, czyli splashu (ten sam
+    // obraz co poster). Gra przez przytrzymanie i dopóki scena jest w oknie,
+    // pauzuje, gdy znika. Powrót scrollem poniżej STOP_BELOW pauzuje i cofa
+    // do splasha. Między progami stan się nie zmienia: drganie palca na
+    // granicy nie przełącza play/pauza. Odrzucone play() (Low Power Mode na
+    // iOS, in-app WebView) ponawiamy przy gestach i kolejnych klatkach
+    // scrolla, dopóki wideo ma grać, bo bez autoplay przeglądarka nie wznowi
+    // sama.
+    var PLAY_AT = 0.92;
+    var STOP_BELOW = 0.88;
+    var warmed = false;
+    // Ostatni stan z IntersectionObservera (układ statyczny), żeby przejście
+    // scrub -> statyczny (obrót, „ogranicz ruch") nie zostawiło grającego
+    // wideo poza ekranem ani zatrzymanego na ekranie.
+    var ioVisible = false;
     var applyVideo = function () {
       if (!phoneVideo || !phoneVideo.currentSrc) { return; }
       if (videoWanted) {
@@ -361,6 +383,9 @@
       videoWanted = on;
       applyVideo();
     };
+    var rewindToSplash = function () {
+      if (phoneVideo && phoneVideo.currentTime > 0) { phoneVideo.currentTime = 0; }
+    };
     ["visibilitychange", "touchend", "pointerup", "click"].forEach(function (ev) {
       document.addEventListener(ev, function () { if (videoWanted) { applyVideo(); } }, { passive: true });
     });
@@ -374,9 +399,19 @@
     // sync() (load + debounced resize), nie co klatkę.
     var update = function () {
       framePending = false;
-      var p = track > 0 ? Math.min(1, Math.max(0, (window.scrollY - heroTop) / track)) : 0;
+      var p = move > 0 ? Math.min(1, Math.max(0, (window.scrollY - heroTop) / move)) : 0;
       if (!nativeScrollTimeline) { hero.style.setProperty("--p", p.toFixed(4)); }
-      setVideoWanted(p >= 0.98 && heroTop + heroHeight - window.scrollY > 0);
+      // Telefon w drugiej połowie wjazdu: dociągamy wideo, żeby przy osiadaniu
+      // ruszyło od razu. Nie wcześniej, bo to kilka MB na komórkowym łączu
+      // (iOS i tak ignoruje "auto" i ładuje dopiero przy play()).
+      if (!warmed && p > 0.6 && phoneVideo) { warmed = true; phoneVideo.preload = "auto"; }
+      if (p >= PLAY_AT) {
+        setVideoWanted(heroTop + heroHeight - window.scrollY > 0);
+      } else if (p < STOP_BELOW) {
+        setVideoWanted(false);
+        rewindToSplash();
+      }
+      if (videoWanted) { applyVideo(); }
     };
     var onScroll = function () {
       if (!scrubbing || framePending) { return; }
@@ -391,7 +426,10 @@
       if (want !== scrubbing) {
         scrubbing = want;
         hero.classList.toggle("is-scrub", want);
-        if (!want) { hero.style.removeProperty("--p"); }
+        if (!want) {
+          hero.style.removeProperty("--p");
+          setVideoWanted(ioVisible && !(reduceMq && reduceMq.matches));
+        }
       }
       if (scrubbing) {
         heroTop = hero.getBoundingClientRect().top + window.scrollY;
@@ -456,7 +494,9 @@
         }
         prevOutsideHero = outsideHero;
         var nearStart = y < heroTop + resyncEdgeMargin;
-        var nearEnd = track > 0 && y > heroTop + track - resyncEdgeMargin && y <= heroTop + heroHeight;
+        // Koniec zakresu animacji to koniec ruchu (move), nie toru: dalej,
+        // w przytrzymaniu, nic się nie rusza, więc reflow tam nie szarpie.
+        var nearEnd = move > 0 && y > heroTop + move - resyncEdgeMargin && y <= heroTop + heroHeight;
         if (!nearStart && !nearEnd) { return; }
         if (scrubResyncTimer) { window.clearTimeout(scrubResyncTimer); }
         scrubResyncTimer = window.setTimeout(function () {
@@ -484,8 +524,9 @@
     // Statyczny układ: nagranie gra, gdy telefon jest w oknie.
     if (window.IntersectionObserver && phoneVideo) {
       new IntersectionObserver(function (entries) {
+        ioVisible = entries[0].isIntersecting;
         if (scrubbing) { return; }
-        setVideoWanted(entries[0].isIntersecting && !(reduceMq && reduceMq.matches));
+        setVideoWanted(ioVisible && !(reduceMq && reduceMq.matches));
       }, { threshold: 0.6 }).observe(phoneVideo);
     }
   }

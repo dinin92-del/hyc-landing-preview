@@ -136,7 +136,12 @@ Telefon w hero to render z Rotato (ramka i ekran) z przezroczystym tłem, kadr
   `ffmpeg -i rotato.mov -vf "crop=416:840:512:120,format=yuva420p" -c:v libvpx-vp9
   -pix_fmt yuva420p -b:v 0 -crf 33 -auto-alt-ref 0 -row-mt 1 -an phone.webm`,
   potem `ffmpeg -i phone.webm -c copy -cues_to_front 1 out.webm`.
-- `phone-poster.webp`: klatka z alfą (z 2 s), pokazywana do startu wideo.
+- `phone-poster.webp`: pierwsza klatka (splash) z alfą. Musi być równa klatce 0,
+  bo main.js trzyma wideo na pauzie w klatce 0, dopóki telefon nie osiądzie
+  na środku, a iOS bez autoplay nie pokazuje klatki wideo, tylko poster.
+- Tor hero: ruch (`--hero-move`, 1,2 wysokości okna) i przytrzymanie
+  (`--hero-hold`, 1 wysokość okna). Wideo startuje na końcu ruchu i gra przez
+  przytrzymanie. `MOVE_VH` w main.js musi się zgadzać z `--hero-move`.
 - ⛔ `ffmpeg` nie koduje HEVC z alfą na macOS (`hevc_videotoolbox` pada), a
   `AVAssetExportSession` z `videoComposition` spłaszcza alfę do czerni. Kadrowanie
   trzeba robić klatka po klatce przez `AVAssetReader`/`AVAssetWriter`
