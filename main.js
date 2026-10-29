@@ -317,7 +317,10 @@
   // nic go nie przechwytuje i nic nie przewija strony samo.
   // ⛔ Historia 1029, nie wracać: scrub sterowany pozycją scrolla zostawiał
   // scenę „w połowie", dojazd w JS po scrollend dawał „stanął i szarpnął",
-  // a CSS scroll snap (mandatory) blokował kółko w dół z przypięcia.
+  // a CSS scroll snap blokował kółko w dół z przypięcia (mandatory) albo
+  // ściągał z powrotem mały ruch (proximity), a na iOS stop
+  // (scroll-snap-stop) nie zatrzymywał szybkiego machnięcia (symulator
+  // iOS 27, 1029). Zatrzymanie na telefonie robi hamulec (niżej).
   // Tryb scrub (klasa .is-scrub) tylko bez „ogranicz ruch" i na oknach co
   // najmniej 560px wysokości. W przeciwnym razie zostaje statyczny układ ze
   // styles.css (tło z tekstem, telefon pod spodem).
@@ -327,10 +330,11 @@
     var reduceMq = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
     var scrubbing = false;
     var pinned = false;
-    var settled = false;
-    var settledTimer = null;
+    // y względem góry hero z poprzedniego update(); Infinity = jeszcze nie
+    // liczony, więc wejście na stronę już przewiniętą nie liczy się jako
+    // scroll z góry (bez hamulca i bez dociągania wideo).
+    var lastRelY = Infinity;
     var heroTop = 0;
-    var heroHeight = 0;
     var framePending = false;
     var videoWanted = false;
     var warmed = false;
@@ -341,26 +345,36 @@
     // Czas wjazdu telefonu, ten sam co transition .hero-phone w styles.css.
     var PHONE_MS = 850;
 
-    // `--vh` liczony RAZ w JS (load + debounced resize), nie jako żywy
-    // `100svh`: na iOS Safari pasek adresu zwija się/wraca W TRAKCIE scrolla
-    // i realna wysokość okna drga w połowie gestu, co przesuwało cały tor.
+
+    // `--vh` liczony w JS (load + debounced resize), nie jako żywy `100svh`:
+    // na iOS Safari pasek adresu zwija się/wraca W TRAKCIE scrolla i realna
+    // wysokość okna drga w połowie gestu, co przesuwało cały tor.
     // `max(100svh,620px)` w CSS zostaje jako wartość przed startem JS.
-    // Width-guard: toolbar iOS zmienia wyłącznie wysokość, więc nie
-    // przeliczamy przy nim; obrót i zmiana okna zmieniają szerokość.
+    // Przeliczamy przy zmianie szerokości (obrót, okno) albo wysokości o
+    // więcej niż pasek adresu iOS (SYNC_DH), nie przy samym pasku. Ta sama
+    // zapamiętana wysokość decyduje o trybie scrub, więc pasek iOS nie
+    // przełącza trybu pod palcem. W trybie scrub --vh = wysokość okna (scena
+    // nie może być wyższa od ekranu), podłoga 620 tylko dla układu
+    // statycznego.
+    var SYNC_DH = 150;
     var lastSyncWidth = -1;
+    var lastSyncHeight = 0;
     var syncVh = function () {
       lastSyncWidth = window.innerWidth;
-      hero.style.setProperty("--vh", Math.max(window.innerHeight, 620) + "px");
+      lastSyncHeight = window.innerHeight;
+      var vh = lastSyncHeight >= 560 ? lastSyncHeight : 620;
+      hero.style.setProperty("--vh", vh + "px");
     };
 
-    // Wideo: do końca wjazdu telefonu stoi na pierwszej klatce, czyli
-    // splashu (ten sam obraz co poster), startuje po dojeździe (PHONE_MS),
-    // nie w trakcie, bo start dekodowania 824x1672 z alfą w połowie ruchu
-    // gubił klatki. Gra, dopóki scena jest w oknie, pauzuje, gdy znika.
-    // Powrót na górę pauzuje i cofa do splasha. Odrzucone play() (Low Power
-    // Mode na iOS, in-app WebView) ponawiamy przy gestach i kolejnych
-    // klatkach scrolla, dopóki wideo ma grać, bo bez autoplay przeglądarka
-    // nie wznowi sama.
+    // Wideo: przed przypięciem stoi na pierwszej klatce, czyli splashu (ten
+    // sam obraz co poster). Rusza w trakcie wjazdu telefonu, gdy ten jest
+    // już widoczny w SHOWN_RATIO: nagranie samo zaczyna się od ~1 s splasha,
+    // więc start w ruchu jest płynny, a iPhone (ignoruje preload i ładuje
+    // dopiero przy play()) zaczyna ładować wcześniej. Start po dojeździe
+    // (do 1029) był na iPhonie wyraźnie spóźniony. Powrót na górę pauzuje i
+    // cofa do splasha. Odrzucone play() (Low Power Mode na iOS, in-app
+    // WebView) ponawiamy przy gestach i kolejnych klatkach scrolla, dopóki
+    // wideo ma grać, bo bez autoplay przeglądarka nie wznowi sama.
     // Czy telefon jest w oknie co najmniej w SHOWN_RATIO (IntersectionObserver,
     // liczy też transform sceny). Wideo gra tylko wtedy: gdy user zjedzie
     // dalej i ekran telefonu zacznie znikać, pauza; powrót wznawia od tego
@@ -397,6 +411,11 @@
         phoneVideo.currentTime = LOOP_FROM;
         applyVideo();
       });
+      // applyVideo() wychodzi, póki przeglądarka nie wybrała źródła; jeśli
+      // wideo miało już grać, rusza, gdy źródło i metadane są gotowe.
+      ["loadedmetadata", "loadeddata"].forEach(function (ev) {
+        phoneVideo.addEventListener(ev, function () { if (videoWanted) { applyVideo(); } });
+      });
     }
     // „Ogranicz ruch": wideo nie gra, więc zamiast splasha z samym logo
     // poster pokazuje ekran apki (trasa do schronienia).
@@ -407,6 +426,29 @@
       var want = reduceMq && reduceMq.matches ? APP_POSTER : splashPoster;
       if (phoneVideo.getAttribute("poster") !== want) { phoneVideo.setAttribute("poster", want); }
     };
+    // Rozgrzewka: Safari na iPhonie ignoruje preload i zaczyna ładować film
+    // dopiero przy play(), więc start po przypięciu spóźniał się (1,6 s w
+    // symulatorze, nawet z localhosta). Przy pierwszym dotknięciu, kółku
+    // albo klawiszu (user zaraz scrolluje) krótkie play() i pauza na
+    // splashu napełnia bufor; pierwsza sekunda nagrania to nieruchomy
+    // splash, więc nic nie widać.
+    var primed = false;
+    var prime = function () {
+      if (primed || !phoneVideo || !scrubbing) { return; }
+      primed = true;
+      if (!warmed) { warmed = true; phoneVideo.preload = "auto"; }
+      if (videoWanted || !phoneVideo.paused) { return; }
+      var pr = phoneVideo.play();
+      if (pr && pr.then) {
+        pr.then(function () {
+          if (!videoWanted) { phoneVideo.pause(); phoneVideo.currentTime = 0; }
+        }, function () {});
+      }
+    };
+    ["touchstart", "wheel", "keydown"].forEach(function (ev) {
+      window.addEventListener(ev, prime, { passive: true });
+    });
+
     // Karta w tle: pauza bez zmiany videoWanted, po powrocie wideo rusza
     // samo. Wcześniej visibilitychange wołał play() także przy chowaniu
     // karty, czyli wznawiał wideo, które przeglądarka właśnie zatrzymała.
@@ -422,12 +464,13 @@
     });
 
     // Hamulec (user 1029: „ma się zatrzymać na telefonie, a nie przez niego
-    // przejeżdżać"): od przypięcia ruch w dół kółkiem/gładzikiem i palcem
-    // jest ignorowany przez wjazd telefonu (PHONE_MS) i dalej, dopóki trwa
-    // ten sam gest (impulsy kółka co < BRAKE_GAP ms, czyli też bezwładność
-    // gładzika), maksymalnie BRAKE_MAX. Następny, nowy gest jedzie normalnie.
-    // Bez scroll snap: mandatory blokował kółko w dół, a proximity ściągał
-    // z powrotem każdy mały ruch obok punktu stopu (oba sprawdzone 1029).
+    // przejeżdżać"): od przypięcia scrollem z góry przewijanie stoi przez
+    // wjazd telefonu (PHONE_MS) i dalej, dopóki trwa ten sam gest (impulsy
+    // kółka co < BRAKE_GAP ms, czyli też bezwładność gładzika), maksymalnie
+    // BRAKE_MAX; w tym czasie także w górę (overflow: hidden). Następny, nowy
+    // gest jedzie normalnie. Na iOS overflow: hidden na <html> zatrzymuje też
+    // rozpęd palca po puszczeniu (iOS 16+; symulator iOS 27: machnięcie,
+    // które bez hamulca kończyło na ~350 px, staje w przytrzymaniu).
     // Samo preventDefault nie wystarcza: Chrome pozwala zablokować tylko
     // pierwsze zdarzenie kółka w geście, bezwładność gładzika idzie dalej
     // jako nieblokowalna. Dlatego na czas hamowania html.hero-brake
@@ -477,24 +520,25 @@
       brakeTimer = window.setTimeout(checkBrake, PHONE_MS);
     };
 
-    var setPinned = function (on) {
+    var setPinned = function (on, fromTop) {
       if (on === pinned) { return; }
       pinned = on;
       hero.classList.toggle("is-pinned", on);
-      settled = false;
-      if (settledTimer) { window.clearTimeout(settledTimer); settledTimer = null; }
       if (on) {
-        // Tylko gdy przypięcie wyzwolił scroll z samej góry (nie wejście na
-        // stronę już przewiniętą, np. powrót z podstrony albo #faq).
-        if (window.scrollY - heroTop < heroHeight) { brake(); }
-        // Dociągamy wideo od razu: przypięcie oznacza, że za chwilę zagra
-        // (iOS ignoruje "auto" i ładuje dopiero przy play()).
-        if (!warmed && phoneVideo) { warmed = true; phoneVideo.preload = "auto"; }
-        settledTimer = window.setTimeout(function () {
-          settledTimer = null;
-          settled = true;
-          update();
-        }, PHONE_MS);
+        // Tylko gdy przypięcie wyzwolił scroll z samej góry, nie wejście na
+        // stronę już przewiniętą (podstrona, #faq, przywrócenie scrolla,
+        // obrót, powrót z modala).
+        if (fromTop) {
+          brake();
+          if (!warmed && phoneVideo) { warmed = true; phoneVideo.preload = "auto"; }
+        }
+        // Przyciski sklepów gasną (visibility: hidden): fokus z klawiatury nie
+        // może na nich zostać, bo spadłby na body i Tab zaczynałby od góry.
+        var ae = document.activeElement;
+        if (ae && ae.closest && ae.closest(".hero-copy")) {
+          var logo = document.querySelector(".topbar-logo");
+          if (logo) { logo.focus({ preventScroll: true }); }
+        }
       } else {
         releaseBrake();
         setVideoWanted(false);
@@ -503,24 +547,52 @@
     };
 
     // Czysta arytmetyka na `window.scrollY`, zero odczytu layoutu w gorącej
-    // ścieżce; heroTop/heroHeight liczone raz w sync() (load + resize).
+    // ścieżce; heroTop liczony raz w sync() (load + resize).
+    // Otwarty modal (scroll-lock.js: body position fixed) zeruje scrollY;
+    // bez tej osłony hero odpinałby się pod modalem i cofał wideo na splash.
+    // W update(), bo woła go też IntersectionObserver i sync(), nie tylko
+    // scroll. Po zamknięciu scroll-lock.js przywraca pozycję i scroll
+    // odświeża stan.
+    var modalOpen = function () { return document.body.classList.contains("has-modal"); };
     var update = function () {
       framePending = false;
+      if (modalOpen()) { return; }
       var y = window.scrollY - heroTop;
-      if (!pinned && y > PIN_AT) { setPinned(true); }
+      if (!pinned && y > PIN_AT) { setPinned(true, lastRelY <= PIN_AT); }
       else if (pinned && y < UNPIN_AT) { setPinned(false); }
-      if (pinned) { setVideoWanted(settled && phoneShown); }
+      lastRelY = y;
+      if (pinned) { setVideoWanted(phoneShown); }
       if (videoWanted) { applyVideo(); }
     };
     var onScroll = function () {
-      if (!scrubbing || framePending) { return; }
+      if (!scrubbing || modalOpen()) { return; }
+      // Przypięcie (i hamulec) od razu w zdarzeniu scrolla, nie klatkę
+      // później w rAF: przy szybkim machnięciu każda klatka to kilkadziesiąt
+      // px, o które strona odjeżdżała za telefon.
+      if (!pinned && window.scrollY - heroTop > PIN_AT) { update(); return; }
+      if (framePending) { return; }
       framePending = true;
       window.requestAnimationFrame(update);
     };
+    // Klawiatura: Spacja/PageDown z samej góry skakały o prawie cały ekran,
+    // dalej niż przytrzymanie, więc mijały telefon. Z góry pierwszy taki
+    // klawisz tylko przypina scenę (krótki krok w dół, dalej hamulec jak
+    // przy kółku); kolejne działają normalnie. Strzałka w dół przesuwa o
+    // ~40 px, więc sama przypina bez przeskoku. Pola, przyciski, linki i
+    // modale zostają nietknięte.
+    window.addEventListener("keydown", function (e) {
+      if (!scrubbing || pinned || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) { return; }
+      if (e.key !== "PageDown" && !(e.key === " " && !e.shiftKey)) { return; }
+      var t = e.target;
+      if (t && t.closest && t.closest("input, textarea, select, button, a, [contenteditable], dialog")) { return; }
+      if (window.scrollY - heroTop > PIN_AT) { return; }
+      e.preventDefault();
+      window.scrollTo(0, heroTop + PIN_AT * 2);
+    });
     var sync = function () {
-      if (window.innerWidth !== lastSyncWidth) { syncVh(); }
+      if (window.innerWidth !== lastSyncWidth || Math.abs(window.innerHeight - lastSyncHeight) > SYNC_DH) { syncVh(); }
       syncPoster();
-      var want = !(reduceMq && reduceMq.matches) && window.innerHeight >= 560;
+      var want = !(reduceMq && reduceMq.matches) && lastSyncHeight >= 560;
       if (want !== scrubbing) {
         scrubbing = want;
         hero.classList.toggle("is-scrub", want);
@@ -531,7 +603,6 @@
       }
       if (scrubbing) {
         heroTop = hero.getBoundingClientRect().top + window.scrollY;
-        heroHeight = hero.offsetHeight;
         update();
       }
     };

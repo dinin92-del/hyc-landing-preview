@@ -79,8 +79,9 @@ html {
      systemach z klasycznym paskiem (Windows). */
   scrollbar-gutter: stable;
 }
-/* Hamulec hero na czas wjazdu telefonu (main.js): zatrzymuje też bezwładność
-   gładzika, której w Chrome nie da się zablokować preventDefault. */
+/* Hamulec hero na czas wjazdu telefonu (main.js): zatrzymuje też
+   bezwładność gładzika, której w Chrome nie da się zablokować
+   preventDefault, i rozpęd palca na iOS. */
 html.hero-brake { overflow: hidden; }
 
 body {
@@ -88,11 +89,10 @@ body {
   /* Hero jest szerokie na 100vw, a pas z grafiką na mobile szerszy niż okno
      (patrz `.hero-scene`) — bez tego wychodzi poziomy pasek przewijania. `clip` zamiast `hidden`:
      `hidden` robi z <body> kontener przewijania i psułoby `position: sticky`
-     u potomków. Poza mobilem reguła jest bezczynna.
-     Dwie deklaracje pod rząd, celowo: `overflow: clip` weszło dopiero
-     w Safari 16 — starsze iOS-y odrzucą drugą linię i zostaną przy `hidden`
-     (ten sam skutek, inny mechanizm), nowsze wezmą `clip`. */
-  overflow-x: hidden;
+     u potomków. Poza mobilem reguła jest bezczynna. Bez zapasowego
+     `overflow-x: hidden`: na iOS < 16 (bez `clip`) robiło z body kontener
+     przewijania i scena hero przestawała się przyklejać; poziomy nadmiar i
+     tak ucina <html> (wyżej). */
   overflow-x: clip;
   /* cream, nie alabaster — cieplejsze, jaśniejsze tło. Żadna powierzchnia na
      stronie nie zakłada, że tło jest alabastrem. */
@@ -394,6 +394,12 @@ body:not(.page-home) .wrap { padding-top: 88px; }
   margin-left: calc(50% - 50vw);
 }
 .hero.is-scrub { height: calc(var(--vh) + var(--hero-hold)); }
+/* Dotyk: zanim hamulec złapie, szybkie machnięcie przejeżdża ~300 px
+   (symulator iOS 27), więc przytrzymanie dłuższe niż przy kółku, żeby
+   strona stanęła jeszcze na przypiętym telefonie. */
+@media (pointer: coarse) {
+  .hero { --hero-hold: calc(var(--vh) * 0.5); }
+}
 /* `will-change`: warstwy kompozytora przed startem przejścia, żeby Safari
    na iOS nie malował ich od zera w jego trakcie. Tylko w trybie scrub — w
    statycznym układzie warstwa kosztowałaby pamięć bez żadnego zysku. */
