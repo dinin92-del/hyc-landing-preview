@@ -167,16 +167,8 @@
 
   // Blokada przewijania tła pod otwartym modalem (dowolnym z dwóch) — patrz
   // scroll-lock.js.
-  // Na czas modala przyciąganie stoi: scroll-lock.js przywraca pozycję przez
-  // window.scrollTo, a iOS 26 pod scroll snap potrafi z niej odbić.
-  var lockScroll = function () {
-    document.documentElement.classList.add("snap-paused");
-    window.HycScrollLock.lock();
-  };
-  var unlockScroll = function () {
-    window.HycScrollLock.unlock();
-    window.requestAnimationFrame(function () { document.documentElement.classList.remove("snap-paused"); });
-  };
+  var lockScroll = window.HycScrollLock.lock;
+  var unlockScroll = window.HycScrollLock.unlock;
 
   // Podłącz przycisk sklepu do linku, albo zablokuj jako "Wkrótce" gdy pusty.
   function wire(btn, url) {
@@ -315,79 +307,60 @@
 
   document.getElementById("year").textContent = new Date().getFullYear();
 
-  // ---- Hero: scena przypięta, animacja sterowana scrollem ----
-  // .hero jest wysokim torem, a .hero-stage w środku przykleja się do góry
-  // okna (sticky). Tu liczymy tylko postęp 0..1 przejazdu przez tor i
-  // wpisujemy go w --p; cała animacja (tekst i piny odjeżdżają, tło blednie,
-  // telefon wjeżdża i rośnie) jest w CSS i rusza wyłącznie transform/opacity.
-  // Scroll zostaje natywny: nic nie przechwytujemy, nic nie odpala się samo.
-  // Tryb scrub (klasa .is-scrub) tylko gdy ma sens: bez „ogranicz ruch" i na
-  // oknach co najmniej 560px wysokości. W przeciwnym razie zostaje statyczny
-  // układ ze styles.css (tło z tekstem, telefon pod spodem).
+  // ---- Hero: scena przypięta, wjazd wyzwalany scrollem ----
+  // .hero jest krótkim torem, a .hero-stage w środku przykleja się do góry
+  // okna (sticky) na czas przytrzymania (--hero-hold w styles.css). Pierwszy
+  // ruch w dół (PIN_AT) dokłada .is-pinned i CSS przejściem czasowym
+  // (transform/opacity, wątek kompozytora) chowa tekst, piny i tło, a
+  // telefon wjeżdża na środek; powrót na samą górę (UNPIN_AT) cofa
+  // przejście. Scroll przez cały czas jest zwykłym scrollem przeglądarki:
+  // nic go nie przechwytuje i nic nie przewija strony samo.
+  // ⛔ Historia 1029, nie wracać: scrub sterowany pozycją scrolla zostawiał
+  // scenę „w połowie", dojazd w JS po scrollend dawał „stanął i szarpnął",
+  // a CSS scroll snap (mandatory) blokował kółko w dół z przypięcia.
+  // Tryb scrub (klasa .is-scrub) tylko bez „ogranicz ruch" i na oknach co
+  // najmniej 560px wysokości. W przeciwnym razie zostaje statyczny układ ze
+  // styles.css (tło z tekstem, telefon pod spodem).
   var hero = document.querySelector(".hero");
   if (hero) {
-    var stage = hero.querySelector(".hero-stage");
     var phoneVideo = hero.querySelector(".phone-video");
     var reduceMq = window.matchMedia ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
     var scrubbing = false;
-    var track = 0;
+    var pinned = false;
+    var settled = false;
+    var settledTimer = null;
     var heroTop = 0;
     var heroHeight = 0;
     var framePending = false;
     var videoWanted = false;
-    // Safari 26+/inne nowe WebKity: `animation-timeline: view()` prowadzi
-    // --hero-bg/--hero-pins/--hero-copy/--hero-phone (styles.css) BEZ JS,
-    // skomponowane przez silnik, nie główny wątek — JS już nie pisze --p,
-    // więc nie wywołuje ani jednego recalc stylu na klatkę scrolla. To samo
-    // sprawdzenie musi być w CSS (@supports) pod tym samym warunkiem. Drugi
-    // warunek: zakres kończy się na długości (--hero-move), nie na procencie;
-    // silnik bez tego zgubiłby zakres, a JS nie pisałby --p, więc hero by stał.
-    var nativeScrollTimeline = !!(window.CSS && CSS.supports && (function () {
-      try {
-        return CSS.supports("animation-timeline: view()") &&
-          CSS.supports("animation-range: contain 0% contain 1px");
-      } catch (e) { return false; }
-    })());
+    var warmed = false;
+    // Progi w px scrolla od góry hero; luka między nimi chroni przed
+    // przełączaniem w tę i z powrotem przy drganiu palca na samej górze.
+    var PIN_AT = 24;
+    var UNPIN_AT = 4;
+    // Czas wjazdu telefonu, ten sam co transition .hero-phone w styles.css.
+    var PHONE_MS = 850;
 
     // `--vh` liczony RAZ w JS (load + debounced resize), nie jako żywy
-    // `100svh` liczony przez przeglądarkę w locie: na iOS Safari pasek
-    // adresu zwija się/wraca W TRAKCIE scrolla, a `svh` bywa wtedy mniej
-    // stabilny niż powinien być ze specyfikacji — realna wysokość okna
-    // potrafi drgnąć w połowie gestu, co przesuwa cały tor sceny i wygląda
-    // na przeskok scrolla dokładnie tam, gdzie akurat jest tor (np. przy
-    // szlaku, jeśli strona jest już przesunięta o tyle, ile urósł/skurczył
-    // się wcześniej hero). `max(100svh,620px)` w CSS zostaje jako wartość
-    // PRZED pierwszym uruchomieniem JS, ale od tego momentu JS nadpisuje ją
-    // inline wartością zmierzoną raz, nie co klatkę.
-    // Szerokość okna przy ostatnim syncVh — iOS toolbar chowa/pokazuje się
-    // zmieniając WYŁĄCZNIE wysokość (width zostaje ten sam), więc width-guard
-    // blokuje fałszywy layout shift `--vh` podczas scrolla. Rzeczywisty resize
-    // (obrót, zmiana okna na desktop) zawsze zmienia szerokość i przechodzi.
+    // `100svh`: na iOS Safari pasek adresu zwija się/wraca W TRAKCIE scrolla
+    // i realna wysokość okna drga w połowie gestu, co przesuwało cały tor.
+    // `max(100svh,620px)` w CSS zostaje jako wartość przed startem JS.
+    // Width-guard: toolbar iOS zmienia wyłącznie wysokość, więc nie
+    // przeliczamy przy nim; obrót i zmiana okna zmieniają szerokość.
     var lastSyncWidth = -1;
-    // Odcinek ruchu toru w wysokościach okna, ten sam mnożnik co --hero-move
-    // w styles.css. Po nim scena stoi przypięta przez --hero-hold.
-    var MOVE_VH = 1.2;
-    var move = 0;
     var syncVh = function () {
       lastSyncWidth = window.innerWidth;
-      var vh = Math.max(window.innerHeight, 620);
-      hero.style.setProperty("--vh", vh + "px");
-      move = vh * MOVE_VH;
+      hero.style.setProperty("--vh", Math.max(window.innerHeight, 620) + "px");
     };
 
-    // Wideo: do końca wjazdu stoi na pierwszej klatce, czyli splashu (ten
-    // sam obraz co poster). Startuje, gdy scena dojedzie do przypięcia
-    // (PLAY_AT), nie w trakcie dojazdu: start dekodowania 824x1672 z alfą w
-    // połowie ruchu gubił klatki. Martwej strefy (cały telefon w oknie, a
-    // wideo stoi) już nie ma, bo przyciąganie nie pozwala zatrzymać się
-    // między górą a przypięciem. Gra przez przytrzymanie i dopóki scena jest
-    // w oknie, pauzuje, gdy znika. Powrót poniżej STOP_BELOW pauzuje i cofa
-    // do splasha. Odrzucone play() (Low Power Mode na iOS, in-app WebView)
-    // ponawiamy przy gestach i kolejnych klatkach scrolla, dopóki wideo ma
-    // grać, bo bez autoplay przeglądarka nie wznowi sama.
-    var PLAY_AT = 0.98;
-    var STOP_BELOW = 0.5;
-    var warmed = false;
+    // Wideo: do końca wjazdu telefonu stoi na pierwszej klatce, czyli
+    // splashu (ten sam obraz co poster), startuje po dojeździe (PHONE_MS),
+    // nie w trakcie, bo start dekodowania 824x1672 z alfą w połowie ruchu
+    // gubił klatki. Gra, dopóki scena jest w oknie, pauzuje, gdy znika.
+    // Powrót na górę pauzuje i cofa do splasha. Odrzucone play() (Low Power
+    // Mode na iOS, in-app WebView) ponawiamy przy gestach i kolejnych
+    // klatkach scrolla, dopóki wideo ma grać, bo bez autoplay przeglądarka
+    // nie wznowi sama.
     // Ostatni stan z IntersectionObservera (układ statyczny), żeby przejście
     // scrub -> statyczny (obrót, „ogranicz ruch") nie zostawiło grającego
     // wideo poza ekranem ani zatrzymanego na ekranie.
@@ -414,7 +387,7 @@
     // Pętla ręcznie, nie atrybutem `loop`: splash (klatka 0) jest tylko na
     // pierwsze wejście, kolejne okrążenia startują od ekranu głównego apki
     // (LOOP_FROM, koniec przejścia splash -> ekran główny w nagraniu), bez
-    // skoku do logo co 63 s. Przy nowym nagraniu sprawdź ten czas.
+    // skoku do logo. Przy nowym nagraniu sprawdź ten czas.
     var LOOP_FROM = 1.5;
     if (phoneVideo) {
       phoneVideo.addEventListener("ended", function () {
@@ -435,153 +408,64 @@
       document.addEventListener(ev, function () { if (videoWanted) { applyVideo(); } }, { passive: true });
     });
 
-    // Czysta arytmetyka na `window.scrollY`, ZERO odczytu layoutu w gorącej
-    // ścieżce (żadnego getBoundingClientRect/offsetHeight tutaj). Safari na
-    // iOS scrolluje na wątku kompozytora, a JS dostaje aktualizacje na
-    // głównym wątku — odczyt layoutu w tym miejscu bywał spóźniony względem
-    // realnej pozycji scrolla (dokumentowany efekt), co dawało stuttering
-    // właśnie przy wjeździe telefonu. heroTop/heroHeight liczone są raz, przy
-    // sync() (load + debounced resize), nie co klatkę.
-    var update = function () {
-      framePending = false;
-      var p = move > 0 ? Math.min(1, Math.max(0, (window.scrollY - heroTop) / move)) : 0;
-      if (!nativeScrollTimeline) { hero.style.setProperty("--p", p.toFixed(4)); }
-      // Pierwszy ruch w dół: dociągamy wideo, żeby ruszyło od razu po
-      // przypięciu. Przyciąganie i tak dowiezie usera do przypięcia, więc to
-      // nie jest pobieranie na zapas (iOS ignoruje "auto" i ładuje przy play()).
-      if (!warmed && p > 0.02 && phoneVideo) { warmed = true; phoneVideo.preload = "auto"; }
-      if (p >= PLAY_AT) {
-        setVideoWanted(heroTop + heroHeight - window.scrollY > 0);
-      } else if (p < STOP_BELOW) {
+    var setPinned = function (on) {
+      if (on === pinned) { return; }
+      pinned = on;
+      hero.classList.toggle("is-pinned", on);
+      settled = false;
+      if (settledTimer) { window.clearTimeout(settledTimer); settledTimer = null; }
+      if (on) {
+        // Dociągamy wideo od razu: przypięcie oznacza, że za chwilę zagra
+        // (iOS ignoruje "auto" i ładuje dopiero przy play()).
+        if (!warmed && phoneVideo) { warmed = true; phoneVideo.preload = "auto"; }
+        settledTimer = window.setTimeout(function () {
+          settledTimer = null;
+          settled = true;
+          update();
+        }, PHONE_MS);
+      } else {
         setVideoWanted(false);
         rewindToSplash();
       }
+    };
+
+    // Czysta arytmetyka na `window.scrollY`, zero odczytu layoutu w gorącej
+    // ścieżce; heroTop/heroHeight liczone raz w sync() (load + resize).
+    var update = function () {
+      framePending = false;
+      var y = window.scrollY - heroTop;
+      if (!pinned && y > PIN_AT) { setPinned(true); }
+      else if (pinned && y < UNPIN_AT) { setPinned(false); }
+      if (pinned) { setVideoWanted(settled && heroTop + heroHeight - window.scrollY > 0); }
       if (videoWanted) { applyVideo(); }
     };
-    // Przyciąganie natywne, CSS scroll snap (html.hero-snap, tylko w trybie
-    // scrub): wjazd ma dwa stany spoczynkowe, góra strony (.hero-snap-top) i
-    // przypięcie (.hero-snap-rest zaczyna się w heroTop + move). Przeglądarka
-    // wybiera cel w trakcie gestu, razem z bezwładnością, na wątku
-    // kompozytora. Dojazd w JS po scrollend (do 1029) z natury dawał
-    // „stanął i szarpnął". .hero-snap-rest sięga do końca dokumentu, a obszar
-    // przyciągania wyższy niż okno pozwala na swobodny scroll w całym swoim
-    // zakresie (CSS Scroll Snap: snap area larger than snapport), więc reszta
-    // strony przewija się normalnie (sprawdzone w Safari 26). Musi pokrywać
-    // dokument do samego końca, inaczej dół strony odbijałby do jego krawędzi,
-    // stąd ResizeObserver na body (FAQ, obrazki zmieniają wysokość).
-    var snapRest = document.querySelector(".hero-snap-rest");
-    var sizeSnap = function () {
-      if (!snapRest || !scrubbing) { return; }
-      var top = Math.ceil(heroTop + move);
-      var body = document.body;
-      var docBottom = body.getBoundingClientRect().bottom + window.scrollY +
-        (parseFloat(window.getComputedStyle(body).marginBottom) || 0);
-      snapRest.style.top = top + "px";
-      snapRest.style.height = Math.max(0, Math.ceil(docBottom) - top) + "px";
-    };
-    if (window.ResizeObserver) { new ResizeObserver(function () { sizeSnap(); }).observe(document.body); }
     var onScroll = function () {
       if (!scrubbing || framePending) { return; }
       framePending = true;
       window.requestAnimationFrame(update);
     };
     var sync = function () {
-      // Tylko przy prawdziwej zmianie szerokości (obrót/desktop resize) —
-      // toolbar iOS zmienia wyłącznie height, width zostaje stały.
       if (window.innerWidth !== lastSyncWidth) { syncVh(); }
       syncPoster();
       var want = !(reduceMq && reduceMq.matches) && window.innerHeight >= 560;
       if (want !== scrubbing) {
         scrubbing = want;
         hero.classList.toggle("is-scrub", want);
-        document.documentElement.classList.toggle("hero-snap", want);
         if (!want) {
-          hero.style.removeProperty("--p");
+          setPinned(false);
           setVideoWanted(ioVisible && !(reduceMq && reduceMq.matches));
         }
       }
       if (scrubbing) {
         heroTop = hero.getBoundingClientRect().top + window.scrollY;
         heroHeight = hero.offsetHeight;
-        track = heroHeight - stage.offsetHeight;
-        sizeSnap();
         update();
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    // Safari: `animation-timeline` potrafi zostać na STAREJ próbce postępu,
-    // gdy scroll osiada tuż po skoku pozycji (zmierzone: po zjechaniu i
-    // powrocie na samą górę opacity bg/pinów/tekstu/telefonu zostawała
-    // zamrożona na wartości sprzed powrotu — reprodukowane nawet lokalnie
-    // przez programatyczny scrollTo, więc to próbkowanie silnika, nie zgadywanie).
-    // Zdjęcie i ponowne dołożenie klasy niosącej `animation-name` wymusza
-    // świeżą próbkę na AKTUALNEJ pozycji scrolla — bez skoku, bo policzony
-    // postęp jest identyczny, tylko odczytany od nowa. Tylko po OSIADANIU
-    // (debounce), nigdy w trakcie gestu — to nie jest kolejny zapis co klatkę.
-    // `scrubbing` zostaje `true` przez CAŁY czas życia strony (viewport
-    // ≥560px) — bez dodatkowego warunku ten listener wymuszałby reflow po
-    // KAŻDYM zatrzymaniu scrolla GDZIEKOLWIEK na stronie, nie tylko przy
-    // hero. Resync ma sens WYŁĄCZNIE, gdy user wciąż jest w torze hero
-    // (scrollY nie minął jeszcze jego dolnej krawędzi).
-    // ⚠ Zdejmowanie i dokładanie klasy `is-scrub` (poprzednia wersja tej
-    // poprawki) NAPRAWIAŁO zawieszoną przezroczystość, ale samo w sobie
-    // dawało WIDOCZNY błysk złej wartości: nowa instancja animacji na jedną
-    // klatkę pokazuje wartość bazową (opacity 1) ZANIM silnik zdąży
-    // przeliczyć ją względem aktualnego scrolla — zmierzone wprost (getComputedStyle
-    // tuż po przełożeniu klasy: 1, dopiero kolejna klatka: poprawna wartość).
-    // To dawało dokładnie zgłoszone „zacinanie/przeskakiwanie" przy zanikaniu
-    // treści hero, bo resync odpala się po KAŻDYM 150ms postoju scrolla,
-    // czyli przy typowym urywanym scrollowaniu wielokrotnie w trakcie
-    // zanikania. Sam wymuszony reflow (`offsetWidth`), BEZ ruszania klas,
-    // naprawia tę samą zawieszoną próbkę i NIE powoduje błysku złej wartości
-    // (zmierzone: wartość zostaje stabilna na każdej klatce po reflow) —
-    // animacja zostaje cały czas podpięta, zmienia się tylko to, KIEDY
-    // silnik przelicza jej postęp względem scrolla.
-    // ⚠ Reflow sam w sobie NIE jest darmowy — blokuje główny wątek na chwilę
-    // niezależnie od tego, czy wartość się zmienia. Odpalany w CAŁYM
-    // zakresie toru (w tym w strefie skalowania telefonu) dawał zgłoszony
-    // stutter przy powiększaniu makiety. Oryginalny bug (zawieszona
-    // przezroczystość) występował WYŁĄCZNIE przy powrocie na samą górę —
-    // graniczny przypadek, nie cały zakres. Trigger zawężony do okolic
-    // granic toru (góra/dół), gdzie ten bug faktycznie się pojawiał; w
-    // środkowej strefie (zanikanie tekstu, skalowanie telefonu) listener
-    // nic nie robi.
-    if (nativeScrollTimeline) {
-      var scrubResyncTimer = null;
-      var resyncEdgeMargin = 60;
-      // Przy szybkim scrollu POWROTNYM user mija strefę ±60px bez zatrzymania,
-      // więc debouncowany resync nie strzela. Natychmiastowy resync przy
-      // WEJŚCIU do hero (scrollY spada z > heroTop+heroHeight do ≤ heroTop+heroHeight)
-      // łapie ten przypadek jednym `offsetWidth` bez debounce.
-      var prevOutsideHero = false;
-      window.addEventListener("scroll", function () {
-        if (!scrubbing) { return; }
-        var y = window.scrollY;
-        var outsideHero = y > heroTop + heroHeight;
-        if (prevOutsideHero && !outsideHero) {
-          // Właśnie weszliśmy do hero z zewnątrz (scroll w górę zza dolnej krawędzi)
-          void hero.offsetWidth;
-        }
-        prevOutsideHero = outsideHero;
-        var nearStart = y < heroTop + resyncEdgeMargin;
-        // Koniec zakresu animacji to koniec ruchu (move), nie toru: dalej,
-        // w przytrzymaniu, nic się nie rusza, więc reflow tam nie szarpie.
-        var nearEnd = move > 0 && y > heroTop + move - resyncEdgeMargin && y <= heroTop + heroHeight;
-        if (!nearStart && !nearEnd) { return; }
-        if (scrubResyncTimer) { window.clearTimeout(scrubResyncTimer); }
-        scrubResyncTimer = window.setTimeout(function () {
-          void hero.offsetWidth;
-        }, 150);
-      }, { passive: true });
-    }
     // Debounce, nie bezpośrednio `sync` na "resize": Safari na iOS odpala
-    // resize za KAŻDYM razem, gdy pasek adresu chowa się/wraca przy scrollu
-    // (znany efekt dynamicznego toolbaru) — bez debounce `sync()` robił wtedy
-    // wymuszony, synchroniczny odczyt layoutu (offsetHeight ×2 +
-    // getBoundingClientRect) w środku gestu scrolla, co blokowało główny wątek
-    // i dawało dokładnie zgłoszone „przeskoki" i zacinający się wyjazd telefonu
-    // (resize łapał moment akurat w trakcie animacji wjazdu). Realny resize
-    // (obrót, zmiana okna) i tak nie musi przeliczać się co klatkę.
+    // resize za każdym razem, gdy pasek adresu chowa się/wraca przy scrollu,
+    // a sync() czyta layout (getBoundingClientRect, offsetHeight).
     var resizeTimer = null;
     var onResize = function () {
       if (resizeTimer) { window.clearTimeout(resizeTimer); }
