@@ -96,6 +96,8 @@ html {
    bezwładność gładzika, której w Chrome nie da się zablokować
    preventDefault, i rozpęd palca na iOS. */
 html.hero-brake { overflow: hidden; }
+/* Intro na wejściu (main.js): scroll stoi do końca animacji. */
+html.intro-lock { overflow: hidden; }
 
 body {
   margin: 0;

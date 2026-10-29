@@ -64,49 +64,54 @@
     // topbar has hero-intro statically in HTML; remove it when skip applies
     // (deep-link: menu must be visible immediately, not wait for intro).
     if (heroNav && skipNavIntro) { heroNav.classList.remove("hero-intro"); }
-    // Intro "lock": until the intro ends (hero-phone-in: 3750ms delay + 1200ms
-    // duration = 4950ms from hero-ready) the first scroll attempt fast-forwards
-    // the intro instead of being swallowed (skipIntro below). No lock when:
-    // deep-link hash, already scrolled, reduced-motion.
+    // Blokada scrolla na czas intro (user 1029): scroll stoi, dopóki nie
+    // skończy się ostatnia animacja wejścia, zamiast przerywać sekwencję.
+    // overflow: hidden (html.intro-lock) zatrzymuje kółko i pasek przewijania,
+    // preventDefault na touchmove i klawiszach to, czego overflow nie łapie
+    // (palec na iOS, spacja, strzałki). Bez blokady: deep-link z hashem,
+    // strona już przewinięta, „ogranicz ruch" (wtedy intro nie ma).
     var introLocked = false;
     var introUnlockTimer = null;
-    // Próba scrolla w trakcie intro nie jest połykana: przewijamy intro do
-    // końca i oddajemy scroll od razu. Kto tylko patrzy, widzi całą
-    // sekwencję; kto chce zjechać, nie stoi do ~7,5 s na stronie, która
-    // wygląda na zawieszoną. finish() tylko na animacjach z osi czasu
-    // dokumentu (scrollowe zostają), try/catch na nieskończone.
-    var skipIntro = function () {
-      if (!introLocked) { return; }
-      unlockIntroScroll();
-      heroGo();
-      [heroIntro, heroNav].forEach(function (el) {
-        if (!el || !el.getAnimations) { return; }
-        el.getAnimations({ subtree: true }).forEach(function (a) {
-          if (a.timeline !== document.timeline) { return; }
-          try { a.finish(); } catch (e) {}
-        });
-      });
-    };
-    var introScrollAttempt = function () { skipIntro(); };
-    var introKeyAttempt = function (e) {
+    var blockScroll = function (e) { if (e.cancelable) { e.preventDefault(); } };
+    var blockScrollKeys = function (e) {
       if (e.key === "ArrowDown" || e.key === "ArrowUp" ||
           e.key === "PageDown"  || e.key === "PageUp"  ||
-          e.key === "End"       || e.key === " ") { skipIntro(); }
+          e.key === "End"       || e.key === "Home"    || e.key === " ") { e.preventDefault(); }
     };
     var unlockIntroScroll = function () {
       if (!introLocked) { return; }
       introLocked = false;
       if (introUnlockTimer) { window.clearTimeout(introUnlockTimer); introUnlockTimer = null; }
-      window.removeEventListener("wheel", introScrollAttempt);
-      window.removeEventListener("touchmove", introScrollAttempt);
-      window.removeEventListener("keydown", introKeyAttempt);
+      document.documentElement.classList.remove("intro-lock");
+      window.removeEventListener("wheel", blockScroll);
+      window.removeEventListener("touchmove", blockScroll);
+      window.removeEventListener("keydown", blockScrollKeys);
     };
     if (!skipNavIntro && window.scrollY <= 10) {
       introLocked = true;
-      window.addEventListener("wheel", introScrollAttempt, { passive: true });
-      window.addEventListener("touchmove", introScrollAttempt, { passive: true });
-      window.addEventListener("keydown", introKeyAttempt);
+      document.documentElement.classList.add("intro-lock");
+      window.addEventListener("wheel", blockScroll, { passive: false });
+      window.addEventListener("touchmove", blockScroll, { passive: false });
+      window.addEventListener("keydown", blockScrollKeys);
     }
+    // Odblokowanie po końcu wszystkich skończonych animacji intro (CSS jest
+    // źródłem czasów, nie stała tutaj). Zapas 6 s, gdyby karta była w tle
+    // i animacje stały.
+    var unlockAfterIntro = function () {
+      if (!introLocked) { return; }
+      introUnlockTimer = window.setTimeout(unlockIntroScroll, 6000);
+      var done = [];
+      [heroIntro, heroNav].forEach(function (el) {
+        if (!el || !el.getAnimations) { return; }
+        el.getAnimations({ subtree: true }).forEach(function (a) {
+          if (a.timeline !== document.timeline) { return; }
+          var t = a.effect && a.effect.getComputedTiming && a.effect.getComputedTiming();
+          if (t && t.endTime === Infinity) { return; }
+          done.push(a.finished.catch(function () {}));
+        });
+      });
+      Promise.all(done).then(unlockIntroScroll);
+    };
     var heroImg = heroIntro.querySelector(".hero-img");
     var heroGo = function () {
       try { sessionStorage.setItem("hyc_hero_played", "1"); } catch (e) {}
@@ -116,9 +121,12 @@
       // .hero-intro), więc menu, które już jest widoczne, zniknęłoby na
       // czas `animation-delay` i wjechało drugi raz.
       if (heroNav && !skipNavIntro) { heroNav.classList.add("hero-ready"); }
-      // Unlock after last intro animation (hero-phone-in: 3750ms delay + 1200ms duration)
-      if (introLocked) {
-        introUnlockTimer = window.setTimeout(unlockIntroScroll, 4950 + 100);
+      // Animacje startują po przeliczeniu stylów; dopiero wtedy getAnimations()
+      // je widzi.
+      if (introLocked && window.requestAnimationFrame) {
+        window.requestAnimationFrame(unlockAfterIntro);
+      } else {
+        unlockAfterIntro();
       }
     };
     var heroTimer = window.setTimeout(heroGo, 2500);
