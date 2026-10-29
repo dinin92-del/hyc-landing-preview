@@ -131,6 +131,14 @@ Telefon w hero to render z Rotato (ramka i ekran) z przezroczystym tłem, kadr
 824x1672 (stąd `--pw = --ph * 0.4928` w `styles.css`), 30 fps, 60,7 s w pętli.
 Źródło: eksport z Rotato 4K (ProRes 4444) na X10, `/Volumes/X10/dev/landing-video/v22.mov`,
 kadr `crop=824:1672:1508:244`. Narzędzie do HEVC z alfą: AVAssetReader/Writer, 2,5 Mb/s.
+Nagranie ekranu ma w Dynamic Island czerwoną kropkę nagrywania (stała pozycja przez
+cały film). Zamaskowana czernią wyspy już na etapie kadrowania, do pośredniego
+ProRes 4444 (`/Volumes/X10/dev/landing-video/mask-1029/masked.mov`), z którego
+idą HEVC, VP9 i postery:
+`ffmpeg -i v22.mov -vf "crop=824:1672:1508:244,drawbox=x=257:y=73:w=44:h=42:color=black@1:t=fill:replace=1"
+-c:v prores_ks -profile:v 4444 -pix_fmt yuva444p10le -alpha_bits 16 -an masked.mov`.
+Postery: klatka PNG z ffmpeg (`-pix_fmt rgba`), potem `cwebp -q 82 -alpha_q 100 -m 6`
+(ffmpeg z Homebrew nie ma libwebp).
 - `phone.mov`: HEVC z alfą, dla Safari/iOS. Typ `video/quicktime; codecs="hvc1"`
   omija Chrome, który odtworzyłby go bez przezroczystości. Plik musi mieć `moov`
   na początku (`shouldOptimizeForNetworkUse`), inaczej start jest wolny.
