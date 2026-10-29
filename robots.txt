@@ -15,5 +15,5 @@ User-agent: PerplexityBot
 User-agent: meta-externalagent
 Disallow: /
 
-# Jedna podstrona + pliki prawne — sitemap nic tu nie wnosi.
-# Gdy landing urośnie o realne podstrony: Sitemap: https://gethyc.com/sitemap.xml
+# Mapa strony dla Google Search Console (pobierz.html ma noindex, poza mapą).
+Sitemap: https://gethyc.com/sitemap.xml

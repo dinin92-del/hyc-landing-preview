@@ -12,7 +12,11 @@ mkdir -p "$DIST"
 # Pages + behaviour + config
 cp index.html o-aplikacji.html kontakt.html pobierz.html \
    styles.css scroll-lock.js nav.js main.js config.js \
-   favicon.svg robots.txt "$DIST/"
+   favicon.svg robots.txt sitemap.xml "$DIST/"
+
+# Weryfikacja Google Search Console (konto hyc.kontakt@gmail.com). Plik musi
+# zostać na stronie na stałe, inaczej Google cofnie weryfikację.
+cp google*.html "$DIST/"
 
 # TDM reservation (machine-readable opt-out, art. 26³ ust. 2 pr. aut.)
 mkdir -p "$DIST/.well-known"
