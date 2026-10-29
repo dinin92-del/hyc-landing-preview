@@ -367,7 +367,7 @@
     var ioVisible = false;
     var applyVideo = function () {
       if (!phoneVideo || !phoneVideo.currentSrc) { return; }
-      if (videoWanted) {
+      if (videoWanted && !document.hidden) {
         if (phoneVideo.paused) {
           var pr = phoneVideo.play();
           if (pr && pr.catch) { pr.catch(function () {}); }
@@ -404,8 +404,18 @@
       var want = reduceMq && reduceMq.matches ? APP_POSTER : splashPoster;
       if (phoneVideo.getAttribute("poster") !== want) { phoneVideo.setAttribute("poster", want); }
     };
-    ["visibilitychange", "touchend", "pointerup", "click"].forEach(function (ev) {
-      document.addEventListener(ev, function () { if (videoWanted) { applyVideo(); } }, { passive: true });
+    // Karta w tle: pauza bez zmiany videoWanted, po powrocie wideo rusza
+    // samo. Wcześniej visibilitychange wołał play() także przy chowaniu
+    // karty, czyli wznawiał wideo, które przeglądarka właśnie zatrzymała.
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) {
+        if (phoneVideo && !phoneVideo.paused) { phoneVideo.pause(); }
+      } else if (videoWanted) {
+        applyVideo();
+      }
+    });
+    ["touchend", "pointerup", "click"].forEach(function (ev) {
+      document.addEventListener(ev, function () { if (videoWanted && !document.hidden) { applyVideo(); } }, { passive: true });
     });
 
     // Hamulec (user 1029: „ma się zatrzymać na telefonie, a nie przez niego
