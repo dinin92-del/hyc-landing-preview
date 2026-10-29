@@ -1167,7 +1167,7 @@ button.store-btn { border: 0; font-family: inherit; cursor: pointer; text-align:
   border-radius: 20px;
   padding: 44px 24px;
 }
-.feature-row + .feature-row { margin-top: 80px; }
+.feature-row + .feature-row { margin-top: 16px; }
 .feature-media {
   display: block;
   width: 100%;
@@ -1591,7 +1591,8 @@ footer .spacer { flex: 1 1 auto; }
      odstęp od paska na desktopie. */
   .about-hero { margin-top: 80px; }
   .feature-list { margin-top: 120px; margin-bottom: 80px; }
-  .feature-row + .feature-row { margin-top: 120px; }
+  /* Kafle wciąż jeden pod drugim (do 1023px): ciasno jak na mobile. */
+  .feature-row + .feature-row { margin-top: 24px; }
   footer { margin-top: 96px; }
   /* Szlak ma pod tekstem własną sporą pustkę (wysoki artboard), więc tu
      starczy mniej — 200px dawało odstęp >400px licząc od ostatniej widocznej
@@ -1620,7 +1621,7 @@ footer .spacer { flex: 1 1 auto; }
     border-radius: 0;
     padding: 0;
   }
-  /* Ciaśniejszy odstęp (28px) jest sprawą sztaplowanych kafli na mobile —
+  /* Ciasny odstęp (16/24px) jest sprawą sztaplowanych kafli na mobile —
      w dwóch kolumnach wraca pełny oddech między rzędami. */
   .feature-row + .feature-row { margin-top: 110px; }
   /* Reset centrowania z mobile — w 2 kolumnach grafika/pigułka/tekst wracają

@@ -484,6 +484,7 @@
     // overflow: hidden, które przeglądarka w aplikacji Facebooka (user 1029)
     // przy mocniejszym machnięciu najwyraźniej ignoruje. Każda taka próba
     // przedłuża hamowanie jak kolejny impuls gestu.
+    var touchMq = window.matchMedia ? window.matchMedia("(pointer: coarse)") : null;
     var BRAKE_GAP = 150;
     var BRAKE_MAX = 2500;
     var brakeY = 0;
@@ -520,7 +521,11 @@
     var brake = function () {
       releaseBrake();
       brakeOn = true;
-      document.documentElement.classList.add("hero-brake");
+      // Na dotyku bez overflow: hidden: w WKWebView (przeglądarka w
+      // aplikacji Facebooka) wstrzymywał zdarzenia scrolla, a rozpęd i tak
+      // przesuwał stronę, więc kotwica nie miała czego cofać (strona kończyła
+      // za przytrzymaniem). Tam stop robi sama kotwica.
+      if (!(touchMq && touchMq.matches)) { document.documentElement.classList.add("hero-brake"); }
       brakeStart = Date.now();
       lastBrakeWheel = brakeStart;
       brakeY = Math.min(window.scrollY, heroTop + Math.max(PIN_AT + 1, Math.round(holdPx * 0.5)));
@@ -568,7 +573,11 @@
       framePending = false;
       if (modalOpen()) { return; }
       var y = window.scrollY - heroTop;
-      if (!pinned && y > PIN_AT) { setPinned(true, lastRelY <= PIN_AT); }
+      // Scroll z góry = poprzedni odczyt na samej górze, a obecny wciąż w
+      // przytrzymaniu. Skok dalej (kotwica #about/#faq, klawisz End) to nie
+      // gest do zatrzymania: bez tego hamulec ściągał stronę z #about z
+      // powrotem na telefon.
+      if (!pinned && y > PIN_AT) { setPinned(true, lastRelY <= PIN_AT && y < holdPx); }
       else if (pinned && y < UNPIN_AT) { setPinned(false); }
       lastRelY = y;
       if (pinned) { setVideoWanted(phoneShown); }
@@ -634,6 +643,15 @@
     window.addEventListener("resize", onResize);
     if (reduceMq && reduceMq.addEventListener) { reduceMq.addEventListener("change", sync); }
     sync();
+    // Kotwica z adresu (#about, #faq z menu na podstronach): przeglądarka
+    // przewija do niej, zanim sync() wydłuży hero (.is-scrub), więc cel
+    // lądował w środku hero na przypiętym telefonie. Po pierwszym sync()
+    // przewijamy do niej jeszcze raz.
+    if (scrubbing && window.location.hash && window.location.hash !== "#top") {
+      var hashTarget = null;
+      try { hashTarget = document.querySelector(window.location.hash); } catch (e) {}
+      if (hashTarget && !hero.contains(hashTarget)) { hashTarget.scrollIntoView(); }
+    }
 
     // Diagnostyka na żywym urządzeniu (np. przeglądarka w aplikacji
     // Facebooka, której nie da się odtworzyć lokalnie): ?herodebug pokazuje
