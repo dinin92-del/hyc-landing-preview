@@ -142,7 +142,7 @@ kadr `crop=824:1672:1508:244`. Narzędzie do HEVC z alfą: AVAssetReader/Writer,
   bo main.js trzyma wideo na pauzie w klatce 0, dopóki telefon nie osiądzie
   na środku, a iOS bez autoplay nie pokazuje klatki wideo, tylko poster.
 - Hero: scena przypięta (sticky) na `--hero-hold` (0,3 wysokości okna, na
-  dotyku 0,5). Pierwszy ruch w dół (24 px) dokłada `.is-pinned`, a wjazd
+  dotyku 0,6). Pierwszy ruch w dół (24 px) dokłada `.is-pinned`, a wjazd
   telefonu, gaśnięcie tekstu, pinów i tła to przejścia czasowe CSS (telefon
   850 ms = `PHONE_MS` w main.js). Powrót na samą górę cofa przejście.
   Scroll zawsze zostaje zwykłym scrollem.

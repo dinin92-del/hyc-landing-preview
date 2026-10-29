@@ -394,11 +394,11 @@ body:not(.page-home) .wrap { padding-top: 88px; }
   margin-left: calc(50% - 50vw);
 }
 .hero.is-scrub { height: calc(var(--vh) + var(--hero-hold)); }
-/* Dotyk: zanim hamulec złapie, szybkie machnięcie przejeżdża ~300 px
+/* Dotyk: zanim hamulec złapie, szybkie machnięcie przejeżdża 300-430 px
    (symulator iOS 27), więc przytrzymanie dłuższe niż przy kółku, żeby
    strona stanęła jeszcze na przypiętym telefonie. */
 @media (pointer: coarse) {
-  .hero { --hero-hold: calc(var(--vh) * 0.5); }
+  .hero { --hero-hold: calc(var(--vh) * 0.6); }
 }
 /* `will-change`: warstwy kompozytora przed startem przejścia, żeby Safari
    na iOS nie malował ich od zera w jego trakcie. Tylko w trybie scrub — w
